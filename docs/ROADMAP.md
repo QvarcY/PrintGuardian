@@ -45,6 +45,8 @@
 - ✅ persistent local **My Baseline** reference profile
 - ✅ one-click comparison against the saved baseline
 - ✅ baseline replace/remove workflow with local-only metadata storage
+- ✅ non-destructive **Keep project / Use baseline** decision preview
+- ✅ decision summary as the bridge toward Safe 3MF Builder
 - ⏳ multiple named baselines / printer-specific references
 
 ## v0.4 — Safe 3MF Builder

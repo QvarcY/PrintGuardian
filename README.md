@@ -9,7 +9,7 @@
 
 PrintGuardian is a bilingual (Latvian / English) 3D-print project inspector by **CraftIN / QvarcY**.
 
-The current development branch is **v0.3.0-dev.2**. It keeps the live local 3MF Inspector from v0.2, expands the interactive **Profile Diff** workflow, and adds the first persistent **My Baseline** reference profile.
+The current development branch is **v0.3.0-dev.3**. It keeps the live local 3MF Inspector from v0.2, expands the interactive **Profile Diff** workflow, adds the persistent **My Baseline** reference profile, and introduces the first non-destructive **Safe 3MF decision preview**.
 
 ## Fastest way to test
 
@@ -69,6 +69,8 @@ The React source now uses the same real 3MF inspection model as the standalone p
 - compare future 3MF projects directly against that saved baseline without re-opening the reference file;
 - replace or remove the baseline from the comparison screen;
 - store only extracted profile metadata/settings and Print DNA values — never the 3MF file itself.
+- when comparing against **My Baseline**, review each changed value and choose **Keep project value** or **Use baseline value**;
+- keep those choices as an in-memory decision plan only — v0.3.0-dev.3 does **not** rewrite or export the 3MF yet.
 
 Profile Diff still treats a changed value as a **fact, not an automatic error**. The impact label is a prioritization aid, not a safety verdict.
 
