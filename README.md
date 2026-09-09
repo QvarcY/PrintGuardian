@@ -9,7 +9,7 @@
 
 PrintGuardian is a bilingual (Latvian / English) 3D-print project inspector by **CraftIN / QvarcY**.
 
-The current development branch is **v0.3-dev**. It keeps the live local 3MF Inspector from v0.2 and adds the first interactive **Profile Diff** workflow for comparing two `.3mf` projects.
+The current development branch is **v0.3-dev.1**. It keeps the live local 3MF Inspector from v0.2 and adds the first interactive **Profile Diff** workflow for comparing two `.3mf` projects.
 
 ## Fastest way to test
 
@@ -58,9 +58,12 @@ The React source now uses the same real 3MF inspection model as the standalone p
 - compare the important slicer settings currently extracted by PrintGuardian;
 - distinguish unchanged values, changed values and values missing from one file;
 - prioritize changed values with low / medium / high impact labels;
-- default to a differences-only view, with a full comparison available on demand;
+- default to a differences-only view, with **High impact only** and full comparison filters available on demand;
+- classify known differences into lightweight categories such as compatibility, adhesion, quality, strength and material flow;
 - show localized "why it matters" explanations while keeping slicer-native names in English;
+- show directional guidance for known higher/lower or enabled/disabled setting changes;
 - show relative numeric deltas when both values use compatible units;
+- overlay both experimental **Print DNA** signatures for a fast visual comparison;
 - keep both comparison files local on the computer.
 
 Profile Diff still treats a changed value as a **fact, not an automatic error**. The impact label is a prioritization aid, not a safety verdict.

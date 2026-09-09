@@ -8,7 +8,10 @@ PrintGuardian is under active development. Until v1.0, features and internal for
 - Added side-by-side comparison for printer, nozzle, build plate, process profile and extracted slicer settings.
 - Added changed / same / missing comparison states.
 - Added low / medium / high impact prioritization for differences.
-- Added a differences-only filter and numeric delta hints.
+- Added differences-only, high-impact-only and full comparison filters.
+- Added numeric delta hints and directional setting guidance where values can be compared safely.
+- Added lightweight comparison categories (compatibility, adhesion, quality, strength, material flow, process).
+- Added a dual Print DNA overlay for visual project comparison.
 - Added localized "why it matters" explanations without translating slicer-native setting names.
 - Added local-only second-file analysis in React and the standalone preview.
 - Added Buy Me a Coffee support CTA to the application and README.

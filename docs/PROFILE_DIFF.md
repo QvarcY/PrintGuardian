@@ -45,14 +45,19 @@ Changed or missing values are also tagged as:
 
 Impact is **not a risk verdict**. It only tells the user where to look first.
 
-The UI defaults to **Differences only**, while **Show all** remains available for forensic comparison. Numeric changes with matching units also display a relative delta where possible.
+The UI defaults to **Differences only**, with **High impact only** for fast triage and **Show all** for forensic comparison. Numeric changes with matching units also display a relative delta where possible. Known numeric/boolean settings can additionally show a localized directional effect (for example, what a higher or lower value commonly changes) without declaring the value right or wrong.
 
 For known slicer settings, the original English setting name is preserved and the localized explanation is available from the info affordance. Latvian UI therefore still teaches the exact terminology the user will see in Bambu Studio / OrcaSlicer.
+
+## Visual comparison
+
+Profile Diff now overlays both **Print DNA** signatures and highlights the three largest axis deltas. This is intentionally marked experimental: Print DNA is a heuristic summary of selected parsed values, not a quality score or safety verdict.
+
+Rows are also grouped with lightweight categories such as compatibility, adhesion, quality, strength, material flow and process.
 
 ## Next steps
 
 - persistent user baseline / known-good profile;
-- richer impact categories (quality, strength, speed, compatibility, adhesion, material flow);
-- Print DNA overlay;
-- high-impact-only filtering;
-- exportable comparison report.
+- exportable comparison report;
+- richer setting coverage;
+- user-selectable comparison categories.

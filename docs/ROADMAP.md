@@ -39,8 +39,10 @@
 - ✅ localized "why it matters" explanations while keeping slicer names in English
 - ✅ differences-only / show-all filtering
 - ✅ relative numeric delta hints where units match
-- ⏳ import/select a persistent user baseline profile
-- ⏳ side-by-side / overlay Print DNA
+- ✅ side-by-side / overlay Print DNA
+- ✅ high-impact-only filtering
+- ✅ directional setting guidance for known numeric/boolean changes
+- ⏳ persistent user baseline / known-good profile
 
 ## v0.4 — Safe 3MF Builder
 - choose what to keep from project vs local printer profile
