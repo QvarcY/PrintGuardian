@@ -9,7 +9,7 @@
 
 PrintGuardian is a bilingual (Latvian / English) 3D-print project inspector by **CraftIN / QvarcY**.
 
-The current development branch is **v0.3.0-dev.5**. It keeps the live local 3MF Inspector from v0.2, expands the interactive **Profile Diff** workflow, adds the persistent **My Baseline** reference profile, persists a scoped **Safe 3MF decision-plan draft**, and now generates an in-memory `project_settings.config` rebuild preview for explicitly supported mappings.
+The current development branch is **v0.3.0-dev.6**. It keeps the live local 3MF Inspector from v0.2, expands the interactive **Profile Diff** workflow, adds the persistent **My Baseline** reference profile, persists a scoped **Safe 3MF decision-plan draft**, and now adds the first **verified experimental 3MF export** for explicitly supported `project_settings.config` substitutions.
 
 ## Fastest way to test
 
@@ -77,7 +77,12 @@ The React source now uses the same real 3MF inspection model as the standalone p
 - build a modified `project_settings.config` copy **in memory** and verify that the source object remains untouched;
 - validate that the preview JSON serializes/parses and show before/after fingerprints;
 - deliberately block compound printer/nozzle/plate/process metadata and filament-indexed flow values until safer rewrite rules exist;
-- v0.3.0-dev.5 still does **not** rebuild or export a 3MF archive yet.
+- rebuild a **new** 3MF archive for eligible supported substitutions without overwriting the source file;
+- reopen the rebuilt archive locally before download and verify archive-entry order/count, non-target entry contents, replacement JSON, requested mutations and core inspection counts;
+- name the result with a `-printguardian.3mf` suffix;
+- block export when any selected baseline substitution is unresolved or intentionally unsupported;
+- keep compound machine/profile metadata and filament-indexed flow values blocked until safer rewrite semantics exist;
+- treat this as **structural PrintGuardian verification**, not proof that Bambu Studio / OrcaSlicer will accept every real-world project and not a guarantee that the print will succeed.
 
 Profile Diff still treats a changed value as a **fact, not an automatic error**. The impact label is a prioritization aid, not a safety verdict.
 

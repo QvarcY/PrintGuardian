@@ -22,7 +22,7 @@ PrintGuardian is under active development. Until v1.0, features and internal for
 - Kept the baseline explicitly framed as a user-selected reference rather than a safety guarantee.
 - Added the first **Safe 3MF Builder decision preview** when comparing a project against My Baseline.
 - Added per-difference **Keep project value / Use baseline value** choices with a live selection summary.
-- Decision choices are intentionally non-destructive and do not modify or export the source 3MF yet.
+- Decision choices are intentionally non-destructive; the source 3MF is never modified, and export occurs only through the later explicit verified builder action.
 - Extracted decision-plan persistence/report logic into a dedicated builder model.
 - Added a context-scoped local decision draft that is restored only when the compared values still match the saved plan context.
 - Added a profile-level before/after report with planned baseline substitutions, retained project values, unresolved choices and high-impact change counts.
@@ -31,6 +31,12 @@ PrintGuardian is under active development. Until v1.0, features and internal for
 - Added source-untouched and JSON serialize/parse integrity checks plus before/after fingerprints.
 - Added deliberate blocking for compound machine/profile metadata and filament-indexed flow values until safer rewrite semantics are implemented.
 - Baselines now retain a small raw-value map for Builder preview; the source 3MF itself is still never stored.
+- Added the first experimental **verified 3MF export** for fully mapped supported substitutions.
+- Rebuilds a separate archive and never overwrites the source 3MF.
+- Reopens the generated archive before download and verifies entry structure, untouched non-target entry contents, the replaced `project_settings.config`, requested mutations and core inspection counts.
+- Blocks export whenever a selected baseline substitution is unresolved or intentionally unsupported.
+- Added a small local ZIP writer with CRC32 and Deflate/store output; ZIP64 remains intentionally unsupported at this stage.
+- Export verification is structural/internal and is not a slicer acceptance or print-safety guarantee.
 
 ## v0.2.0 — Live 3MF Inspector
 

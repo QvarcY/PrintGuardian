@@ -51,6 +51,8 @@
 - ✅ profile-level before/after decision report
 - ✅ map supported decisions to concrete `project_settings.config` keys
 - ✅ in-memory project-settings rebuild preview with source-untouched and JSON integrity checks
+- ✅ experimental verified 3MF export for fully mapped supported substitutions
+- ✅ reopen generated archive and verify non-target entries / requested mutations before download
 - ✅ block compound machine/profile metadata and filament-indexed values until safer rewrite rules exist
 - ⏳ multiple named baselines / printer-specific references
 
@@ -59,8 +61,10 @@
 - choose what to keep from project vs local printer profile
 - preserve geometry / painting / supports / modifiers selectively
 - remove unwanted printer/AMS/profile metadata
-- non-destructive export to a new file
-- integrity validation
+- ✅ first non-destructive export path started in v0.3.0-dev.6
+- ✅ first archive-level structural integrity validation started in v0.3.0-dev.6
+- real Bambu Studio / OrcaSlicer round-trip compatibility tests
+- ZIP64 / large-project export handling
 - archive-level before/after validation report
 
 ## v0.5 — G-code Preflight

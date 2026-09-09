@@ -76,6 +76,6 @@ The baseline is intentionally described as a **reference**, not as “safe”, �
 - user-selectable comparison categories.
 
 
-## Safe 3MF Builder bridge — dev.5
+## Safe 3MF Builder bridge — dev.6
 
-When a project is compared against **My Baseline**, the decision plan now feeds an in-memory `project_settings.config` rebuild preview. Only explicitly supported scalar settings are mapped. Compound machine/profile metadata and filament-indexed values are intentionally blocked until dedicated rewrite rules exist. This preview never modifies the source 3MF.
+When a project is compared against **My Baseline**, the decision plan now feeds an in-memory `project_settings.config` rebuild preview. Only explicitly supported scalar settings are mapped. Compound machine/profile metadata and filament-indexed values are intentionally blocked until dedicated rewrite rules exist. Starting in dev.6, fully mapped supported substitutions can also be rebuilt into a separate experimental 3MF, reopened locally and structurally verified before download. The source 3MF is never overwritten.
