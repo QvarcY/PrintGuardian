@@ -8,6 +8,7 @@ import { LanguageSwitch } from './components/LanguageSwitch';
 import { DropZone } from './components/DropZone';
 import { SettingTerm } from './components/SettingTerm';
 import { PrintDna } from './components/PrintDna';
+import { SupportProject } from './components/SupportProject';
 import { createDemoInspection, inspectThreeMf, type ThreeMfInspection } from './lib/threeMfInspector';
 
 const navIcons = [CircleGauge, Box, ScanSearch, Layers3, Settings2, TriangleAlert, Zap];
@@ -71,7 +72,7 @@ function App() {
 
       <footer className="footer">
         <span>{t('app.prototype')}</span>
-        <span>© 2026 <b>CraftIN / QvarcY</b> · kas.id.lv · craftin.lv</span>
+        <span className="footer-right">© 2026 <b>CraftIN / QvarcY</b> · kas.id.lv · craftin.lv <SupportProject compact /></span>
       </footer>
     </div>
   );
@@ -97,9 +98,12 @@ function Dashboard({ inspection }: { inspection: ThreeMfInspection }) {
             return <button key={key} className={index === 0 ? 'selected' : ''}><Icon size={17} /><span>{t(`app.${key}`)}</span></button>;
           })}
         </nav>
-        <div className="author-card">
-          <span className="mini-logo">PG</span>
-          <div><b>{t('app.author')}</b><small>kas.id.lv · craftin.lv</small></div>
+        <div className="sidebar-bottom">
+          <SupportProject />
+          <div className="author-card">
+            <span className="mini-logo">PG</span>
+            <div><b>{t('app.author')}</b><small>kas.id.lv · craftin.lv</small></div>
+          </div>
         </div>
       </aside>
 

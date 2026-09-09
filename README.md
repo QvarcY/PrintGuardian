@@ -61,6 +61,15 @@ The current score is a **preliminary project check**, not a guarantee that a pri
 - **Analysis engine:** currently TypeScript proof-of-concept, hardened Rust engine planned for the desktop build
 - **Default data policy:** local processing
 
+
+## Support the project
+
+PrintGuardian is being developed as an independent CraftIN / QvarcY project. If the project is useful to you and you want to support continued development:
+
+**☕ Buy Me a Coffee:** https://buymeacoffee.com/craftin
+
+Support is optional and does not change the local-first design goal of PrintGuardian.
+
 ## Author
 
 Created by **CraftIN / QvarcY**

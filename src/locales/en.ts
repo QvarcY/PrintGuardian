@@ -27,6 +27,7 @@ export const en = {
     demoProject: 'Demo project',
     author: 'Created by CraftIN / QvarcY',
     support: 'Support the project',
+    supportHint: 'Open the CraftIN Buy Me a Coffee page in a new tab.',
     prototype: 'v0.2 · live 3MF Inspector',
     language: 'Language',
     realData: 'REAL DATA',
