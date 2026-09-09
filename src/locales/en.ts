@@ -59,9 +59,18 @@ export const en = {
     subtitle: 'Find printer, process and important slicer-setting differences without manually digging through profiles.',
     current: 'Current project', comparison: 'Comparison project', choose: 'Choose second 3MF', chooseHint: 'The file is analyzed locally', reading: 'Reading second project…', reset: 'Clear comparison',
     emptyTitle: 'Add a second 3MF file', emptyText: 'PrintGuardian will compare stored profiles and selected slicer settings between both files.',
-    changed: 'Changed', same: 'Same', missing: 'Missing in one file', parameter: 'Parameter', result: 'Result',
+    changed: 'Changed', same: 'Same', missing: 'Missing in one file', highImpact: 'High-impact differences', parameter: 'Parameter', result: 'Result',
+    focus: 'View filter', differencesOnly: 'Differences only', showAll: 'Show all', showing: 'Showing {{count}} of {{total}} parameters',
+    whyItMatters: 'Why it matters',
+    impact: { high: 'High impact', medium: 'Medium impact', low: 'Low impact' },
+    explanations: {
+      nozzle: 'Nozzle diameter affects valid layer height, line width, flow and printable detail. A different nozzle profile should be reviewed before printing.',
+      printer: 'Printer profile may contain machine-specific dimensions, speeds, accelerations and start/end G-code. A different profile is not automatically wrong, but it is an important compatibility difference.',
+      plate: 'Build plate selection can change first-layer temperature, adhesion behavior and slicer startup behavior.',
+      process: 'Process profile groups a large set of slicer settings. A different profile name alone does not prove a problem, so the concrete values are compared below as well.'
+    },
     only3mf: 'Profile Diff currently accepts .3mf files only.', failed: 'The second 3MF file could not be analyzed.',
-    disclaimer: 'A difference is not automatically an error. Profile Diff shows the facts; risk interpretation will expand in later stages.'
+    disclaimer: 'Impact level indicates how strongly a parameter can affect print behavior or compatibility. It is not an automatic error or danger verdict.'
   },
   settings: {
     maxVolumetricSpeed: {

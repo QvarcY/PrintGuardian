@@ -1,8 +1,8 @@
 import { useMemo, useRef, useState } from 'react';
-import { ArrowRight, Check, FileUp2, GitCompareArrows, RotateCcw, TriangleAlert } from 'lucide-react';
+import { ArrowRight, Check, FileUp2, Filter, GitCompareArrows, Info, RotateCcw, TriangleAlert } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { inspectThreeMf, type ThreeMfInspection } from '../lib/threeMfInspector';
-import { compareInspections, type DiffStatus } from '../lib/profileDiff';
+import { compareInspections, type DiffImpact, type DiffStatus, type ProfileDiffRow } from '../lib/profileDiff';
 
 export function ProfileDiffPanel({ inspection }: { inspection: ThreeMfInspection }) {
   const { t } = useTranslation();
@@ -10,8 +10,10 @@ export function ProfileDiffPanel({ inspection }: { inspection: ThreeMfInspection
   const [comparison, setComparison] = useState<ThreeMfInspection | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [differencesOnly, setDifferencesOnly] = useState(true);
 
   const diff = useMemo(() => comparison ? compareInspections(inspection, comparison) : null, [inspection, comparison]);
+  const visibleRows = useMemo(() => !diff ? [] : differencesOnly ? diff.rows.filter((row) => row.status !== 'same') : diff.rows, [diff, differencesOnly]);
 
   const load = async (file?: File) => {
     if (!file) return;
@@ -61,8 +63,19 @@ export function ProfileDiffPanel({ inspection }: { inspection: ThreeMfInspection
         : <>
           <div className="diff-summary">
             <SummaryStat tone="changed" value={diff.changed} label={t('compare.changed')} />
+            <SummaryStat tone="high" value={diff.highImpact} label={t('compare.highImpact')} />
             <SummaryStat tone="same" value={diff.same} label={t('compare.same')} />
             <SummaryStat tone="missing" value={diff.missing} label={t('compare.missing')} />
+          </div>
+
+          <div className="diff-toolbar glass-panel">
+            <div>
+              <Filter size={14} />
+              <span>{t('compare.focus')}</span>
+            </div>
+            <button className={differencesOnly ? 'selected' : ''} onClick={() => setDifferencesOnly(true)}>{t('compare.differencesOnly')}</button>
+            <button className={!differencesOnly ? 'selected' : ''} onClick={() => setDifferencesOnly(false)}>{t('compare.showAll')}</button>
+            <span className="diff-visible-count">{t('compare.showing', { count: visibleRows.length, total: diff.rows.length })}</span>
           </div>
 
           <section className="diff-table glass-panel">
@@ -72,7 +85,7 @@ export function ProfileDiffPanel({ inspection }: { inspection: ThreeMfInspection
               <span>{comparison?.fileName}</span>
               <span>{t('compare.result')}</span>
             </div>
-            {diff.rows.map((row) => <DiffRow key={row.key} label={row.label} left={row.baseValue} right={row.compareValue} status={row.status} />)}
+            {visibleRows.map((row) => <DiffRow key={row.key} row={row} />)}
           </section>
           <p className="compare-disclaimer">{t('compare.disclaimer')}</p>
         </>}
@@ -88,18 +101,45 @@ function SummaryStat({ tone, value, label }: { tone: string; value: number; labe
   return <article className={`diff-stat glass-panel ${tone}`}><strong>{value}</strong><span>{label}</span></article>;
 }
 
-function DiffRow({ label, left, right, status }: { label: string; left?: string; right?: string; status: DiffStatus }) {
+const tooltipKeys: Record<string, string> = {
+  layer_height: 'layerHeight',
+  wall_loops: 'wallLoops',
+  sparse_infill_density: 'sparseInfillDensity',
+  enable_support: 'support',
+  brim_width: 'brimWidth',
+  max_volumetric_speed: 'maxVolumetricSpeed',
+};
+
+function DiffRow({ row }: { row: ProfileDiffRow }) {
   const { t } = useTranslation();
-  const statusLabel = status === 'same' ? t('compare.same') : status === 'changed' ? t('compare.changed') : t('compare.missing');
+  const statusLabel = row.status === 'same' ? t('compare.same') : row.status === 'changed' ? t('compare.changed') : t('compare.missing');
+  const settingTooltip = row.settingKey ? tooltipKeys[row.settingKey] : undefined;
+  const explanationKey = settingTooltip
+    ? `settings.${settingTooltip}.description`
+    : row.key === 'nozzle_diameter' ? 'compare.explanations.nozzle'
+    : row.key === 'printer_profile' ? 'compare.explanations.printer'
+    : row.key === 'build_plate' ? 'compare.explanations.plate'
+    : row.key === 'process_profile' ? 'compare.explanations.process'
+    : undefined;
+  const explanation = explanationKey ? t(explanationKey) : undefined;
   return (
-    <div className={`diff-row ${status}`}>
-      <div className="diff-name">{label}</div>
-      <code>{left || '—'}</code>
-      <code>{right || '—'}</code>
-      <span className={`diff-result ${status}`}>
-        {status === 'same' ? <Check size={13} /> : status === 'changed' ? <GitCompareArrows size={13} /> : <TriangleAlert size={13} />}
+    <div className={`diff-row ${row.status}`}>
+      <div className="diff-name-wrap">
+        <div className="diff-name">{row.label}</div>
+        {explanation && <span className="diff-info" tabIndex={0} aria-label={t('compare.whyItMatters')}><Info size={12} /><span className="diff-tooltip"><b>{t('compare.whyItMatters')}</b>{explanation}</span></span>}
+        {row.impact !== 'none' && <ImpactBadge impact={row.impact} />}
+      </div>
+      <code title={row.baseValue}>{row.baseValue || '—'}</code>
+      <code title={row.compareValue}>{row.compareValue || '—'}{row.delta && <small className="diff-delta">{row.delta}</small>}</code>
+      <span className={`diff-result ${row.status}`}>
+        {row.status === 'same' ? <Check size={13} /> : row.status === 'changed' ? <GitCompareArrows size={13} /> : <TriangleAlert size={13} />}
         {statusLabel}
       </span>
     </div>
   );
+}
+
+function ImpactBadge({ impact }: { impact: Exclude<DiffImpact, 'none'> }) {
+  const { t } = useTranslation();
+  return <span className={`impact-badge ${impact}`}>{t(`compare.impact.${impact}`)}</span>;
 }

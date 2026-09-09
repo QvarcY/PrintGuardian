@@ -57,9 +57,13 @@ The React source now uses the same real 3MF inspection model as the standalone p
 - compare `Printer profile`, `Nozzle diameter`, `Build plate` and `Process profile`;
 - compare the important slicer settings currently extracted by PrintGuardian;
 - distinguish unchanged values, changed values and values missing from one file;
+- prioritize changed values with low / medium / high impact labels;
+- default to a differences-only view, with a full comparison available on demand;
+- show localized "why it matters" explanations while keeping slicer-native names in English;
+- show relative numeric deltas when both values use compatible units;
 - keep both comparison files local on the computer.
 
-Profile Diff currently reports factual differences. A changed value is **not automatically treated as an error or risk**. Impact/risk interpretation will be expanded separately.
+Profile Diff still treats a changed value as a **fact, not an automatic error**. The impact label is a prioritization aid, not a safety verdict.
 
 ## Important current limitation
 

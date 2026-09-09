@@ -7,6 +7,9 @@ PrintGuardian is under active development. Until v1.0, features and internal for
 - Added an interactive two-file 3MF Profile Diff view.
 - Added side-by-side comparison for printer, nozzle, build plate, process profile and extracted slicer settings.
 - Added changed / same / missing comparison states.
+- Added low / medium / high impact prioritization for differences.
+- Added a differences-only filter and numeric delta hints.
+- Added localized "why it matters" explanations without translating slicer-native setting names.
 - Added local-only second-file analysis in React and the standalone preview.
 - Added Buy Me a Coffee support CTA to the application and README.
 - Kept slicer-native setting names in English while UI explanations remain localized.

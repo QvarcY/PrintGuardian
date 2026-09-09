@@ -58,9 +58,18 @@ export const lv = {
     subtitle: 'Atrodi printera, procesa un svarīgāko slicer iestatījumu atšķirības bez manuālas meklēšanas pa profilu.',
     current: 'Pašreizējais projekts', comparison: 'Salīdzināmais projekts', choose: 'Izvēlēties otru 3MF', chooseHint: 'Fails tiek analizēts lokāli', reading: 'Nolasa otru projektu…', reset: 'Notīrīt salīdzinājumu',
     emptyTitle: 'Pievieno otru 3MF failu', emptyText: 'PrintGuardian salīdzinās abos failos saglabātos profilus un atlasītos slicer iestatījumus.',
-    changed: 'Atšķiras', same: 'Vienādi', missing: 'Trūkst vienā failā', parameter: 'Parametrs', result: 'Rezultāts',
+    changed: 'Atšķiras', same: 'Vienādi', missing: 'Trūkst vienā failā', highImpact: 'Augstas ietekmes atšķirības', parameter: 'Parametrs', result: 'Rezultāts',
+    focus: 'Skata filtrs', differencesOnly: 'Tikai atšķirības', showAll: 'Rādīt visu', showing: 'Rāda {{count}} no {{total}} parametriem',
+    whyItMatters: 'Kāpēc tas ir svarīgi',
+    impact: { high: 'Augsta ietekme', medium: 'Vidēja ietekme', low: 'Zema ietekme' },
+    explanations: {
+      nozzle: 'Nozzle diametrs ietekmē atļauto slāņa augstumu, līniju platumu, plūsmu un detaļu smalkumu. Atšķirīgs nozzle profils ir jāpārbauda pirms drukas.',
+      printer: 'Printer profile var saturēt mašīnai specifiskus izmērus, ātrumus, paātrinājumus un starta/beigu G-code. Svešs profils nav automātiski kļūda, bet tas ir būtisks salīdzināšanas punkts.',
+      plate: 'Build plate izvēle var mainīt pirmā slāņa temperatūru, saķeres uzvedību un slicera starta procedūru.',
+      process: 'Process profile apvieno lielu slicer iestatījumu kopumu. Atšķirīgs nosaukums pats par sevi vēl nepierāda problēmu, tāpēc zemāk tiek salīdzinātas arī konkrētās vērtības.'
+    },
     only3mf: 'Profile Diff šobrīd pieņem tikai .3mf failus.', failed: 'Otru 3MF failu neizdevās analizēt.',
-    disclaimer: 'Atšķirība pati par sevi nenozīmē kļūdu. Profile Diff parāda faktus; riska interpretācija tiks paplašināta nākamajos posmos.'
+    disclaimer: 'Ietekmes līmenis norāda, cik būtiski konkrētais parametrs var mainīt drukas rezultātu vai saderību. Tas nav automātisks kļūdas vai bīstamības spriedums.'
   },
   settings: {
     maxVolumetricSpeed: {
