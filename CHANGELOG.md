@@ -23,6 +23,9 @@ PrintGuardian is under active development. Until v1.0, features and internal for
 - Added the first **Safe 3MF Builder decision preview** when comparing a project against My Baseline.
 - Added per-difference **Keep project value / Use baseline value** choices with a live selection summary.
 - Decision choices are intentionally non-destructive and do not modify or export the source 3MF yet.
+- Extracted decision-plan persistence/report logic into a dedicated builder model.
+- Added a context-scoped local decision draft that is restored only when the compared values still match the saved plan context.
+- Added a profile-level before/after report with planned baseline substitutions, retained project values, unresolved choices and high-impact change counts.
 
 ## v0.2.0 — Live 3MF Inspector
 

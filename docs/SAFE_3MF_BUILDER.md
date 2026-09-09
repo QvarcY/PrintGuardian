@@ -9,7 +9,7 @@ For every detected difference the user can explicitly choose:
 - **Keep project value**
 - **Use baseline value**
 
-The current implementation stores these decisions only in UI state. It does **not** rewrite, sanitize, export, or claim to make a 3MF safe.
+Starting with `v0.3.0-dev.4`, those decisions are also stored as a **local, context-scoped draft** and can be restored when the exact same current-vs-baseline comparison is opened again. PrintGuardian also generates a profile-level before/after report from that draft. It still does **not** rewrite, sanitize, export, or claim to make a 3MF safe.
 
 ## Why this exists before file rewriting
 
@@ -27,8 +27,9 @@ A reliable builder needs an explicit decision model before PrintGuardian starts 
 
 ## Planned next steps
 
-- model decisions independently from the UI component;
-- persist/restore a draft decision plan for the active project;
+- ✅ model decisions independently from the UI component;
+- ✅ persist/restore a context-scoped draft decision plan;
+- ✅ generate a profile-level before/after decision report;
 - map decisions to concrete `project_settings.config` keys;
 - define which machine/AMS metadata can be replaced safely;
 - preserve geometry, painting, supports and modifiers intentionally;

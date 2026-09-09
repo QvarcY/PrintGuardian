@@ -47,6 +47,8 @@
 - ✅ baseline replace/remove workflow with local-only metadata storage
 - ✅ non-destructive **Keep project / Use baseline** decision preview
 - ✅ decision summary as the bridge toward Safe 3MF Builder
+- ✅ context-scoped local decision-plan persistence
+- ✅ profile-level before/after decision report
 - ⏳ multiple named baselines / printer-specific references
 
 ## v0.4 — Safe 3MF Builder
@@ -55,7 +57,7 @@
 - remove unwanted printer/AMS/profile metadata
 - non-destructive export to a new file
 - integrity validation
-- before/after report
+- archive-level before/after validation report
 
 ## v0.5 — G-code Preflight
 - `.gcode` metadata/parser
