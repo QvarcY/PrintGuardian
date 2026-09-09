@@ -12,6 +12,7 @@ import {
   loadProfileBaseline, removeProfileBaseline, saveProfileBaseline, type SavedProfileBaseline,
 } from '../lib/baselineProfile';
 import { PrintDnaComparison } from './PrintDnaComparison';
+import { ProfileChoicePanel } from './ProfileChoicePanel';
 
 type DiffFilter = 'differences' | 'high' | 'all';
 type ComparisonSource = 'file' | 'baseline' | null;
@@ -181,6 +182,9 @@ export function ProfileDiffPanel({ inspection }: { inspection: ThreeMfInspection
               ? visibleRows.map((row) => <DiffRow key={row.key} row={row} />)
               : <div className="diff-filter-empty">{t('compare.noRows')}</div>}
           </section>
+
+          {comparisonSource === 'baseline' && <ProfileChoicePanel rows={diff.rows} />}
+
           <p className="compare-disclaimer">{comparisonSource === 'baseline' ? t('baseline.referenceDisclaimer') : t('compare.disclaimer')}</p>
         </>}
     </section>
