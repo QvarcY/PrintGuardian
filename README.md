@@ -9,7 +9,7 @@
 
 PrintGuardian is a bilingual (Latvian / English) 3D-print project inspector by **CraftIN / QvarcY**.
 
-The current development branch is **v0.3.0-dev.4**. It keeps the live local 3MF Inspector from v0.2, expands the interactive **Profile Diff** workflow, adds the persistent **My Baseline** reference profile, and now persists a scoped **Safe 3MF decision-plan draft** with a profile-level before/after report.
+The current development branch is **v0.3.0-dev.5**. It keeps the live local 3MF Inspector from v0.2, expands the interactive **Profile Diff** workflow, adds the persistent **My Baseline** reference profile, persists a scoped **Safe 3MF decision-plan draft**, and now generates an in-memory `project_settings.config` rebuild preview for explicitly supported mappings.
 
 ## Fastest way to test
 
@@ -68,12 +68,16 @@ The React source now uses the same real 3MF inspection model as the standalone p
 - save the currently loaded project profile as **My Baseline** in local browser storage;
 - compare future 3MF projects directly against that saved baseline without re-opening the reference file;
 - replace or remove the baseline from the comparison screen;
-- store only extracted profile metadata/settings and Print DNA values — never the 3MF file itself.
+- store only extracted profile metadata/settings, Print DNA values and a small Builder raw-value map — never the 3MF file itself.
 - when comparing against **My Baseline**, review each changed value and choose **Keep project value** or **Use baseline value**;
 - persist those choices locally as a scoped decision-plan draft tied to the exact current-vs-baseline comparison;
 - automatically ignore a saved draft when the comparison context no longer matches;
 - show a profile-level **before / after report** with planned baseline substitutions, retained project values, unresolved items and high-impact planned changes;
-- v0.3.0-dev.4 still does **not** rewrite or export the 3MF yet.
+- map supported baseline choices to the concrete `project_settings.config` keys already present in the current project;
+- build a modified `project_settings.config` copy **in memory** and verify that the source object remains untouched;
+- validate that the preview JSON serializes/parses and show before/after fingerprints;
+- deliberately block compound printer/nozzle/plate/process metadata and filament-indexed flow values until safer rewrite rules exist;
+- v0.3.0-dev.5 still does **not** rebuild or export a 3MF archive yet.
 
 Profile Diff still treats a changed value as a **fact, not an automatic error**. The impact label is a prioritization aid, not a safety verdict.
 

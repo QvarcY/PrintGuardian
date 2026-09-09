@@ -49,9 +49,13 @@
 - ✅ decision summary as the bridge toward Safe 3MF Builder
 - ✅ context-scoped local decision-plan persistence
 - ✅ profile-level before/after decision report
+- ✅ map supported decisions to concrete `project_settings.config` keys
+- ✅ in-memory project-settings rebuild preview with source-untouched and JSON integrity checks
+- ✅ block compound machine/profile metadata and filament-indexed values until safer rewrite rules exist
 - ⏳ multiple named baselines / printer-specific references
 
 ## v0.4 — Safe 3MF Builder
+- ✅ decision model and in-memory `project_settings.config` preview started in v0.3
 - choose what to keep from project vs local printer profile
 - preserve geometry / painting / supports / modifiers selectively
 - remove unwanted printer/AMS/profile metadata

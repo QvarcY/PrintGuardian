@@ -26,6 +26,11 @@ PrintGuardian is under active development. Until v1.0, features and internal for
 - Extracted decision-plan persistence/report logic into a dedicated builder model.
 - Added a context-scoped local decision draft that is restored only when the compared values still match the saved plan context.
 - Added a profile-level before/after report with planned baseline substitutions, retained project values, unresolved choices and high-impact change counts.
+- Added a concrete `project_settings.config` mapping layer for Safe 3MF Builder preview work.
+- Added an in-memory rebuild preview that applies only explicitly supported baseline substitutions to a cloned project settings object.
+- Added source-untouched and JSON serialize/parse integrity checks plus before/after fingerprints.
+- Added deliberate blocking for compound machine/profile metadata and filament-indexed flow values until safer rewrite semantics are implemented.
+- Baselines now retain a small raw-value map for Builder preview; the source 3MF itself is still never stored.
 
 ## v0.2.0 — Live 3MF Inspector
 
