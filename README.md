@@ -9,7 +9,7 @@
 
 PrintGuardian is a bilingual (Latvian / English) 3D-print project inspector by **CraftIN / QvarcY**.
 
-The current development branch is **v0.3.0-dev.6**. It keeps the live local 3MF Inspector from v0.2, expands the interactive **Profile Diff** workflow, adds the persistent **My Baseline** reference profile, persists a scoped **Safe 3MF decision-plan draft**, and now adds the first **verified experimental 3MF export** for explicitly supported `project_settings.config` substitutions.
+The current development branch is **v0.3.0-dev.7**. The core parser, Profile Diff, local reference profile, decision-plan model and verified experimental 3MF export remain in place, but the primary workflow is now **guided-first**: load a project, see a plain-language verdict, set up a trusted print profile once, and review important differences directly on the main screen.
 
 ## Fastest way to test
 
@@ -41,7 +41,7 @@ The React source now uses the same real 3MF inspection model as the standalone p
 - extracts filament palette information;
 - extracts a first set of important slicer settings;
 - counts objects, parts, plates and archive entries;
-- displays a live preliminary inspection score;
+- displays a plain-language project verdict and explicit check coverage instead of a misleading numeric safety score;
 - runs a first small ruleset for suspicious settings/metadata;
 - generates a live Print DNA visualization from project values;
 - LV / EN runtime language switching;
@@ -50,9 +50,16 @@ The React source now uses the same real 3MF inspection model as the standalone p
 - CraftIN / QvarcY author attribution.
 
 
-### v0.3-dev Profile Diff
+### v0.3-dev Guided Review + Advanced Profile Diff
 
-- open **Compare** from the sidebar after loading a project;
+- the default screen now automatically guides the user through project checks and trusted-profile comparison without requiring them to discover a Compare workflow;
+- a trusted 3MF can be selected once as **My print profile** directly from the main review flow;
+- future projects are compared against that profile automatically;
+- important differences appear as plain-language review cards with **In this project / In my profile** values and clear actions;
+- safely rewritable values can be selected directly with **Use my value**, while unsupported compound changes remain explained but intentionally non-editable;
+- the primary **Review & Prepare** action scrolls directly to the relevant workflow instead of acting as a dead button;
+- the old technical Profile Diff remains available under **Advanced tools** for users who want raw comparison detail;
+- open **Advanced tools** to manually compare a second `.3mf` file;
 - select a second `.3mf` file;
 - compare `Printer profile`, `Nozzle diameter`, `Build plate` and `Process profile`;
 - compare the important slicer settings currently extracted by PrintGuardian;
@@ -90,7 +97,7 @@ Profile Diff still treats a changed value as a **fact, not an automatic error**.
 
 ## Important current limitation
 
-The current inspection score is a **preliminary project check**, not a guarantee that a print will succeed. Geometry-level overhang/bridge/island analysis and full G-code safety inspection are not connected yet.
+PrintGuardian intentionally no longer presents a numeric “100/100” style safety score. The main verdict reports what was actually checked and clearly marks missing analysis coverage. Geometry-level overhang/bridge/island analysis and full G-code safety inspection are not connected yet, so even a clean basic verdict is **not** a guarantee that a print will succeed.
 
 ## Architecture target
 

@@ -28,7 +28,7 @@ export const lv = {
     author: 'Izveidoja CraftIN / QvarcY',
     support: 'Atbalstīt projektu',
     supportHint: 'Atvērt CraftIN Buy Me a Coffee lapu jaunā cilnē.',
-    prototype: 'v0.3.0-dev.6 · Verified 3MF Export',
+    prototype: 'v0.3.0-dev.7 · Guided Review UX',
     language: 'Valoda',
     sectionSoon: 'Šī sadaļa tiks pieslēgta nākamajos izstrādes posmos.',
     realData: 'REAL DATA',

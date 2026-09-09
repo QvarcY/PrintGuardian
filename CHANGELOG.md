@@ -4,6 +4,16 @@ PrintGuardian is under active development. Until v1.0, features and internal for
 
 ## v0.3.0-dev — Profile Diff (in development)
 
+- Reworked the primary application UX around the user question “Can I print this, what should I review, and what can I safely change?” rather than around internal PrintGuardian concepts.
+- Removed the prominent numeric project score from the main workflow and replaced it with a plain-language verdict plus explicit check coverage.
+- Added a guided **My print profile** setup directly on the main screen using a trusted 3MF as the local reference source.
+- Added automatic current-project vs trusted-profile comparison without requiring the user to enter a separate Compare mode.
+- Added plain-language difference cards with current value, trusted profile value, impact explanation and direct **Keep / Use my value** decisions.
+- Kept unsupported compound machine/profile rewrites visible and explained while disabling unsafe automatic replacement.
+- Added a main-screen adjusted-copy flow that reuses the verified Safe 3MF export engine.
+- Simplified sidebar navigation to user-oriented **Overview / Understand settings / Advanced tools**.
+- Moved the technical Profile Diff workflow to Advanced tools instead of making it part of the normal path.
+- Made the main Review & Prepare action functional and context-aware instead of leaving a disabled Safe 3MF button.
 - Added an interactive two-file 3MF Profile Diff view.
 - Added side-by-side comparison for printer, nozzle, build plate, process profile and extracted slicer settings.
 - Added changed / same / missing comparison states.

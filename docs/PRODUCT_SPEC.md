@@ -53,6 +53,17 @@ Optional project support is exposed through the official CraftIN Buy Me a Coffee
 The CTA must remain secondary to the product workflow and must never block or gate local inspection features.
 
 
-## Local reference profile — My Baseline
+## Local reference profile — My print profile
 
-PrintGuardian may persist a user-selected comparison baseline locally. The stored record is intentionally minimal: printer/process metadata, selected slicer settings, and derived Print DNA values. The source 3MF binary is not persisted. The UI must never label the baseline as certified-safe; it is a user-selected reference for change detection.
+PrintGuardian may persist a user-selected trusted print reference locally. Internally this is still the baseline model, but the normal UI calls it **My print profile / Mans drukas profils** because users should not need to understand the implementation concept. The stored record is intentionally minimal: printer/process metadata, selected slicer settings, derived Print DNA values and the small raw-value map needed for supported Builder substitutions. The source 3MF binary is not persisted. The UI must never label the reference as certified-safe; it is a user-selected reference for change detection and supported value reuse.
+
+## Primary interaction model
+
+The default screen must answer the user's real questions in order:
+
+1. Can PrintGuardian see an obvious reason not to continue?
+2. What should I review before printing?
+3. What does each relevant setting mean in the real print?
+4. Which values can PrintGuardian safely replace with values from my trusted setup?
+
+Technical Profile Diff and archive-level diagnostics belong under advanced tools, not in the normal path.

@@ -2,12 +2,14 @@
 
 ## Current development stage
 
-The full Safe 3MF Builder is **not implemented yet**. Starting with `v0.3.0-dev.3`, PrintGuardian contains a non-destructive decision preview that appears when the current project is compared with **My Baseline**.
+The full Safe 3MF Builder is **not stable yet**, but the first end-to-end supported path now exists. Starting with `v0.3.0-dev.7`, the normal user no longer has to discover a separate **My Baseline → Compare → Decision Plan** sequence. The same baseline/diff/decision engine remains underneath, while the main screen presents it as a guided **My print profile** review flow.
 
-For every detected difference the user can explicitly choose:
+For every detected difference the user can see the current project value and the trusted print-profile value. Where the raw mapping is proven safe, the user can explicitly choose:
 
 - **Keep project value**
-- **Use baseline value**
+- **Use my value**
+
+Compound or unresolved changes remain visible and explained, but their automatic replacement control is disabled.
 
 Starting with `v0.3.0-dev.4`, those decisions are also stored as a **local, context-scoped draft** and can be restored when the exact same current-vs-baseline comparison is opened again. PrintGuardian also generates a profile-level before/after report from that draft.
 
@@ -15,7 +17,7 @@ Starting with `v0.3.0-dev.5`, PrintGuardian additionally captures a small raw-va
 
 ## Current mapping policy
 
-The dev.5 preview is deliberately conservative. Simple scalar slicer settings such as `Layer height`, `Wall loops`, `Sparse infill density`, `Enable support` and `Brim width` can be mapped when the current project already contains the corresponding key and the baseline provides the same raw data type.
+The mapping policy remains deliberately conservative. Simple scalar slicer settings such as `Layer height`, `Wall loops`, `Sparse infill density`, `Enable support` and `Brim width` can be mapped when the current project already contains the corresponding key and the baseline provides the same raw data type.
 
 The following remain blocked in the preview:
 
@@ -39,9 +41,9 @@ The first export path is intentionally strict:
 
 The current writer emits classic ZIP archives (Deflate when available, Store otherwise) and normalizes ZIP container metadata while preserving entry names and decompressed non-target contents. **ZIP64 and duplicate entry names are not supported yet.** Structural verification by PrintGuardian does not prove that every Bambu Studio / OrcaSlicer version will accept every exported real-world project, and it is not a print-safety certification. Real slicer round-trip tests remain required before this feature can be called stable.
 
-## Why this exists before file rewriting
+## Guided UX policy
 
-A reliable builder needs an explicit decision model before PrintGuardian starts changing project archives. This stage lets the UI and comparison semantics mature without risking source files.
+The normal user should not need to understand `project_settings.config`, baseline activation, diff modes, archive fingerprints or decision-plan context IDs. Those concepts remain internal/advanced. The default flow asks for one trusted 3MF once, automatically compares future projects, explains the differences, and exposes only the replacements the Builder can currently prove safe.
 
 ## Safety rules for the future builder
 

@@ -54,6 +54,11 @@
 - ✅ experimental verified 3MF export for fully mapped supported substitutions
 - ✅ reopen generated archive and verify non-target entries / requested mutations before download
 - ✅ block compound machine/profile metadata and filament-indexed values until safer rewrite rules exist
+- ✅ guided-first main UX with plain-language verdict and explicit analysis coverage instead of a numeric score
+- ✅ one-time **My print profile** setup from a trusted 3MF on the main screen
+- ✅ automatic trusted-profile comparison for every subsequently opened project
+- ✅ direct plain-language Keep / Use my value decisions on the main screen
+- ✅ move technical Profile Diff into **Advanced tools**
 - ⏳ multiple named baselines / printer-specific references
 
 ## v0.4 — Safe 3MF Builder
