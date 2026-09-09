@@ -5,6 +5,7 @@ import {
   ShieldCheck, SlidersHorizontal, Sparkles, Wrench,
 } from 'lucide-react';
 import { LanguageSwitch } from './components/LanguageSwitch';
+import { UiScaleControl } from './components/UiScaleControl';
 import { DropZone } from './components/DropZone';
 import { SettingTerm } from './components/SettingTerm';
 import { PrintDna } from './components/PrintDna';
@@ -62,6 +63,7 @@ function App() {
         </button>
         <div className="top-actions">
           {inspection && <div className="project-chip"><span className="pulse-dot" />{inspection.fileName}</div>}
+          <UiScaleControl />
           <LanguageSwitch />
         </div>
       </header>
