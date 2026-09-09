@@ -1,10 +1,16 @@
 import { useEffect, useMemo, useState } from 'react';
-import { RotateCcw, ShieldCheck } from 'lucide-react';
+import { FileCheck2, RotateCcw, ShieldCheck } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { ProfileDiffRow } from '../lib/profileDiff';
+import {
+  clearProfileDecisionPlan,
+  createProfileDecisionReport,
+  decisionPlanContext,
+  loadProfileDecisionPlan,
+  saveProfileDecisionPlan,
+  type ProfileDecision,
+} from '../lib/profileDecisionPlan';
 import './ProfileChoicePanel.css';
-
-type Decision = 'project' | 'baseline';
 
 type Copy = {
   eyebrow: string;
@@ -20,6 +26,21 @@ type Copy = {
   noChanges: string;
   unavailable: string;
   disclaimer: string;
+  draftSaved: string;
+  draftRestored: string;
+  reportEyebrow: string;
+  reportTitle: string;
+  reportSubtitle: string;
+  plannedChanges: string;
+  keptProject: string;
+  unresolved: string;
+  highImpact: string;
+  before: string;
+  after: string;
+  sourceProject: string;
+  sourceBaseline: string;
+  noPlannedChanges: string;
+  reportDisclaimer: string;
   impact: Record<'high' | 'medium' | 'low' | 'none', string>;
 };
 
@@ -38,6 +59,21 @@ const copy: Record<'lv' | 'en', Copy> = {
     noChanges: 'Nav atšķirību, kurām nepieciešama izvēle.',
     unavailable: 'Etalonā šīs vērtības nav',
     disclaimer: 'Šis ir tikai lēmumu plāns. PrintGuardian šajā posmā vēl nepārraksta un neeksportē 3MF failu.',
+    draftSaved: 'Melnraksts saglabāts lokāli',
+    draftRestored: 'Atjaunots iepriekš saglabāts lēmumu melnraksts',
+    reportEyebrow: 'BEFORE / AFTER REPORT',
+    reportTitle: 'Plānoto izmaiņu pārskats',
+    reportSubtitle: 'Precīzi redzi, kas paliks no projekta un ko plānots aizstāt ar etalona vērtību.',
+    plannedChanges: 'Plānotas izmaiņas',
+    keptProject: 'Paturētas projekta vērtības',
+    unresolved: 'Neatrisinātas',
+    highImpact: 'Augstas ietekmes izmaiņas',
+    before: 'Pirms',
+    after: 'Pēc',
+    sourceProject: 'PROJECT',
+    sourceBaseline: 'BASELINE',
+    noPlannedChanges: 'Pašlaik nav izvēlēta neviena etalona vērtība, tāpēc projekts paliktu nemainīts.',
+    reportDisclaimer: 'Pārskats apraksta tikai plānoto profila vērtību rezultātu. Tas vēl nav pārbūvēts vai validēts 3MF fails.',
     impact: { high: 'Augsta ietekme', medium: 'Vidēja ietekme', low: 'Zema ietekme', none: 'Bez ietekmes' },
   },
   en: {
@@ -54,6 +90,21 @@ const copy: Record<'lv' | 'en', Copy> = {
     noChanges: 'There are no differences that need a decision.',
     unavailable: 'No baseline value available',
     disclaimer: 'This is a decision plan only. PrintGuardian does not rewrite or export the 3MF file at this stage.',
+    draftSaved: 'Draft saved locally',
+    draftRestored: 'Previously saved decision draft restored',
+    reportEyebrow: 'BEFORE / AFTER REPORT',
+    reportTitle: 'Planned changes report',
+    reportSubtitle: 'See exactly what stays from the project and what is planned to come from the baseline.',
+    plannedChanges: 'Planned changes',
+    keptProject: 'Project values kept',
+    unresolved: 'Unresolved',
+    highImpact: 'High-impact changes',
+    before: 'Before',
+    after: 'After',
+    sourceProject: 'PROJECT',
+    sourceBaseline: 'BASELINE',
+    noPlannedChanges: 'No baseline values are currently selected, so the project would remain unchanged.',
+    reportDisclaimer: 'This report describes the planned profile-value result only. It is not yet a rebuilt or validated 3MF file.',
     impact: { high: 'High impact', medium: 'Medium impact', low: 'Low impact', none: 'No impact' },
   },
 };
@@ -62,68 +113,123 @@ export function ProfileChoicePanel({ rows }: { rows: ProfileDiffRow[] }) {
   const { i18n } = useTranslation();
   const text = copy[i18n.language.startsWith('lv') ? 'lv' : 'en'];
   const actionableRows = useMemo(() => rows.filter((row) => row.status !== 'same'), [rows]);
-  const [decisions, setDecisions] = useState<Record<string, Decision>>({});
-  const rowsSignature = useMemo(() => actionableRows.map((row) => `${row.key}:${row.baseValue ?? ''}:${row.compareValue ?? ''}`).join('|'), [actionableRows]);
+  const contextId = useMemo(() => decisionPlanContext(rows), [rows]);
+  const restoredPlan = useMemo(() => loadProfileDecisionPlan(rows), [contextId]);
+  const [decisions, setDecisions] = useState<Record<string, ProfileDecision>>(() => restoredPlan?.decisions ?? {});
+  const [restored, setRestored] = useState(Boolean(restoredPlan && Object.keys(restoredPlan.decisions).length));
 
-  useEffect(() => setDecisions({}), [rowsSignature]);
+  useEffect(() => {
+    const saved = loadProfileDecisionPlan(rows);
+    setDecisions(saved?.decisions ?? {});
+    setRestored(Boolean(saved && Object.keys(saved.decisions).length));
+  }, [contextId, rows]);
 
-  const decisionFor = (row: ProfileDiffRow): Decision => decisions[row.key] ?? 'project';
-  const selectedBaselineCount = actionableRows.filter((row) => decisionFor(row) === 'baseline').length;
+  const decisionFor = (row: ProfileDiffRow): ProfileDecision => decisions[row.key] ?? 'project';
+  const report = useMemo(() => createProfileDecisionReport(rows, decisions), [rows, decisions]);
+  const selectedBaselineCount = report.baselineCount;
 
-  const choose = (row: ProfileDiffRow, decision: Decision) => {
+  const choose = (row: ProfileDiffRow, decision: ProfileDecision) => {
     if (decision === 'baseline' && !row.compareValue) return;
-    setDecisions((current) => ({ ...current, [row.key]: decision }));
+    const next = { ...decisions, [row.key]: decision };
+    setDecisions(next);
+    setRestored(false);
+    saveProfileDecisionPlan(rows, next);
   };
 
-  const reset = () => setDecisions({});
+  const reset = () => {
+    setDecisions({});
+    setRestored(false);
+    clearProfileDecisionPlan();
+  };
 
   return (
-    <section className="choice-panel glass-panel">
-      <div className="choice-heading">
-        <div>
-          <span className="eyebrow"><ShieldCheck size={14} /> {text.eyebrow}</span>
-          <h2>{text.title}</h2>
-          <p>{text.subtitle}</p>
+    <>
+      <section className="choice-panel glass-panel">
+        <div className="choice-heading">
+          <div>
+            <span className="eyebrow"><ShieldCheck size={14} /> {text.eyebrow}</span>
+            <h2>{text.title}</h2>
+            <p>{text.subtitle}</p>
+          </div>
+          <div className="choice-heading-actions">
+            {Object.keys(decisions).length > 0 && <span className="choice-draft-state">{restored ? text.draftRestored : text.draftSaved}</span>}
+            <span className="choice-summary">{text.summary.replace('{{count}}', String(actionableRows.length))}</span>
+            <button className="ghost" onClick={reset} disabled={Object.keys(decisions).length === 0}><RotateCcw size={14} /> {text.reset}</button>
+          </div>
         </div>
-        <div className="choice-heading-actions">
-          <span className="choice-summary">{text.summary.replace('{{count}}', String(actionableRows.length))}</span>
-          <button className="ghost" onClick={reset} disabled={Object.keys(decisions).length === 0}><RotateCcw size={14} /> {text.reset}</button>
-        </div>
-      </div>
 
-      {actionableRows.length === 0 ? <div className="choice-empty">{text.noChanges}</div> : <>
-        <div className="choice-columns">
-          <span>{text.project}</span>
-          <span>{text.baseline}</span>
-        </div>
-        <div className="choice-list">
-          {actionableRows.map((row) => {
-            const decision = decisionFor(row);
-            const baselineAvailable = !!row.compareValue;
-            return (
-              <article className={`choice-row ${decision}`} key={row.key}>
-                <div className="choice-name">
-                  <strong>{row.label}</strong>
-                  <span className={`impact-badge ${row.impact}`}>{text.impact[row.impact]}</span>
-                </div>
-                <button className={`choice-value ${decision === 'project' ? 'selected' : ''}`} onClick={() => choose(row, 'project')}>
-                  <span>{row.baseValue || '—'}</span>
-                  <small>{text.useProject}</small>
-                </button>
-                <button className={`choice-value ${decision === 'baseline' ? 'selected' : ''}`} onClick={() => choose(row, 'baseline')} disabled={!baselineAvailable} title={!baselineAvailable ? text.unavailable : undefined}>
-                  <span>{row.compareValue || '—'}</span>
-                  <small>{baselineAvailable ? text.useBaseline : text.unavailable}</small>
-                </button>
-              </article>
-            );
-          })}
-        </div>
-      </>}
+        {actionableRows.length === 0 ? <div className="choice-empty">{text.noChanges}</div> : <>
+          <div className="choice-columns">
+            <span>{text.project}</span>
+            <span>{text.baseline}</span>
+          </div>
+          <div className="choice-list">
+            {actionableRows.map((row) => {
+              const decision = decisionFor(row);
+              const baselineAvailable = !!row.compareValue;
+              return (
+                <article className={`choice-row ${decision}`} key={row.key}>
+                  <div className="choice-name">
+                    <strong>{row.label}</strong>
+                    <span className={`impact-badge ${row.impact}`}>{text.impact[row.impact]}</span>
+                  </div>
+                  <button className={`choice-value ${decision === 'project' ? 'selected' : ''}`} onClick={() => choose(row, 'project')}>
+                    <span>{row.baseValue || '—'}</span>
+                    <small>{text.useProject}</small>
+                  </button>
+                  <button className={`choice-value ${decision === 'baseline' ? 'selected' : ''}`} onClick={() => choose(row, 'baseline')} disabled={!baselineAvailable} title={!baselineAvailable ? text.unavailable : undefined}>
+                    <span>{row.compareValue || '—'}</span>
+                    <small>{baselineAvailable ? text.useBaseline : text.unavailable}</small>
+                  </button>
+                </article>
+              );
+            })}
+          </div>
+        </>}
 
-      <div className="choice-footer">
-        <strong>{text.selectedBaseline.replace('{{count}}', String(selectedBaselineCount))}</strong>
-        <span>{text.disclaimer}</span>
-      </div>
-    </section>
+        <div className="choice-footer">
+          <strong>{text.selectedBaseline.replace('{{count}}', String(selectedBaselineCount))}</strong>
+          <span>{text.disclaimer}</span>
+        </div>
+      </section>
+
+      <section className="decision-report glass-panel">
+        <div className="decision-report-heading">
+          <div>
+            <span className="eyebrow"><FileCheck2 size={14} /> {text.reportEyebrow}</span>
+            <h2>{text.reportTitle}</h2>
+            <p>{text.reportSubtitle}</p>
+          </div>
+          <div className="decision-report-stats">
+            <ReportStat value={report.baselineCount} label={text.plannedChanges} tone="accent" />
+            <ReportStat value={report.projectCount} label={text.keptProject} />
+            <ReportStat value={report.highImpactBaselineCount} label={text.highImpact} tone="warning" />
+            <ReportStat value={report.unresolvedCount} label={text.unresolved} tone={report.unresolvedCount ? 'danger' : undefined} />
+          </div>
+        </div>
+
+        {report.baselineCount === 0
+          ? <div className="decision-report-empty">{text.noPlannedChanges}</div>
+          : <div className="decision-report-list">
+              <div className="decision-report-columns"><span>{text.before}</span><span>{text.after}</span></div>
+              {report.entries.filter((entry) => entry.changedFromProject).map((entry) => (
+                <article className="decision-report-row" key={entry.key}>
+                  <div className="decision-report-name">
+                    <strong>{entry.label}</strong>
+                    <span className={`impact-badge ${entry.impact}`}>{text.impact[entry.impact]}</span>
+                  </div>
+                  <code>{entry.before || '—'}</code>
+                  <code>{entry.after || '—'}</code>
+                  <span className="decision-source baseline">{text.sourceBaseline}</span>
+                </article>
+              ))}
+            </div>}
+        <div className="decision-report-note">{text.reportDisclaimer}</div>
+      </section>
+    </>
   );
+}
+
+function ReportStat({ value, label, tone }: { value: number; label: string; tone?: 'accent' | 'warning' | 'danger' }) {
+  return <div className={`decision-report-stat${tone ? ` ${tone}` : ''}`}><strong>{value}</strong><span>{label}</span></div>;
 }
