@@ -1,7 +1,7 @@
 import type { ThreeMfInspection } from './threeMfInspector';
 
 export type ComparableInspection = Pick<ThreeMfInspection,
-  'fileName' | 'printerProfile' | 'printerModel' | 'nozzleDiameter' | 'buildPlate' | 'processProfile' | 'settings' | 'dna'
+  'fileName' | 'printerProfile' | 'printerModel' | 'nozzleDiameter' | 'buildPlate' | 'processProfile' | 'settings' | 'dna' | 'builderValues'
 >;
 
 export type DiffStatus = 'same' | 'changed' | 'only-base' | 'only-compare';

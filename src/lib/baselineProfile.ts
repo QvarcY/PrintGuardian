@@ -52,6 +52,7 @@ export function createProfileBaseline(inspection: ThreeMfInspection): SavedProfi
       processProfile: inspection.processProfile,
       settings: inspection.settings.map((setting) => ({ ...setting })),
       dna: { ...inspection.dna },
+      builderValues: inspection.builderValues ? JSON.parse(JSON.stringify(inspection.builderValues)) : undefined,
     },
   };
 }

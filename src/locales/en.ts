@@ -84,7 +84,7 @@ export const en = {
     replace: 'Replace with current',
     remove: 'Remove',
     myBaseline: 'My Baseline',
-    privacy: 'Only extracted printer/process metadata, selected slicer settings and Print DNA values are stored in this browser. The 3MF file itself is not stored.',
+    privacy: 'Only extracted printer/process metadata, selected slicer settings, Print DNA values and a small Builder raw-value map are stored in this browser. The 3MF file itself is not stored.',
     referenceDisclaimer: 'My Baseline is a user-selected local reference, not a safety certification. Differences still require judgement before printing.',
     replaceConfirm: 'Replace My Baseline with the currently loaded project profile?',
     removeConfirm: 'Remove the saved My Baseline from this browser?',

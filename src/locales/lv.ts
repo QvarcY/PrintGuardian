@@ -84,7 +84,7 @@ export const lv = {
     replace: 'Aizstāt ar pašreizējo',
     remove: 'Dzēst',
     myBaseline: 'Mans etalons',
-    privacy: 'Šajā pārlūkā tiek saglabāti tikai nolasītie printera/procesa metadati, atlasītie slicer iestatījumi un Print DNA vērtības. Pats 3MF fails netiek saglabāts.',
+    privacy: 'Šajā pārlūkā tiek saglabāti tikai nolasītie printera/procesa metadati, atlasītie slicer iestatījumi, Print DNA vērtības un neliela Builder raw-value karte. Pats 3MF fails netiek saglabāts.',
     referenceDisclaimer: 'Mans etalons ir lietotāja izvēlēts lokāls atskaites punkts, nevis drošības sertifikāts. Pirms drukas atšķirības joprojām ir jāizvērtē.',
     replaceConfirm: 'Aizstāt saglabāto etalonu ar pašlaik atvērtā projekta profilu?',
     removeConfirm: 'Dzēst saglabāto etalonu no šī pārlūka?',

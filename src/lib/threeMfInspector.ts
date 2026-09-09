@@ -1,4 +1,5 @@
 import { ZipArchive } from './zip';
+import { captureBuilderValues, type BuilderValueMap, type ProjectSettings } from './projectSettingsBridge';
 
 export type Severity = 'info' | 'warning' | 'critical';
 
@@ -58,9 +59,9 @@ export type ThreeMfInspection = {
   score: number;
   projectSettingsCount: number;
   archiveEntries: string[];
+  builderValues?: BuilderValueMap;
+  projectSettings?: ProjectSettings;
 };
-
-type ProjectSettings = Record<string, unknown>;
 
 const PROJECT_SETTINGS = 'Metadata/project_settings.config';
 const MODEL_SETTINGS = 'Metadata/model_settings.config';
@@ -289,6 +290,8 @@ export async function inspectThreeMf(file: File): Promise<ThreeMfInspection> {
     score,
     projectSettingsCount: Object.keys(project).length,
     archiveEntries: names,
+    builderValues: captureBuilderValues(project),
+    projectSettings: project,
   };
 }
 
@@ -310,5 +313,7 @@ export function createDemoInspection(fileName = 'gearbox-demo.3mf'): ThreeMfInsp
     ],
     notices: [{ id: 'demo-filament', severity: 'warning', titleKey: 'notices.unusedFilaments.title', detailKey: 'notices.unusedFilaments.detail', values: { count: 1 } }],
     dna: { quality: 72, speed: 48, flow: 47, support: 78, strength: 82, cooling: 68 }, score: 92, archiveEntries: [],
+    builderValues: { layer_height: '0.2', wall_loops: '4', sparse_infill_density: '25', enable_support: '1', brim_width: '5', max_volumetric_speed: ['14', '21'], printer_profile: 'Bambu Lab P1S 0.4 nozzle', nozzle_diameter: ['0.4'], build_plate: 'Textured PEI Plate', process_profile: '0.20mm Strength @BBL P1S' },
+    projectSettings: { printer_settings_id: 'Bambu Lab P1S 0.4 nozzle', printer_model: 'P1S', nozzle_diameter: ['0.4'], curr_bed_type: 'Textured PEI Plate', print_settings_id: '0.20mm Strength @BBL P1S', layer_height: '0.2', wall_loops: '4', sparse_infill_density: '25', enable_support: '1', brim_width: '5', filament_max_volumetric_speed: ['14', '21'] },
   };
 }

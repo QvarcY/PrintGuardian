@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { FileCheck2, RotateCcw, ShieldCheck } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import type { ProfileDiffRow } from '../lib/profileDiff';
+import type { ComparableInspection, ProfileDiffRow } from '../lib/profileDiff';
+import type { ThreeMfInspection } from '../lib/threeMfInspector';
 import {
   clearProfileDecisionPlan,
   createProfileDecisionReport,
@@ -10,6 +11,7 @@ import {
   saveProfileDecisionPlan,
   type ProfileDecision,
 } from '../lib/profileDecisionPlan';
+import { SafeBuildPreviewPanel } from './SafeBuildPreviewPanel';
 import './ProfileChoicePanel.css';
 
 type Copy = {
@@ -109,7 +111,7 @@ const copy: Record<'lv' | 'en', Copy> = {
   },
 };
 
-export function ProfileChoicePanel({ rows }: { rows: ProfileDiffRow[] }) {
+export function ProfileChoicePanel({ rows, inspection, baseline }: { rows: ProfileDiffRow[]; inspection: ThreeMfInspection; baseline: ComparableInspection }) {
   const { i18n } = useTranslation();
   const text = copy[i18n.language.startsWith('lv') ? 'lv' : 'en'];
   const actionableRows = useMemo(() => rows.filter((row) => row.status !== 'same'), [rows]);
@@ -226,6 +228,8 @@ export function ProfileChoicePanel({ rows }: { rows: ProfileDiffRow[] }) {
             </div>}
         <div className="decision-report-note">{text.reportDisclaimer}</div>
       </section>
+
+      <SafeBuildPreviewPanel inspection={inspection} baseline={baseline} rows={rows} decisions={decisions} />
     </>
   );
 }

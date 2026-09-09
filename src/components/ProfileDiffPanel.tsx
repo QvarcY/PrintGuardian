@@ -183,7 +183,7 @@ export function ProfileDiffPanel({ inspection }: { inspection: ThreeMfInspection
               : <div className="diff-filter-empty">{t('compare.noRows')}</div>}
           </section>
 
-          {comparisonSource === 'baseline' && <ProfileChoicePanel rows={diff.rows} />}
+          {comparisonSource === 'baseline' && <ProfileChoicePanel rows={diff.rows} inspection={inspection} baseline={comparison} />}
 
           <p className="compare-disclaimer">{comparisonSource === 'baseline' ? t('baseline.referenceDisclaimer') : t('compare.disclaimer')}</p>
         </>}
