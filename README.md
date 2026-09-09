@@ -19,7 +19,7 @@ Open `preview.html` in a modern Chromium-based browser and either:
 - click **Browse files**;
 - or use the built-in demo project.
 
-The standalone preview has no external runtime dependencies. A tiny synthetic smoke-test project is included at `fixtures/bambu-style-smoke-test.3mf`.
+The standalone preview has no external runtime dependencies. A tiny synthetic smoke-test project is included at `fixtures/bambu-style-smoke-test.3mf`. A second synthetic project, `fixtures/bambu-style-profile-diff-test.3mf`, is included so the v0.3 Profile Diff can be tested with deliberately changed profile/settings values.
 
 ## React development UI
 
