@@ -44,3 +44,10 @@ Created by CraftIN / QvarcY
 - GitHub: QvarcY
 
 Copyright © 2026 CraftIN / QvarcY (kas.id.lv)
+
+## Project support
+
+Optional project support is exposed through the official CraftIN Buy Me a Coffee page:
+- https://buymeacoffee.com/craftin
+
+The CTA must remain secondary to the product workflow and must never block or gate local inspection features.

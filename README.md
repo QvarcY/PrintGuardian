@@ -9,7 +9,7 @@
 
 PrintGuardian is a bilingual (Latvian / English) 3D-print project inspector by **CraftIN / QvarcY**.
 
-This snapshot is **v0.2** and contains the first live 3MF Inspector. A `.3mf` project can be dropped into the UI and inspected locally without uploading the file anywhere.
+The current development branch is **v0.3-dev**. It keeps the live local 3MF Inspector from v0.2 and adds the first interactive **Profile Diff** workflow for comparing two `.3mf` projects.
 
 ## Fastest way to test
 
@@ -30,7 +30,7 @@ npm run dev
 
 The React source now uses the same real 3MF inspection model as the standalone preview.
 
-## v0.2 live capabilities
+## Current development capabilities
 
 - local ZIP/3MF container reader;
 - reads `Metadata/project_settings.config`;
@@ -49,9 +49,21 @@ The React source now uses the same real 3MF inspection model as the standalone p
 - localized hover explanations for slicer settings;
 - CraftIN / QvarcY author attribution.
 
-## Important v0.2 limitation
 
-The current score is a **preliminary project check**, not a guarantee that a print will succeed. Geometry-level overhang/bridge/island analysis and full G-code safety inspection are not connected yet.
+### v0.3-dev Profile Diff
+
+- open **Compare** from the sidebar after loading a project;
+- select a second `.3mf` file;
+- compare `Printer profile`, `Nozzle diameter`, `Build plate` and `Process profile`;
+- compare the important slicer settings currently extracted by PrintGuardian;
+- distinguish unchanged values, changed values and values missing from one file;
+- keep both comparison files local on the computer.
+
+Profile Diff currently reports factual differences. A changed value is **not automatically treated as an error or risk**. Impact/risk interpretation will be expanded separately.
+
+## Important current limitation
+
+The current inspection score is a **preliminary project check**, not a guarantee that a print will succeed. Geometry-level overhang/bridge/island analysis and full G-code safety inspection are not connected yet.
 
 ## Architecture target
 

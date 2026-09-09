@@ -29,12 +29,16 @@
 - Bambu Studio / OrcaSlicer fixture suite
 - exact slicer/version identification
 
-## v0.3 — Profile Diff
-- import/select a user baseline profile
-- compare imported project values against baseline
-- categorize changed settings by impact
-- bilingual human-readable explanations
-- side-by-side / overlay Print DNA
+## v0.3 — Profile Diff 🚧
+- ✅ compare two imported 3MF projects
+- ✅ printer / nozzle / build plate / process comparison
+- ✅ selected slicer-setting diff
+- ✅ changed / same / missing states
+- ✅ LV / EN comparison UI
+- ⏳ import/select a persistent user baseline profile
+- ⏳ categorize changed settings by impact
+- ⏳ bilingual human-readable impact explanations
+- ⏳ side-by-side / overlay Print DNA
 
 ## v0.4 — Safe 3MF Builder
 - choose what to keep from project vs local printer profile
