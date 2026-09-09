@@ -4,6 +4,12 @@ PrintGuardian is under active development. Until v1.0, features and internal for
 
 ## v0.3.0-dev — Profile Diff (in development)
 
+- Added persistent **Compact / Standard / Large** interface-size control in the top bar.
+- Increased default body, explanation, sidebar, button, tooltip, settings, checklist and guided-review text sizes for normal reading distance.
+- Increased contrast of secondary copy so explanations remain subordinate without becoming difficult to read.
+- Allowed guided checklist detail text to wrap instead of silently truncating important status information.
+- Applied the readability pass to Advanced/Profile Diff and Safe 3MF Builder views as well as the normal guided workflow.
+- Mirrored the same interface-size preference and readable typography in standalone `preview.html`.
 - Reworked the primary application UX around the user question “Can I print this, what should I review, and what can I safely change?” rather than around internal PrintGuardian concepts.
 - Removed the prominent numeric project score from the main workflow and replaced it with a plain-language verdict plus explicit check coverage.
 - Added a guided **My print profile** setup directly on the main screen using a trusted 3MF as the local reference source.

@@ -9,7 +9,9 @@
 
 PrintGuardian is a bilingual (Latvian / English) 3D-print project inspector by **CraftIN / QvarcY**.
 
-The current development branch is **v0.3.0-dev.7**. The core parser, Profile Diff, local reference profile, decision-plan model and verified experimental 3MF export remain in place, but the primary workflow is now **guided-first**: load a project, see a plain-language verdict, set up a trusted print profile once, and review important differences directly on the main screen.
+The current development branch is **v0.3.0-dev.8**. The core parser, Profile Diff, local reference profile, decision-plan model and verified experimental 3MF export remain in place, but the primary workflow is now **guided-first**: load a project, see a plain-language verdict, set up a trusted print profile once, and review important differences directly on the main screen.
+
+The dev.8 checkpoint adds a readability pass across the guided and advanced views plus a persistent **Compact / Standard / Large** interface-size control. Standard mode is intentionally larger than the earlier micro-dashboard typography.
 
 ## Fastest way to test
 

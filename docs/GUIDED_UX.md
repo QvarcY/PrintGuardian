@@ -52,3 +52,11 @@ The check coverage panel must separately identify unavailable geometry/G-code an
 The normal UX uses **My print profile / Mans drukas profils** rather than requiring users to understand the internal “My Baseline” term.
 
 The existing baseline storage model remains the implementation underneath this UI.
+## Readability policy
+
+PrintGuardian must not trade legibility for a dense dashboard aesthetic. If information is important enough to show, it must be readable at a normal desktop viewing distance.
+
+The default **Standard** interface size uses larger body, explanation, button and status text than the early prototype. Users can switch between **Compact**, **Standard** and **Large** at runtime; the choice is stored locally and does not require restarting the app.
+
+Secondary text may be visually quieter, but it must not become micro-text. Important checklist details are allowed to wrap rather than being truncated simply to preserve card height.
+
