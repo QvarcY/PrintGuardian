@@ -41,6 +41,7 @@ export type ThreeMfInspection = {
   kind: '3mf';
   fileName: string;
   fileSize: number;
+  sourceFile?: File;
   slicer?: string;
   printerProfile?: string;
   printerModel?: string;
@@ -272,6 +273,7 @@ export async function inspectThreeMf(file: File): Promise<ThreeMfInspection> {
     kind: '3mf',
     fileName: file.name,
     fileSize: file.size,
+    sourceFile: file,
     slicer: inferSlicer(project),
     printerProfile: first(project, ['printer_settings_id', 'machine_settings_id']),
     printerModel: first(project, ['printer_model', 'printer_structure']),

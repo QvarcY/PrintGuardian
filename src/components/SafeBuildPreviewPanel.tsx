@@ -1,16 +1,22 @@
-import { Braces, CheckCircle2, FileWarning, LockKeyhole, ShieldCheck, TriangleAlert } from 'lucide-react';
-import { useMemo } from 'react';
+import { Braces, CheckCircle2, Download, FileCheck2, FileWarning, LoaderCircle, ShieldCheck, TriangleAlert } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ThreeMfInspection } from '../lib/threeMfInspector';
 import type { ComparableInspection, ProfileDiffRow } from '../lib/profileDiff';
 import type { ProfileDecision } from '../lib/profileDecisionPlan';
 import { createSafeThreeMfBuildPreview, type BuildPreviewMutation } from '../lib/safeThreeMfBuildPreview';
+import {
+  buildVerifiedThreeMfExport,
+  downloadThreeMf,
+  exportEligibility,
+  type SafeThreeMfExportVerification,
+} from '../lib/safeThreeMfExporter';
 
 const copy = {
   lv: {
-    eyebrow: 'SAFE 3MF BUILDER · BUILD PREVIEW',
-    title: 'project_settings.config pārbūves priekšskatījums',
-    subtitle: 'PrintGuardian izveido modificētu konfigurācijas kopiju tikai atmiņā un pārbauda, kuras izvēles var droši kartēt uz konkrētām 3MF atslēgām.',
+    eyebrow: 'SAFE 3MF BUILDER · VERIFIED EXPORT',
+    title: 'project_settings.config pārbūve un 3MF eksports',
+    subtitle: 'PrintGuardian vispirms izveido konfigurācijas kopiju atmiņā. Eksports tiek atļauts tikai tad, ja visas izvēlētās izmaiņas ir kartētas un jaunais 3MF iziet pēcpārbūves pārbaudes.',
     ready: 'Kartētas', blocked: 'Bloķētas', unresolved: 'Neatrisinātas', untouched: 'Oriģināls neskarts', serializes: 'JSON validējas',
     before: 'Pirms', after: 'Pēc', target: '3MF atslēga', status: 'Statuss',
     noSelection: 'Izvēlies vismaz vienu etalona vērtību, lai redzētu pārbūves priekšskatījumu.',
@@ -25,13 +31,19 @@ const copy = {
       'type-mismatch': 'Projekta un etalona raw datu tipi nesakrīt, tāpēc automātiska aizstāšana ir bloķēta.',
     },
     sourceHash: 'Avota fingerprint', previewHash: 'Preview fingerprint', bytes: 'Preview JSON',
-    export: 'Export new 3MF', exportSoon: 'Eksports vēl ir bloķēts. Nākamais posms būs jauna 3MF arhīva izveide un integritātes validācija.',
-    disclaimer: 'Šis priekšskatījums maina tikai atmiņā esošu project_settings.config kopiju. Oriģinālais 3MF netiek modificēts.',
+    export: 'Eksportēt jaunu 3MF', exporting: 'Pārbūvē un pārbauda…',
+    exportLocked: 'Eksports būs pieejams, kad būs vismaz viena kartēta izmaiņa un nebūs nevienas bloķētas vai neatrisinātas izvēles.',
+    sourceMissing: 'Demo projektam nav oriģinālā 3MF faila, tāpēc eksportu var pārbaudīt tikai ar reāli ielādētu 3MF.',
+    exportFailed: 'Jaunais 3MF neizturēja validāciju, tāpēc lejupielāde netika piedāvāta.',
+    verifiedTitle: 'Eksports pārbaudīts',
+    verifiedText: 'Jaunais 3MF tika atkārtoti atvērts un pārbaudīts pirms lejupielādes.',
+    archive: 'Arhīva struktūra', preserved: 'Saglabāti citi ieraksti', mutations: 'Izmaiņas pārbaudītas', reinspection: 'Atkārtota inspekcija',
+    disclaimer: 'Oriģinālais 3MF netiek pārrakstīts. PrintGuardian izveido jaunu failu ar sufiksu -printguardian. Tas nav drukas drošības sertifikāts.',
   },
   en: {
-    eyebrow: 'SAFE 3MF BUILDER · BUILD PREVIEW',
-    title: 'project_settings.config rebuild preview',
-    subtitle: 'PrintGuardian creates a modified configuration copy in memory and verifies which decisions can be mapped to concrete 3MF keys.',
+    eyebrow: 'SAFE 3MF BUILDER · VERIFIED EXPORT',
+    title: 'project_settings.config rebuild and 3MF export',
+    subtitle: 'PrintGuardian first builds a configuration copy in memory. Export is enabled only when every selected change is mapped and the rebuilt 3MF passes post-build verification.',
     ready: 'Mapped', blocked: 'Blocked', unresolved: 'Unresolved', untouched: 'Source untouched', serializes: 'JSON validates',
     before: 'Before', after: 'After', target: '3MF key', status: 'Status',
     noSelection: 'Select at least one baseline value to generate a rebuild preview.',
@@ -46,8 +58,14 @@ const copy = {
       'type-mismatch': 'Project and baseline raw value types differ, so automatic replacement is blocked.',
     },
     sourceHash: 'Source fingerprint', previewHash: 'Preview fingerprint', bytes: 'Preview JSON',
-    export: 'Export new 3MF', exportSoon: 'Export remains locked. The next stage will rebuild a new 3MF archive and validate its integrity.',
-    disclaimer: 'This preview only modifies an in-memory copy of project_settings.config. The source 3MF is not changed.',
+    export: 'Export new 3MF', exporting: 'Rebuilding and verifying…',
+    exportLocked: 'Export becomes available when at least one change is mapped and no selected choice is blocked or unresolved.',
+    sourceMissing: 'The demo project has no original 3MF file, so export can only be tested with a real loaded 3MF.',
+    exportFailed: 'The rebuilt 3MF did not pass verification, so no download was offered.',
+    verifiedTitle: 'Export verified',
+    verifiedText: 'The rebuilt 3MF was reopened and checked before the download was offered.',
+    archive: 'Archive structure', preserved: 'Other entries preserved', mutations: 'Changes verified', reinspection: 'Reinspection',
+    disclaimer: 'The source 3MF is never overwritten. PrintGuardian creates a new file with the -printguardian suffix. This is not a print-safety certification.',
   },
 } as const;
 
@@ -69,6 +87,29 @@ export function SafeBuildPreviewPanel({
     [inspection, baseline, rows, decisions],
   );
   const selected = preview.mutations.filter((mutation) => mutation.status !== 'kept-project');
+  const eligibility = useMemo(() => exportEligibility(inspection, preview), [inspection, preview]);
+  const [exporting, setExporting] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
+  const [verification, setVerification] = useState<SafeThreeMfExportVerification | null>(null);
+
+  const runExport = async () => {
+    if (!eligibility.ok || exporting) return;
+    setExporting(true);
+    setExportError(null);
+    setVerification(null);
+    try {
+      const result = await buildVerifiedThreeMfExport(inspection, preview);
+      setVerification(result.verification);
+      downloadThreeMf(result.file);
+    } catch (reason) {
+      console.error(reason);
+      setExportError(reason instanceof Error ? reason.message : text.exportFailed);
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const exportHint = !inspection.sourceFile ? text.sourceMissing : text.exportLocked;
 
   return (
     <section className="build-preview glass-panel">
@@ -104,9 +145,26 @@ export function SafeBuildPreviewPanel({
             {selected.map((mutation) => <MutationRow key={mutation.rowKey} mutation={mutation} text={text} />)}
           </div>}
 
+      {verification && (
+        <div className="export-verification">
+          <div className="export-verification-title"><FileCheck2 size={16} /><div><strong>{text.verifiedTitle}</strong><span>{text.verifiedText}</span></div></div>
+          <div className="export-verification-grid">
+            <Integrity ok={verification.archiveStructureMatches} label={text.archive} />
+            <Integrity ok={verification.nonTargetEntriesPreserved} label={`${text.preserved}: ${verification.preservedEntryCount}`} />
+            <Integrity ok={verification.mutationsVerified} label={text.mutations} />
+            <Integrity ok={verification.reinspectionPassed} label={text.reinspection} />
+          </div>
+          <code className="export-file-name">{verification.fileName} · {verification.fileSize.toLocaleString()} B</code>
+        </div>
+      )}
+
+      {exportError && <div className="build-preview-warning export-error"><FileWarning size={15} /><span>{text.exportFailed} {exportError}</span></div>}
+
       <div className="build-preview-footer">
         <div><ShieldCheck size={15} /><span>{text.disclaimer}</span></div>
-        <button className="primary" disabled title={text.exportSoon}><LockKeyhole size={14} /> {text.export}</button>
+        <button className="primary" disabled={!eligibility.ok || exporting} title={!eligibility.ok ? exportHint : undefined} onClick={runExport}>
+          {exporting ? <LoaderCircle className="spin" size={14} /> : <Download size={14} />} {exporting ? text.exporting : text.export}
+        </button>
       </div>
     </section>
   );
