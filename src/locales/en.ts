@@ -30,6 +30,7 @@ export const en = {
     supportHint: 'Open the CraftIN Buy Me a Coffee page in a new tab.',
     prototype: 'v0.2 · live 3MF Inspector',
     language: 'Language',
+    sectionSoon: 'This section will be connected in a later development stage.',
     realData: 'REAL DATA',
     extracted: 'READ FROM 3MF',
     projectFacts: 'Project facts',
@@ -52,6 +53,15 @@ export const en = {
     process: 'Process profile',
     unknown: 'Not specified',
     scoreAbout: 'The v0.2 score is based on 3MF structure and a small set of setting checks; it does not yet prove that a print will succeed.'
+  },
+  compare: {
+    title: 'Compare two 3MF projects',
+    subtitle: 'Find printer, process and important slicer-setting differences without manually digging through profiles.',
+    current: 'Current project', comparison: 'Comparison project', choose: 'Choose second 3MF', chooseHint: 'The file is analyzed locally', reading: 'Reading second project…', reset: 'Clear comparison',
+    emptyTitle: 'Add a second 3MF file', emptyText: 'PrintGuardian will compare stored profiles and selected slicer settings between both files.',
+    changed: 'Changed', same: 'Same', missing: 'Missing in one file', parameter: 'Parameter', result: 'Result',
+    only3mf: 'Profile Diff currently accepts .3mf files only.', failed: 'The second 3MF file could not be analyzed.',
+    disclaimer: 'A difference is not automatically an error. Profile Diff shows the facts; risk interpretation will expand in later stages.'
   },
   settings: {
     maxVolumetricSpeed: {

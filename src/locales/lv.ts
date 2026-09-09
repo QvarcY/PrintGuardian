@@ -29,6 +29,7 @@ export const lv = {
     support: 'Atbalstīt projektu',
     prototype: 'v0.2 · dzīvs 3MF Inspector',
     language: 'Valoda',
+    sectionSoon: 'Šī sadaļa tiks pieslēgta nākamajos izstrādes posmos.',
     realData: 'REAL DATA',
     extracted: 'NOLASĪTS NO 3MF',
     projectFacts: 'Projekta dati',
@@ -51,6 +52,15 @@ export const lv = {
     process: 'Process profile',
     unknown: 'Nav norādīts',
     scoreAbout: 'V0.2 vērtējums balstās uz 3MF struktūras un dažu iestatījumu pārbaudēm; tas vēl neapstiprina, ka druka noteikti izdosies.'
+  },
+  compare: {
+    title: 'Salīdzini divus 3MF projektus',
+    subtitle: 'Atrodi printera, procesa un svarīgāko slicer iestatījumu atšķirības bez manuālas meklēšanas pa profilu.',
+    current: 'Pašreizējais projekts', comparison: 'Salīdzināmais projekts', choose: 'Izvēlēties otru 3MF', chooseHint: 'Fails tiek analizēts lokāli', reading: 'Nolasa otru projektu…', reset: 'Notīrīt salīdzinājumu',
+    emptyTitle: 'Pievieno otru 3MF failu', emptyText: 'PrintGuardian salīdzinās abos failos saglabātos profilus un atlasītos slicer iestatījumus.',
+    changed: 'Atšķiras', same: 'Vienādi', missing: 'Trūkst vienā failā', parameter: 'Parametrs', result: 'Rezultāts',
+    only3mf: 'Profile Diff šobrīd pieņem tikai .3mf failus.', failed: 'Otru 3MF failu neizdevās analizēt.',
+    disclaimer: 'Atšķirība pati par sevi nenozīmē kļūdu. Profile Diff parāda faktus; riska interpretācija tiks paplašināta nākamajos posmos.'
   },
   settings: {
     maxVolumetricSpeed: {

@@ -9,6 +9,7 @@ import { DropZone } from './components/DropZone';
 import { SettingTerm } from './components/SettingTerm';
 import { PrintDna } from './components/PrintDna';
 import { SupportProject } from './components/SupportProject';
+import { ProfileDiffPanel } from './components/ProfileDiffPanel';
 import { createDemoInspection, inspectThreeMf, type ThreeMfInspection } from './lib/threeMfInspector';
 
 const navIcons = [CircleGauge, Box, ScanSearch, Layers3, Settings2, TriangleAlert, Zap];
@@ -80,6 +81,7 @@ function App() {
 
 function Dashboard({ inspection }: { inspection: ThreeMfInspection }) {
   const { t } = useTranslation();
+  const [activeView, setActiveView] = useState<'overview' | 'compare'>('overview');
   const warnings = inspection.notices.filter((notice) => notice.severity === 'warning').length;
   const critical = inspection.notices.filter((notice) => notice.severity === 'critical').length;
   const headline = critical > 0 ? t('app.criticalReview') : warnings > 0 ? t('app.needsReview') : t('app.goodToPrint');
@@ -95,7 +97,9 @@ function Dashboard({ inspection }: { inspection: ThreeMfInspection }) {
         <nav>
           {navKeys.map((key, index) => {
             const Icon = navIcons[index];
-            return <button key={key} className={index === 0 ? 'selected' : ''}><Icon size={17} /><span>{t(`app.${key}`)}</span></button>;
+            const interactive = key === 'overview' || key === 'compare';
+            const selected = (key === 'overview' && activeView === 'overview') || (key === 'compare' && activeView === 'compare');
+            return <button key={key} className={selected ? 'selected' : ''} disabled={!interactive} title={!interactive ? t('app.sectionSoon') : undefined} onClick={() => interactive && setActiveView(key)}><Icon size={17} /><span>{t(`app.${key}`)}</span></button>;
           })}
         </nav>
         <div className="sidebar-bottom">
@@ -108,6 +112,7 @@ function Dashboard({ inspection }: { inspection: ThreeMfInspection }) {
       </aside>
 
       <section className="dashboard">
+        {activeView === 'compare' ? <ProfileDiffPanel inspection={inspection} /> : <>
         <div className="health-panel glass-panel">
           <div className={`score-ring ${scoreTone}`} style={{ '--score': `${inspection.score * 3.6}deg` } as CSSProperties} aria-label={`Project check ${inspection.score} out of 100`}>
             <span>{inspection.score}</span><small>/100</small>
@@ -182,6 +187,7 @@ function Dashboard({ inspection }: { inspection: ThreeMfInspection }) {
               </div>
             ))}
         </section>
+        </>}
       </section>
     </main>
   );
