@@ -28,7 +28,7 @@ export const en = {
     author: 'Created by CraftIN / QvarcY',
     support: 'Support the project',
     supportHint: 'Open the CraftIN Buy Me a Coffee page in a new tab.',
-    prototype: 'v0.3-dev · Profile Diff',
+    prototype: 'v0.3.0-dev.2 · Profile Diff + My Baseline',
     language: 'Language',
     sectionSoon: 'This section will be connected in a later development stage.',
     realData: 'REAL DATA',
@@ -73,6 +73,23 @@ export const en = {
     },
     only3mf: 'Profile Diff currently accepts .3mf files only.', failed: 'The second 3MF file could not be analyzed.',
     disclaimer: 'Impact level indicates how strongly a parameter can affect print behavior or compatibility. It is not an automatic error or danger verdict.'
+  },
+  baseline: {
+    title: 'My Baseline',
+    empty: 'Save a trusted project profile once and reuse it as a local reference for future comparisons.',
+    save: 'Save current as My Baseline',
+    saved: 'Saved {{date}}',
+    compare: 'Compare with baseline',
+    inUse: 'Baseline active',
+    replace: 'Replace with current',
+    remove: 'Remove',
+    myBaseline: 'My Baseline',
+    privacy: 'Only extracted printer/process metadata, selected slicer settings and Print DNA values are stored in this browser. The 3MF file itself is not stored.',
+    referenceDisclaimer: 'My Baseline is a user-selected local reference, not a safety certification. Differences still require judgement before printing.',
+    replaceConfirm: 'Replace My Baseline with the currently loaded project profile?',
+    removeConfirm: 'Remove the saved My Baseline from this browser?',
+    saveFailed: 'The baseline could not be saved in local browser storage.',
+    removeFailed: 'The baseline could not be removed from local browser storage.'
   },
   settings: {
     maxVolumetricSpeed: {

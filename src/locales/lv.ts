@@ -28,7 +28,7 @@ export const lv = {
     author: 'Izveidoja CraftIN / QvarcY',
     support: 'Atbalstīt projektu',
     supportHint: 'Atvērt CraftIN Buy Me a Coffee lapu jaunā cilnē.',
-    prototype: 'v0.3-dev · Profile Diff',
+    prototype: 'v0.3.0-dev.2 · Profile Diff + My Baseline',
     language: 'Valoda',
     sectionSoon: 'Šī sadaļa tiks pieslēgta nākamajos izstrādes posmos.',
     realData: 'REAL DATA',
@@ -73,6 +73,23 @@ export const lv = {
     },
     only3mf: 'Profile Diff šobrīd pieņem tikai .3mf failus.', failed: 'Otru 3MF failu neizdevās analizēt.',
     disclaimer: 'Ietekmes līmenis norāda, cik būtiski konkrētais parametrs var mainīt drukas rezultātu vai saderību. Tas nav automātisks kļūdas vai bīstamības spriedums.'
+  },
+  baseline: {
+    title: 'Mans etalons',
+    empty: 'Vienreiz saglabā uzticama projekta profilu un turpmāk izmanto to kā lokālu atskaites punktu salīdzinājumiem.',
+    save: 'Saglabāt pašreizējo kā Mans etalons',
+    saved: 'Saglabāts {{date}}',
+    compare: 'Salīdzināt ar etalonu',
+    inUse: 'Etalons aktīvs',
+    replace: 'Aizstāt ar pašreizējo',
+    remove: 'Dzēst',
+    myBaseline: 'Mans etalons',
+    privacy: 'Šajā pārlūkā tiek saglabāti tikai nolasītie printera/procesa metadati, atlasītie slicer iestatījumi un Print DNA vērtības. Pats 3MF fails netiek saglabāts.',
+    referenceDisclaimer: 'Mans etalons ir lietotāja izvēlēts lokāls atskaites punkts, nevis drošības sertifikāts. Pirms drukas atšķirības joprojām ir jāizvērtē.',
+    replaceConfirm: 'Aizstāt saglabāto etalonu ar pašlaik atvērtā projekta profilu?',
+    removeConfirm: 'Dzēst saglabāto etalonu no šī pārlūka?',
+    saveFailed: 'Etalonu neizdevās saglabāt pārlūka lokālajā krātuvē.',
+    removeFailed: 'Etalonu neizdevās izdzēst no pārlūka lokālās krātuves.'
   },
   settings: {
     maxVolumetricSpeed: {

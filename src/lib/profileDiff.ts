@@ -1,5 +1,9 @@
 import type { ThreeMfInspection } from './threeMfInspector';
 
+export type ComparableInspection = Pick<ThreeMfInspection,
+  'fileName' | 'printerProfile' | 'printerModel' | 'nozzleDiameter' | 'buildPlate' | 'processProfile' | 'settings' | 'dna'
+>;
+
 export type DiffStatus = 'same' | 'changed' | 'only-base' | 'only-compare';
 export type DiffImpact = 'high' | 'medium' | 'low' | 'none';
 export type DiffCategory = 'compatibility' | 'adhesion' | 'quality' | 'strength' | 'flow' | 'process';
@@ -132,7 +136,7 @@ function makeRow(key: string, label: string, baseValue?: string, compareValue?: 
   };
 }
 
-export function compareInspections(base: ThreeMfInspection, compare: ThreeMfInspection): ProfileDiff {
+export function compareInspections(base: ComparableInspection, compare: ComparableInspection): ProfileDiff {
   const rows: ProfileDiffRow[] = [
     makeRow('printer_profile', 'Printer profile', base.printerProfile || base.printerModel, compare.printerProfile || compare.printerModel),
     makeRow('nozzle_diameter', 'Nozzle diameter', base.nozzleDiameter ? `${base.nozzleDiameter} mm` : undefined, compare.nozzleDiameter ? `${compare.nozzleDiameter} mm` : undefined),

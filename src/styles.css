@@ -222,3 +222,20 @@ button:disabled { opacity:.42; cursor:not-allowed; transform:none !important; }
 .dna-delta-list strong { display:block; margin-top:3px; font-size:12px; font-variant-numeric:tabular-nums; }
 .dna-delta-list strong.up { color:var(--warning); }.dna-delta-list strong.down { color:var(--accent-2); }.dna-delta-list strong.neutral { color:#687582; }
 @media (max-width:1100px){.dna-compare{grid-template-columns:1fr}.dna-radar-compare{justify-self:start}.dna-delta-list{grid-template-columns:repeat(3,1fr)}}
+
+/* v0.3 My Baseline */
+.baseline-panel { border-radius:var(--radius-lg); padding:15px 17px; display:grid; grid-template-columns:42px minmax(0,1fr) auto; gap:14px; align-items:center; position:relative; overflow:hidden; }
+.baseline-panel:after { content:""; position:absolute; width:180px; height:150px; left:-110px; top:-85px; border-radius:50%; background:var(--accent); filter:blur(70px); opacity:.045; pointer-events:none; }
+.baseline-panel.active { border-color:rgba(100,230,187,.16); background:linear-gradient(145deg,rgba(100,230,187,.035),rgba(255,255,255,.018)); }
+.baseline-icon { width:42px; height:42px; border-radius:13px; display:grid; place-items:center; color:var(--accent); border:1px solid rgba(100,230,187,.12); background:rgba(100,230,187,.045); z-index:1; }
+.baseline-copy { min-width:0; z-index:1; }
+.baseline-copy h2 { margin:5px 0 3px; font-size:14px; }
+.baseline-copy p { margin:0; color:#8794a1; font-size:9px; line-height:1.45; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.baseline-copy p strong { color:#cbd5dd; font-weight:750; }
+.baseline-copy small { display:block; margin-top:5px; max-width:760px; color:#5f6d79; font-size:7.5px; line-height:1.45; }
+.baseline-actions { display:flex; align-items:center; justify-content:flex-end; gap:6px; flex-wrap:wrap; z-index:1; }
+.baseline-actions button { display:inline-flex; align-items:center; gap:6px; min-height:34px; white-space:nowrap; }
+.baseline-use { min-width:150px; justify-content:center; }
+.ghost.danger { color:#9a7270; }
+.ghost.danger:hover { color:#ff9a91; border-color:rgba(255,140,130,.18); background:rgba(255,140,130,.05); }
+@media (max-width:1050px){.baseline-panel{grid-template-columns:42px 1fr}.baseline-actions{grid-column:1 / -1;justify-content:flex-start;padding-left:56px}.baseline-copy p{white-space:normal}}

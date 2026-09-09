@@ -1,16 +1,27 @@
 import { useMemo, useRef, useState } from 'react';
-import { ArrowRight, Check, FileUp2, Filter, GitCompareArrows, Info, RotateCcw, TriangleAlert } from 'lucide-react';
+import {
+  ArrowRight, BookmarkCheck, Check, FileUp2, Filter, GitCompareArrows, Info,
+  RotateCcw, Save, Trash2, TriangleAlert,
+} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { inspectThreeMf, type ThreeMfInspection } from '../lib/threeMfInspector';
-import { compareInspections, type DiffImpact, type DiffStatus, type ProfileDiffRow } from '../lib/profileDiff';
+import {
+  compareInspections, type ComparableInspection, type DiffImpact, type DiffStatus, type ProfileDiffRow,
+} from '../lib/profileDiff';
+import {
+  loadProfileBaseline, removeProfileBaseline, saveProfileBaseline, type SavedProfileBaseline,
+} from '../lib/baselineProfile';
 import { PrintDnaComparison } from './PrintDnaComparison';
 
 type DiffFilter = 'differences' | 'high' | 'all';
+type ComparisonSource = 'file' | 'baseline' | null;
 
 export function ProfileDiffPanel({ inspection }: { inspection: ThreeMfInspection }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const inputRef = useRef<HTMLInputElement>(null);
-  const [comparison, setComparison] = useState<ThreeMfInspection | null>(null);
+  const [comparison, setComparison] = useState<ComparableInspection | null>(null);
+  const [comparisonSource, setComparisonSource] = useState<ComparisonSource>(null);
+  const [baseline, setBaseline] = useState<SavedProfileBaseline | null>(() => loadProfileBaseline());
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<DiffFilter>('differences');
@@ -23,6 +34,26 @@ export function ProfileDiffPanel({ inspection }: { inspection: ThreeMfInspection
     return diff.rows;
   }, [diff, filter]);
 
+  const baselineSavedLabel = useMemo(() => {
+    if (!baseline) return '';
+    const date = new Date(baseline.savedAt);
+    if (Number.isNaN(date.getTime())) return '';
+    try {
+      return new Intl.DateTimeFormat(i18n.language.startsWith('lv') ? 'lv-LV' : 'en-GB', {
+        dateStyle: 'medium', timeStyle: 'short',
+      }).format(date);
+    } catch {
+      return date.toLocaleString();
+    }
+  }, [baseline, i18n.language]);
+
+  const resetComparison = () => {
+    setComparison(null);
+    setComparisonSource(null);
+    setError(null);
+    setFilter('differences');
+  };
+
   const load = async (file?: File) => {
     if (!file) return;
     if (!file.name.toLowerCase().endsWith('.3mf')) {
@@ -33,12 +64,52 @@ export function ProfileDiffPanel({ inspection }: { inspection: ThreeMfInspection
     setError(null);
     try {
       setComparison(await inspectThreeMf(file));
+      setComparisonSource('file');
+      setFilter('differences');
     } catch (reason) {
       setError(`${t('compare.failed')} ${reason instanceof Error ? reason.message : String(reason)}`);
     } finally {
       setBusy(false);
     }
   };
+
+  const saveCurrentBaseline = () => {
+    const saved = saveProfileBaseline(inspection);
+    if (!saved) {
+      setError(t('baseline.saveFailed'));
+      return;
+    }
+    setBaseline(saved);
+    setError(null);
+    if (comparisonSource === 'baseline') setComparison(saved.profile);
+  };
+
+  const useBaseline = () => {
+    if (!baseline) return;
+    setComparison(baseline.profile);
+    setComparisonSource('baseline');
+    setError(null);
+    setFilter('differences');
+  };
+
+  const deleteBaseline = () => {
+    if (!baseline) return;
+    if (!window.confirm(t('baseline.removeConfirm'))) return;
+    if (!removeProfileBaseline()) {
+      setError(t('baseline.removeFailed'));
+      return;
+    }
+    setBaseline(null);
+    setError(null);
+    if (comparisonSource === 'baseline') resetComparison();
+  };
+
+  const replaceBaseline = () => {
+    if (!window.confirm(t('baseline.replaceConfirm'))) return;
+    saveCurrentBaseline();
+  };
+
+  const comparisonRole = comparisonSource === 'baseline' ? t('baseline.myBaseline') : t('compare.comparison');
 
   return (
     <section className="compare-view">
@@ -48,14 +119,24 @@ export function ProfileDiffPanel({ inspection }: { inspection: ThreeMfInspection
           <h1>{t('compare.title')}</h1>
           <p>{t('compare.subtitle')}</p>
         </div>
-        {comparison && <button className="ghost compare-reset" onClick={() => { setComparison(null); setError(null); setFilter('differences'); }}><RotateCcw size={15} /> {t('compare.reset')}</button>}
+        {comparison && <button className="ghost compare-reset" onClick={resetComparison}><RotateCcw size={15} /> {t('compare.reset')}</button>}
       </div>
+
+      <BaselinePanel
+        baseline={baseline}
+        savedLabel={baselineSavedLabel}
+        active={comparisonSource === 'baseline'}
+        onSave={saveCurrentBaseline}
+        onReplace={replaceBaseline}
+        onUse={useBaseline}
+        onRemove={deleteBaseline}
+      />
 
       <div className="compare-files">
         <FileCard role={t('compare.current')} name={inspection.fileName} meta={inspection.processProfile || inspection.printerProfile || t('app.unknown')} active />
         <div className="compare-arrow"><ArrowRight size={18} /></div>
         {comparison
-          ? <FileCard role={t('compare.comparison')} name={comparison.fileName} meta={comparison.processProfile || comparison.printerProfile || t('app.unknown')} active />
+          ? <FileCard role={comparisonRole} name={comparison.fileName} meta={comparison.processProfile || comparison.printerProfile || t('app.unknown')} active />
           : <button className={`compare-drop glass-panel${busy ? ' busy' : ''}`} onClick={() => inputRef.current?.click()} disabled={busy}>
               <FileUp2 size={24} />
               <strong>{busy ? t('compare.reading') : t('compare.choose')}</strong>
@@ -93,15 +174,49 @@ export function ProfileDiffPanel({ inspection }: { inspection: ThreeMfInspection
             <div className="diff-table-head">
               <span>{t('compare.parameter')}</span>
               <span>{inspection.fileName}</span>
-              <span>{comparison.fileName}</span>
+              <span>{comparisonSource === 'baseline' ? t('baseline.myBaseline') : comparison.fileName}</span>
               <span>{t('compare.result')}</span>
             </div>
             {visibleRows.length > 0
               ? visibleRows.map((row) => <DiffRow key={row.key} row={row} />)
               : <div className="diff-filter-empty">{t('compare.noRows')}</div>}
           </section>
-          <p className="compare-disclaimer">{t('compare.disclaimer')}</p>
+          <p className="compare-disclaimer">{comparisonSource === 'baseline' ? t('baseline.referenceDisclaimer') : t('compare.disclaimer')}</p>
         </>}
+    </section>
+  );
+}
+
+function BaselinePanel({
+  baseline, savedLabel, active, onSave, onReplace, onUse, onRemove,
+}: {
+  baseline: SavedProfileBaseline | null;
+  savedLabel: string;
+  active: boolean;
+  onSave: () => void;
+  onReplace: () => void;
+  onUse: () => void;
+  onRemove: () => void;
+}) {
+  const { t } = useTranslation();
+  return (
+    <section className={`baseline-panel glass-panel${active ? ' active' : ''}`}>
+      <div className="baseline-icon"><BookmarkCheck size={21} /></div>
+      <div className="baseline-copy">
+        <span className="eyebrow">LOCAL REFERENCE</span>
+        <h2>{t('baseline.title')}</h2>
+        {baseline
+          ? <p><strong>{baseline.sourceFileName}</strong> · {t('baseline.saved', { date: savedLabel || '—' })}</p>
+          : <p>{t('baseline.empty')}</p>}
+        <small>{t('baseline.privacy')}</small>
+      </div>
+      <div className="baseline-actions">
+        {baseline ? <>
+          <button className="primary baseline-use" onClick={onUse} disabled={active}><GitCompareArrows size={14} /> {active ? t('baseline.inUse') : t('baseline.compare')}</button>
+          <button className="ghost" onClick={onReplace}><Save size={14} /> {t('baseline.replace')}</button>
+          <button className="ghost danger" onClick={onRemove}><Trash2 size={14} /> {t('baseline.remove')}</button>
+        </> : <button className="primary baseline-use" onClick={onSave}><Save size={14} /> {t('baseline.save')}</button>}
+      </div>
     </section>
   );
 }
