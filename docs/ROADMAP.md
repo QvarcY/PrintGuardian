@@ -58,6 +58,7 @@
 - initial motion and extrusion risk engine
 
 ## Later
+- signed desktop updater with Stable / Beta channels (design documented in `docs/UPDATER.md`)
 - `.bgcode`
 - geometry analysis: islands, bridges, overhangs, contact area
 - print-cost / purge-waste analysis

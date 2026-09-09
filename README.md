@@ -76,6 +76,9 @@ The current inspection score is a **preliminary project check**, not a guarantee
 - **Localization:** i18next / react-i18next
 - **Analysis engine:** currently TypeScript proof-of-concept, hardened Rust engine planned for the desktop build
 - **Default data policy:** local processing
+- **Desktop updates:** signed Tauri updater flow with opt-in installation and Stable / Beta channels planned before v1.0
+
+Updater design notes are tracked in [`docs/UPDATER.md`](docs/UPDATER.md). The current browser prototype does **not** self-update.
 
 
 ## Support the project
