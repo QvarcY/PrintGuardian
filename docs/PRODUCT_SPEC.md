@@ -51,3 +51,8 @@ Optional project support is exposed through the official CraftIN Buy Me a Coffee
 - https://buymeacoffee.com/craftin
 
 The CTA must remain secondary to the product workflow and must never block or gate local inspection features.
+
+
+## Local reference profile — My Baseline
+
+PrintGuardian may persist a user-selected comparison baseline locally. The stored record is intentionally minimal: printer/process metadata, selected slicer settings, and derived Print DNA values. The source 3MF binary is not persisted. The UI must never label the baseline as certified-safe; it is a user-selected reference for change detection.

@@ -42,7 +42,10 @@
 - ✅ side-by-side / overlay Print DNA
 - ✅ high-impact-only filtering
 - ✅ directional setting guidance for known numeric/boolean changes
-- ⏳ persistent user baseline / known-good profile
+- ✅ persistent local **My Baseline** reference profile
+- ✅ one-click comparison against the saved baseline
+- ✅ baseline replace/remove workflow with local-only metadata storage
+- ⏳ multiple named baselines / printer-specific references
 
 ## v0.4 — Safe 3MF Builder
 - choose what to keep from project vs local printer profile

@@ -16,6 +16,10 @@ PrintGuardian is under active development. Until v1.0, features and internal for
 - Added local-only second-file analysis in React and the standalone preview.
 - Added Buy Me a Coffee support CTA to the application and README.
 - Kept slicer-native setting names in English while UI explanations remain localized.
+- Added persistent **My Baseline** comparison reference using local browser storage.
+- Added one-click comparison against the saved baseline plus explicit replace/remove actions.
+- Baseline persistence stores only extracted profile metadata/settings and Print DNA values, never the source 3MF file.
+- Kept the baseline explicitly framed as a user-selected reference rather than a safety guarantee.
 
 ## v0.2.0 — Live 3MF Inspector
 

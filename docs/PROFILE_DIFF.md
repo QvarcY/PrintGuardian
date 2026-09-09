@@ -55,9 +55,22 @@ Profile Diff now overlays both **Print DNA** signatures and highlights the three
 
 Rows are also grouped with lightweight categories such as compatibility, adhesion, quality, strength, material flow and process.
 
+## My Baseline
+
+v0.3.0-dev.2 adds the first persistent comparison reference:
+
+- the currently loaded 3MF inspection can be saved as **My Baseline**;
+- the baseline survives page/app restarts through local storage;
+- future projects can be compared against the saved baseline with one action;
+- the baseline can be replaced or removed explicitly;
+- only extracted printer/process metadata, selected slicer settings and Print DNA values are persisted;
+- the original 3MF binary and geometry are **not** stored in the baseline record.
+
+The baseline is intentionally described as a **reference**, not as “safe”, “approved” or “known-good” by PrintGuardian. The user chooses the reference and remains responsible for judging differences.
+
 ## Next steps
 
-- persistent user baseline / known-good profile;
+- baseline naming / multiple printer-specific baselines;
 - exportable comparison report;
 - richer setting coverage;
 - user-selectable comparison categories.
