@@ -157,6 +157,15 @@ function readFilaments(project: ProjectSettings, sliceXml?: XMLDocument): Filame
   });
 }
 
+function withUnit(value: string | undefined, unit: string): string {
+  const text = (value ?? '—').trim();
+  if (text === '—') return text;
+  if (unit === '%' && /%\s*$/.test(text)) return text;
+  if (unit === 'mm' && /\bmm\s*$/i.test(text)) return text;
+  if (unit === 'mm³/s' && /mm(?:³|\^3)?\s*\/\s*s\s*$/i.test(text)) return text;
+  return `${text}${unit === '%' ? '%' : ` ${unit}`}`;
+}
+
 function readSettings(project: ProjectSettings): SettingValue[] {
   const candidates: Array<SettingValue & { keys: string[] }> = [
     { key: 'layer_height', keys: ['layer_height'], label: 'Layer height', value: '', tooltipKey: 'layerHeight' },
@@ -179,11 +188,11 @@ function readSettings(project: ProjectSettings): SettingValue[] {
       const enabled = boolish(raw);
       value = enabled == null ? String(raw) : enabled ? 'Enabled' : 'Disabled';
     } else if (candidate.key === 'layer_height' || candidate.key === 'brim_width') {
-      value = `${display(raw) ?? '—'} mm`;
+      value = withUnit(display(raw), 'mm');
     } else if (candidate.key === 'sparse_infill_density') {
-      value = `${display(raw) ?? '—'}%`;
+      value = withUnit(display(raw), '%');
     } else if (candidate.key === 'max_volumetric_speed') {
-      value = `${display(raw) ?? '—'} mm³/s`;
+      value = withUnit(display(raw), 'mm³/s');
     } else {
       value = display(raw) ?? '—';
     }
