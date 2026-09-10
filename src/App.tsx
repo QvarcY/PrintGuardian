@@ -77,7 +77,7 @@ function App() {
   );
 }
 
-type DashboardView = 'project' | 'profiles';
+type DashboardView = 'project' | 'profiles' | 'history' | 'settings';
 
 function Dashboard({ inspection }: { inspection: ThreeMfInspection }) {
   const { t, i18n } = useTranslation();
@@ -129,8 +129,8 @@ function Dashboard({ inspection }: { inspection: ThreeMfInspection }) {
         <nav>
           <button className={view === 'project' ? 'selected' : ''} onClick={() => setView('project')}><FolderOpen size={17} /><span>{lv ? 'Pašreizējais projekts' : 'Current project'}</span></button>
           <button className={view === 'profiles' ? 'selected' : ''} onClick={() => setView('profiles')}><UserRoundCog size={17} /><span>{lv ? 'Mani drukas profili' : 'My print profiles'}</span>{library.profiles.length > 0 && <small>{library.profiles.length}</small>}</button>
-          <button disabled><Clock3 size={17} /><span>{lv ? 'Vēsture' : 'History'}</span><small>{lv ? 'drīzumā' : 'soon'}</small></button>
-          <button disabled><Settings2 size={17} /><span>{lv ? 'Iestatījumi' : 'Settings'}</span><small>{lv ? 'drīzumā' : 'soon'}</small></button>
+          <button className={view === 'history' ? 'selected' : ''} onClick={() => setView('history')}><Clock3 size={17} /><span>{lv ? 'Vēsture' : 'History'}</span><small className="soon-badge">{lv ? 'drīzumā' : 'soon'}</small></button>
+          <button className={view === 'settings' ? 'selected' : ''} onClick={() => setView('settings')}><Settings2 size={17} /><span>{lv ? 'Iestatījumi' : 'Settings'}</span><small className="soon-badge">{lv ? 'drīzumā' : 'soon'}</small></button>
         </nav>
         <div className="sidebar-bottom">
           <SupportProject />
@@ -146,7 +146,7 @@ function Dashboard({ inspection }: { inspection: ThreeMfInspection }) {
             onProfileChange={updateFromWorkspace}
             onManageProfiles={() => setView('profiles')}
           />
-        ) : (
+        ) : view === 'profiles' ? (
           <PrintProfilesPanel
             profiles={library.profiles}
             activeId={library.activeId}
@@ -157,9 +157,36 @@ function Dashboard({ inspection }: { inspection: ThreeMfInspection }) {
             onRemove={deleteProfile}
             onBack={() => setView('project')}
           />
+        ) : (
+          <ComingSoonPanel kind={view} onBack={() => setView('project')} />
         )}
       </section>
     </main>
+  );
+}
+
+function ComingSoonPanel({ kind, onBack }: { kind: 'history' | 'settings'; onBack: () => void }) {
+  const { i18n } = useTranslation();
+  const lv = i18n.language.startsWith('lv');
+  const history = kind === 'history';
+  const title = history ? (lv ? 'Vēsture' : 'History') : (lv ? 'Iestatījumi' : 'Settings');
+  const description = history
+    ? (lv ? 'Šeit vēlāk būs redzami iepriekš pārbaudītie projekti, veiktās izmaiņas un eksporta vēsture.' : 'This area will show previously inspected projects, applied changes and export history.')
+    : (lv ? 'Šeit būs PrintGuardian uzvedības, privātuma, atjauninājumu un citi aplikācijas iestatījumi.' : 'This area will contain PrintGuardian behaviour, privacy, update and other application settings.');
+  return (
+    <section className="coming-soon-view glass-panel">
+      <span className="eyebrow">{lv ? 'PLĀNOTA FUNKCIJA' : 'PLANNED FEATURE'} · {lv ? 'DRĪZUMĀ' : 'COMING SOON'}</span>
+      <h1>{title}</h1>
+      <p>{description}</p>
+      <div className="coming-soon-update-note">
+        <ShieldCheck size={18} />
+        <div>
+          <strong>{lv ? 'Atjauninājumu paziņojumi' : 'Update notifications'}</strong>
+          <span>{lv ? 'Kad šī funkcija kļūs pieejama jaunā laidienā, PrintGuardian atjauninājumu centrs to varēs izcelt kā jaunumu. Šis marķējums paliek redzams apzināti, lai varētu testēt šo plūsmu.' : 'When this feature becomes available in a newer release, PrintGuardian can surface it through the update centre. This marker intentionally stays visible so the flow can be tested.'}</span>
+        </div>
+      </div>
+      <button className="ghost" onClick={onBack}>{lv ? '← Atpakaļ uz projektu' : '← Back to project'}</button>
+    </section>
   );
 }
 

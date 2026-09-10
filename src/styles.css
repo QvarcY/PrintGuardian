@@ -431,3 +431,35 @@ html[data-ui-scale="large"] { --ui-scale: 1.14; }
 .support-project.prominent:hover,.support-project.prominent:focus-visible{border-color:rgba(255,211,128,.68);background:linear-gradient(135deg,rgba(255,201,105,.28),rgba(255,154,61,.16));box-shadow:0 8px 32px rgba(0,0,0,.24),0 0 24px rgba(255,201,105,.08)}
 .support-project.prominent .support-project-icon{width:auto;height:auto;border:0;background:none;color:#ffd17e}
 .support-project.prominent .support-project-copy strong{font-size:10.5px;white-space:nowrap;color:#fff1d5}
+
+/* Coming-soon destinations are intentional release-preview surfaces, not dead navigation. */
+.app-level-sidebar .soon-badge {
+  margin-left: auto;
+  padding: 3px 7px;
+  border: 1px solid rgba(116, 166, 255, .25);
+  border-radius: 999px;
+  color: #9bbdff;
+  background: rgba(73, 116, 194, .10);
+  font-size: calc(10px * var(--ui-scale));
+  letter-spacing: .05em;
+}
+.coming-soon-view {
+  max-width: 880px;
+  margin: 18px auto;
+  padding: clamp(26px, 4vw, 46px);
+}
+.coming-soon-view h1 { margin: 10px 0 8px; font-size: clamp(28px, 4vw, 42px); }
+.coming-soon-view > p { max-width: 720px; color: var(--text-muted); font-size: calc(15px * var(--ui-scale)); line-height: 1.65; }
+.coming-soon-update-note {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin: 28px 0 24px;
+  padding: 18px;
+  border-radius: 14px;
+  border: 1px solid rgba(116, 166, 255, .18);
+  background: rgba(73, 116, 194, .07);
+}
+.coming-soon-update-note strong,
+.coming-soon-update-note span { display: block; }
+.coming-soon-update-note span { margin-top: 5px; color: var(--text-muted); line-height: 1.55; font-size: calc(13.5px * var(--ui-scale)); }
