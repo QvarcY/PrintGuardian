@@ -29,20 +29,55 @@
 - Bambu Studio / OrcaSlicer fixture suite
 - exact slicer/version identification
 
-## v0.3 — Profile Diff
-- import/select a user baseline profile
-- compare imported project values against baseline
-- categorize changed settings by impact
-- bilingual human-readable explanations
-- side-by-side / overlay Print DNA
+## v0.3 — Profile Diff 🚧
+- ✅ compare two imported 3MF projects
+- ✅ printer / nozzle / build plate / process comparison
+- ✅ selected slicer-setting diff
+- ✅ changed / same / missing states
+- ✅ LV / EN comparison UI
+- ✅ low / medium / high impact prioritization
+- ✅ localized "why it matters" explanations while keeping slicer names in English
+- ✅ differences-only / show-all filtering
+- ✅ relative numeric delta hints where units match
+- ✅ side-by-side / overlay Print DNA
+- ✅ high-impact-only filtering
+- ✅ directional setting guidance for known numeric/boolean changes
+- ✅ persistent local **My Baseline** reference profile
+- ✅ one-click comparison against the saved baseline
+- ✅ baseline replace/remove workflow with local-only metadata storage
+- ✅ non-destructive **Keep project / Use baseline** decision preview
+- ✅ decision summary as the bridge toward Safe 3MF Builder
+- ✅ context-scoped local decision-plan persistence
+- ✅ profile-level before/after decision report
+- ✅ map supported decisions to concrete `project_settings.config` keys
+- ✅ in-memory project-settings rebuild preview with source-untouched and JSON integrity checks
+- ✅ experimental verified 3MF export for fully mapped supported substitutions
+- ✅ reopen generated archive and verify non-target entries / requested mutations before download
+- ✅ block compound machine/profile metadata and filament-indexed values until safer rewrite rules exist
+- ✅ guided-first main UX with plain-language verdict and explicit analysis coverage instead of a numeric score
+- ✅ one-time **My print profile** setup from a trusted 3MF on the main screen
+- ✅ automatic trusted-profile comparison for every subsequently opened project
+- ✅ direct plain-language Keep / Use my value decisions on the main screen
+- ✅ move technical Profile Diff into **Advanced tools**
+- ✅ category-based **Project Workspace** tabs for Overview / Printer / Material / Print settings / Model & Supports / Advanced
+- ✅ persistent unresolved-attention badges that do not clear on view
+- ✅ type-aware manual editing for supported scalar settings
+- ✅ explicit acknowledgement for high-impact manual edits
+- ✅ sticky prepared-changes / unresolved-attention / verified-export action bar
+- ✅ multiple named **My print profiles** / printer-material references with active-profile selection and local management
+- ✅ first bounded local project-history summary with post-update **NEW** feature discovery
+- ✅ distribution-aware update-notification UX with GitHub Releases highlights and Portable/Installed handoff guidance
 
 ## v0.4 — Safe 3MF Builder
+- ✅ decision model and in-memory `project_settings.config` preview started in v0.3
 - choose what to keep from project vs local printer profile
 - preserve geometry / painting / supports / modifiers selectively
 - remove unwanted printer/AMS/profile metadata
-- non-destructive export to a new file
-- integrity validation
-- before/after report
+- ✅ first non-destructive export path started in v0.3.0-dev.6
+- ✅ first archive-level structural integrity validation started in v0.3.0-dev.6
+- real Bambu Studio / OrcaSlicer round-trip compatibility tests
+- ZIP64 / large-project export handling
+- archive-level before/after validation report
 
 ## v0.5 — G-code Preflight
 - `.gcode` metadata/parser
@@ -52,7 +87,8 @@
 - initial motion and extrusion risk engine
 
 ## Later
+- signed desktop updater with Stable / Beta channels (design documented in `docs/UPDATER.md`)
 - `.bgcode`
 - geometry analysis: islands, bridges, overhangs, contact area
 - print-cost / purge-waste analysis
-- local print history / Print Memory
+- richer Print Memory / export history beyond the initial bounded inspection history

@@ -8,3 +8,7 @@ src-tauri/target/
 Thumbs.db
 
 *.tsbuildinfo
+
+release-out/
+release-build/
+src-tauri/gen/
