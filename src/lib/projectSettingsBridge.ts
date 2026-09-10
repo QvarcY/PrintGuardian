@@ -113,10 +113,28 @@ function rawBooleanLike(source: unknown, enabled: boolean): unknown {
   return enabled;
 }
 
+function parseNumberLike(value: unknown): number | undefined {
+  if (typeof value === 'number') return Number.isFinite(value) ? value : undefined;
+  if (typeof value !== 'string') return undefined;
+  const match = value.trim().match(/^[+-]?(?:\d+(?:[.,]\d*)?|[.,]\d+)/);
+  if (!match) return undefined;
+  const parsed = Number(match[0].replace(',', '.'));
+  return Number.isFinite(parsed) ? parsed : undefined;
+}
+
 function rawNumberLike(source: unknown, value: number): unknown {
   if (typeof source === 'number') return value;
-  if (typeof source === 'string') return String(value);
-  return value;
+  if (typeof source !== 'string') return value;
+
+  const match = source.match(/^(\s*)([+-]?(?:\d+(?:[.,]\d*)?|[.,]\d+))(\s*.*)$/);
+  if (!match) return String(value);
+
+  const sourceNumber = Number(match[2].replace(',', '.'));
+  if (Number.isFinite(sourceNumber) && sourceNumber === value) return source;
+
+  let rendered = String(value);
+  if (match[2].includes(',')) rendered = rendered.replace('.', ',');
+  return `${match[1]}${rendered}${match[3]}`;
 }
 
 export function coerceManualBuilderValue(
@@ -141,4 +159,28 @@ export function coerceManualBuilderValue(
   if (editor.min != null && normalized < editor.min) return { ok: false, reason: 'below-minimum' };
   if (editor.max != null && normalized > editor.max) return { ok: false, reason: 'above-maximum' };
   return { ok: true, rawValue: rawNumberLike(source, normalized) };
+}
+
+export function normalizeManualBuilderRawValue(
+  project: ProjectSettings,
+  canonicalKey: string,
+  input: unknown,
+): { ok: true; rawValue: unknown } | { ok: false; reason: string } {
+  const editor = manualEditorFor(canonicalKey);
+  if (!editor) return { ok: false, reason: 'manual-edit-not-supported' };
+
+  if (editor.kind === 'boolean') {
+    if (typeof input === 'boolean') return coerceManualBuilderValue(project, canonicalKey, input);
+    if (typeof input === 'number') return coerceManualBuilderValue(project, canonicalKey, input !== 0);
+    if (typeof input === 'string') {
+      const lower = input.trim().toLowerCase();
+      if (['1', 'true', 'yes', 'on', 'enabled'].includes(lower)) return coerceManualBuilderValue(project, canonicalKey, true);
+      if (['0', 'false', 'no', 'off', 'disabled'].includes(lower)) return coerceManualBuilderValue(project, canonicalKey, false);
+    }
+    return { ok: false, reason: 'invalid-boolean' };
+  }
+
+  const numeric = parseNumberLike(input);
+  if (numeric == null) return { ok: false, reason: 'invalid-number' };
+  return coerceManualBuilderValue(project, canonicalKey, numeric);
 }

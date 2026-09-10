@@ -624,13 +624,18 @@ export function ProjectWorkspace({ inspection, profile, profileName, onProfileCh
       {selectedRows.map((row) => {
         const linkedIssues = issues.filter((issue) => issue.rowKey === row.key);
         const unresolvedLinkedIssues = unresolvedIssues.filter((issue) => issue.rowKey === row.key);
+        const requestedChoice = choices[row.key] ?? 'project';
+        const mutation = preview.mutations.find((item) => item.rowKey === row.key);
+        const effectiveChoice = requestedChoice !== 'project' && mutation?.status === 'kept-project'
+          ? 'project'
+          : requestedChoice;
         return (
           <SettingCard
             key={row.key}
             row={row}
             inspection={inspection}
             profile={profile}
-            choice={choices[row.key] ?? 'project'}
+            choice={effectiveChoice}
             manualValue={manualValues[row.key]}
             linkedIssues={linkedIssues}
             unresolvedLinkedIssues={unresolvedLinkedIssues}

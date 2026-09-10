@@ -8,6 +8,7 @@ import {
   cloneProjectSettings,
   findExistingProjectSettingsKey,
   jsonValueKind,
+  normalizeManualBuilderRawValue,
   type BuilderFieldPolicy,
   type ProjectSettings,
 } from './projectSettingsBridge';
@@ -23,7 +24,7 @@ export type BuildPreviewMutation = {
   targetKey?: string;
   before?: unknown;
   after?: unknown;
-  reason?: 'compound-metadata' | 'material-index' | 'missing-mapping' | 'missing-project-key' | 'missing-baseline-raw-value' | 'missing-manual-value' | 'type-mismatch';
+  reason?: 'compound-metadata' | 'material-index' | 'missing-mapping' | 'missing-project-key' | 'missing-baseline-raw-value' | 'missing-manual-value' | 'invalid-manual-value' | 'type-mismatch';
 };
 
 export type SafeThreeMfBuildPreview = {
@@ -142,10 +143,10 @@ export function createSafeThreeMfBuildPreview(
       continue;
     }
 
-    const nextRaw = requested === 'manual'
+    const selectedRaw = requested === 'manual'
       ? manualValues[row.key]
       : baselineValues?.[canonical as keyof typeof baselineValues];
-    if (nextRaw === undefined) {
+    if (selectedRaw === undefined) {
       mutations.push({
         rowKey: row.key,
         label: row.label,
@@ -158,9 +159,41 @@ export function createSafeThreeMfBuildPreview(
       continue;
     }
 
+    let nextRaw: unknown = selectedRaw;
+    if (requested === 'manual') {
+      const normalized = normalizeManualBuilderRawValue(source, canonical, selectedRaw);
+      if (!normalized.ok) {
+        mutations.push({
+          rowKey: row.key,
+          label: row.label,
+          impact: row.impact,
+          status: 'unresolved',
+          canonicalKey: canonical,
+          targetKey,
+          reason: 'invalid-manual-value',
+        });
+        continue;
+      }
+      nextRaw = normalized.rawValue;
+    }
+
     const before = source[targetKey];
     if (!compatibleKinds(before, nextRaw)) {
       mutations.push({ rowKey: row.key, label: row.label, impact: row.impact, status: 'blocked', canonicalKey: canonical, targetKey, before, after: nextRaw, reason: 'type-mismatch' });
+      continue;
+    }
+
+    if (stableJson(before) === stableJson(nextRaw)) {
+      mutations.push({
+        rowKey: row.key,
+        label: row.label,
+        impact: row.impact,
+        status: 'kept-project',
+        canonicalKey: canonical,
+        targetKey,
+        before,
+        after: before,
+      });
       continue;
     }
 
