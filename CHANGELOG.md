@@ -4,6 +4,14 @@ PrintGuardian is under active development. Until v1.0, features and internal for
 
 ## v0.3.0-dev — Profile Diff (in development)
 
+- Added the real Tauri 2 desktop host source and Windows application configuration.
+- Added separate Portable and Installed build flavors from the same source tree, with compile-time runtime identity instead of path heuristics.
+- Added a desktop edition/version badge so testers can confirm which executable is running.
+- Routed desktop external links through Tauri opener permissions rather than navigating the app webview.
+- Added combined Windows flavor packaging and a Windows CI build workflow for the draft PR/manual runs.
+- Configured the NSIS installer for current-user installation and English/Latvian language selection.
+- Kept signed updater activation deliberately disabled until real updater keys and signature-failure tests are in place.
+
 - Began pre-release hardening while intentionally freezing feature expansion.
 - Kept History / Settings visible with explicit Soon / Drīzumā markers and made them open explanatory planned-feature surfaces instead of dead controls.
 - Reserved coming-soon surfaces for future update-notification UX testing.

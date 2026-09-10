@@ -14,10 +14,10 @@ This document is the release gate. A public preview is created only when every *
 | ZIP/3MF input hardening | PASS (initial) | Archive/file/entry/decompression limits, bounds checks, encryption/multi-disk/ZIP64 rejection and suspicious compression-ratio rejection are in place. |
 | Synthetic Bambu-style fixtures | PASS | Both included fixtures are accepted by the hardened ZIP reader. |
 | Distribution contract | PASS (design) | Portable + installed Windows package shape and update behavior are documented in `DISTRIBUTION.md`. |
-| Tauri 2 desktop shell | BLOCKER | The React prototype still needs the actual Tauri 2 desktop host. |
-| Portable executable | BLOCKER | Build and verify `PrintGuardian Portable.exe`; portable data/storage behavior must be deliberate and tested. |
-| NSIS installer executable | BLOCKER | Build and verify the Tauri Windows installer that becomes `Install PrintGuardian.exe`. |
-| Update Centre + distribution awareness | BLOCKER | Desktop build must know whether it is portable/installed and show the correct update action. |
+| Tauri 2 desktop shell | PASS (source) | Tauri 2 host, Windows config, distribution-mode command and external-link capability are present. Windows compilation still needs to pass. |
+| Portable executable | BLOCKER | Source build flavor exists; build and verify `PrintGuardian Portable.exe`. Portable data/storage behavior must still be deliberate and tested. |
+| NSIS installer executable | BLOCKER | NSIS config/build command exists; build and verify the installer that becomes `Install PrintGuardian.exe`. |
+| Update Centre + distribution awareness | PARTIAL | Desktop build now knows portable vs installed at compile time and exposes it to the UI; the actual Update Centre/check flow remains BLOCKER. |
 | Signed installed-update flow | BLOCKER | Tauri updater signing key/public key, artifacts and invalid-signature rejection must be tested before public auto-update is enabled. |
 | React dependency lock | BLOCKER | Successful `npm install`; commit `package-lock.json` and stop relying on unpinned resolution for a release build. |
 | React production build | BLOCKER | `npm run build` must complete successfully on the maintainer Windows machine. |

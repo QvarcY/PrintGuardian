@@ -9,9 +9,9 @@
 
 PrintGuardian is a bilingual (Latvian / English) 3D-print project inspector by **CraftIN / QvarcY**.
 
-The current development branch is **v0.3.0-dev.11**. Feature expansion is temporarily frozen while PrintGuardian is hardened for its first usable Windows preview. The existing Project Workspace, print-profile library, manual supported edits, comparison tools and verified experimental 3MF export remain in place.
+The current development branch is **v0.3.0-dev.12**. Feature expansion is temporarily frozen while PrintGuardian is hardened for its first usable Windows preview. The existing Project Workspace, print-profile library, manual supported edits, comparison tools and verified experimental 3MF export remain in place.
 
-Dev.11 keeps visible **History / Settings — Soon / Drīzumā** destinations as intentional planned-feature surfaces rather than dead controls, strengthens 3MF ZIP input handling, and defines the public Windows distribution contract: a clear **Portable** executable plus a clear **Installer** executable from the same codebase.
+Dev.12 adds the real **Tauri 2 desktop host source**, explicit **Portable / Installed** build flavors, runtime edition identity, native external-link handling and an automated Windows packaging/CI path. Windows binaries still require successful build and smoke-test verification before preview.1.
 
 ## Fastest way to test
 
@@ -53,6 +53,20 @@ The React source now uses the same real 3MF inspection model as the standalone p
 
 
 
+### v0.3-dev.12 Tauri desktop shell + Windows build flavors
+
+- adds the real Tauri 2 desktop host under `src-tauri/` instead of treating the browser preview as the final application shell;
+- adds compile-time **Portable / Installed** distribution awareness so the application does not guess its mode from a Windows path;
+- shows the running desktop edition and application version in the top bar, while the browser preview remains clearly separate;
+- opens external support links through the Tauri opener plugin with an explicit allow-list instead of navigating the app webview;
+- adds dedicated commands for `tauri:dev`, portable build, NSIS installer build and combined clean Windows package staging;
+- adds a Windows GitHub Actions build job for the existing PR / manual CI path;
+- adds Tauri window, CSP, NSIS current-user installer and bilingual installer configuration;
+- keeps signed updater activation disabled until real signing keys and invalid-signature tests exist;
+- keeps portable settings/profile persistence as a release blocker until the browser local-storage layer is replaced by deliberate desktop storage.
+
+See [`docs/DESKTOP.md`](docs/DESKTOP.md) for the desktop build contract.
+
 ### v0.3-dev.11 Release hardening + Windows distribution preparation
 
 - keeps **History** and **Settings** visible with explicit **Soon / Drīzumā** badges; opening them shows an honest planned-feature surface instead of a dead destination;
@@ -64,7 +78,7 @@ The React source now uses the same real 3MF inspection model as the standalone p
 - distinguishes installed-update behavior from portable-update behavior instead of pretending the two deployment types update identically;
 - adds release-readiness, real-file test, security and Windows release-staging documentation/scripts.
 
-The actual Tauri desktop host, portable binary, NSIS installer and signed updater flow are still **release blockers**. `preview.html` remains a development/testing surface, not the intended final public Windows package.
+The Tauri desktop host source now exists in dev.12. The actual portable binary, NSIS installer, desktop storage behavior and signed updater flow are still **release blockers**. `preview.html` remains a development/testing surface, not the intended final public Windows package.
 
 ### v0.3-dev.10 Print Profiles + UX polish
 
