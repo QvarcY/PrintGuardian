@@ -15,19 +15,20 @@ This document is the release gate. A public preview is created only when every *
 | Synthetic Bambu-style fixtures | PASS | Both included fixtures are accepted by the hardened ZIP reader. |
 | Distribution contract | PASS (design) | Portable + installed Windows package shape and update behavior are documented in `DISTRIBUTION.md`. |
 | Tauri 2 desktop shell | PASS (source) | Tauri 2 host, Windows config, distribution-mode command and external-link capability are present. GitHub Actions has built the real Windows artifacts successfully. |
-| Portable executable | PASS (build + maintainer smoke) | GitHub Actions produced `PrintGuardian Portable.exe`; maintainer launched it and loaded both demo and real 3MF files. Portable data/storage behavior still remains a separate BLOCKER. |
-| NSIS installer executable | PARTIAL | GitHub Actions produced `Install PrintGuardian.exe`; maintainer installed and launched it successfully. Latvian installer labels and uninstall discoverability are fixed in dev.13 and require a rebuilt verification run. |
-| Update Centre + distribution awareness | PARTIAL | Desktop build now knows portable vs installed at compile time and exposes it to the UI; the actual Update Centre/check flow remains BLOCKER. |
+| Portable executable | PASS (build + maintainer smoke) | GitHub Actions produced `PrintGuardian Portable.exe`; maintainer launched it and loaded both demo and real 3MF files. Dev.14 adds dedicated portable WebView/localStorage placement; move/reopen/separation testing remains BLOCKER. |
+| NSIS installer executable | PASS | GitHub Actions built dev.13 successfully; maintainer verified localized finish controls, Start Menu uninstall, Windows Installed apps uninstall, optional app-data deletion and clean reinstall. |
+| Update Centre + distribution awareness | PARTIAL | Dev.14 adds the desktop Update Centre, Preview/Stable filtering, GitHub Releases metadata checks, local notification simulation and storage visibility. A real published-release notification still needs runtime verification. |
+| Portable data isolation + move test | BLOCKER | Dev.14 stores Portable WebView/localStorage under hidden `PrintGuardianData` beside the EXE with explicit Local AppData fallback. Verify persistence, whole-folder move and separation from Installed per `PORTABLE_STORAGE.md`. |
 | Signed installed-update flow | BLOCKER | Tauri updater signing key/public key, artifacts and invalid-signature rejection must be tested before public auto-update is enabled. |
 | Windows Authenticode signing | BLOCKER | Current development binaries show Unknown publisher / SmartScreen warnings. Choose signing path, sign exact public artifacts, timestamp and verify before preview.1. See `WINDOWS_SIGNING.md`. |
-| React dependency lock | BLOCKER | Successful `npm install`; commit `package-lock.json` and stop relying on unpinned resolution for a release build. |
+| React dependency lock | BLOCKER | Commit `package-lock.json` and stop relying on unpinned resolution for release builds. Dev.14 CI uploads its generated lock as a temporary maintainer artifact so it can be reviewed/committed next. |
 | React production build | PASS (CI) / BLOCKER (maintainer) | GitHub Actions production build passes. `npm run build` still needs one successful run on the maintainer Windows machine before preview.1. |
 | Real Bambu Studio 3MF matrix | BLOCKER | Test multiple real projects, including multi-plate and AMS/multi-filament examples. |
 | Real OrcaSlicer 3MF matrix | BLOCKER | Test multiple real projects and confirm extracted values remain correct. |
 | Export -> reopen in Bambu Studio | BLOCKER | Exported files must open normally and retain untouched project content. |
 | Export -> reopen in OrcaSlicer | BLOCKER | Exported files must open normally and retain untouched project content. |
-| Clean Windows portable test | BLOCKER | Exact staged portable executable must launch and operate from a fresh unpacked folder. |
-| Clean Windows installer test | PARTIAL | Install + launch passed on maintainer Windows. Uninstall + app-data cleanup + reinstall still need explicit verification after dev.13 rebuild. |
+| Clean Windows portable test | BLOCKER | Exact staged dev.14 Portable must launch from a fresh folder, persist profile/preferences in its own data root, survive whole-folder move, and remain isolated from Installed data. |
+| Clean Windows installer test | PASS | Maintainer verified install, localized finish checkbox, Start Menu uninstall shortcut, Windows Installed apps uninstall, optional app-data deletion, full removal and clean reinstall on dev.13. |
 | Clean top-level release layout | PASS (development artifact) | Generated artifact contains only Portable, Installer, checksums and START HERE. Final preview package still needs the chosen license file. |
 | License choice | BLOCKER | Repository owner must explicitly choose the source/distribution license before publication. |
 | Final release package + notes | PENDING | Build only after blockers above pass. |
@@ -50,7 +51,7 @@ Minimum before preview.1:
 3. Produce both portable and NSIS installer artifacts.
 4. Stage the clean Windows release folder with `scripts/stage-windows-release.mjs`.
 5. Perform clean-Windows smoke tests using those exact staged binaries.
-6. Test installed update notification/signature/install behavior and portable update-notification/download behavior.
+6. Test real GitHub release notification behavior, then installed signature/install behavior and portable release/download behavior.
 7. Update changelog/README/version to `v0.3.0-preview.1`.
 8. Finish PR #1 and merge with a normal merge commit (no squash).
 9. Tag the merge commit `v0.3.0-preview.1`.

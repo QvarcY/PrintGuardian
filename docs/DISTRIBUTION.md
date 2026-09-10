@@ -25,11 +25,12 @@ No source files, JavaScript bundles, Rust build folders, DLL collections, packag
 
 - starts without an installation wizard;
 - does not register an uninstall entry merely to run;
-- should keep portable-specific user data in a dedicated `PrintGuardianData` location beside the executable when that location is writable;
-- must not be called fully portable until its settings/profile/history storage behavior has been verified from a removable/unpacked folder;
+- keeps portable-specific WebView/localStorage data in a dedicated hidden `PrintGuardianData` location beside the executable when that location is writable;
+- reports an explicit `portable-fallback` state and uses Windows Local AppData if the executable folder is not writable;
+- must not be called fully portable until the dev.14 move/reopen/separation test in `PORTABLE_STORAGE.md` passes;
 - uses the same analysis engine and UI as the installed build.
 
-The current browser/localStorage prototype does **not** satisfy the final portable-storage requirement. This is a release blocker, not something to hide in release notes.
+The browser preview still uses ordinary browser storage, but the Windows Portable build now redirects its WebView2/localStorage directory beside the EXE. Runtime portability verification remains a release blocker until the move/reopen/separation test passes.
 
 ## Option 2 — Installed
 
@@ -54,7 +55,7 @@ Tauri uses Microsoft WebView2 on Windows. Current Windows 10/11 systems commonly
 
 ## Update behavior by distribution type
 
-Both editions share one **Update Centre** visual model and one release/version feed, but the action after a new version is found differs:
+Dev.14 introduces one desktop **Update Centre** visual model and a GitHub Releases metadata feed. Both editions can discover/describe newer releases; the action after a new version is found differs:
 
 ### Installed build
 

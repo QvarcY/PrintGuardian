@@ -9,9 +9,9 @@
 
 PrintGuardian is a bilingual (Latvian / English) 3D-print project inspector by **CraftIN / QvarcY**.
 
-The current development branch is **v0.3.0-dev.13**. Feature expansion is temporarily frozen while PrintGuardian is hardened for its first usable Windows preview. The existing Project Workspace, print-profile library, manual supported edits, comparison tools and verified experimental 3MF export remain in place.
+The current development branch is **v0.3.0-dev.14**. Feature expansion is temporarily frozen while PrintGuardian is hardened for its first usable Windows preview. The existing Project Workspace, print-profile library, manual supported edits, comparison tools and verified experimental 3MF export remain in place.
 
-Dev.12 adds the real **Tauri 2 desktop host source**, explicit **Portable / Installed** build flavors, runtime edition identity, native external-link handling and an automated Windows packaging/CI path. Windows binaries still require successful build and smoke-test verification before preview.1.
+Dev.14 keeps the working **Tauri 2 Windows desktop build** and adds deliberate distribution-aware storage plus the first real Update Centre foundation. Portable now keeps WebView/localStorage state beside the executable, Installed stays in Windows Local AppData, and update metadata checks are limited to the public PrintGuardian GitHub Releases feed. Signed in-app installation is still disabled until updater signing is completed.
 
 ## Fastest way to test
 
@@ -53,19 +53,25 @@ The React source now uses the same real 3MF inspection model as the standalone p
 
 
 
+### v0.3-dev.14 Portable storage + Update Centre foundation
+
+- creates the desktop WebView window from the Rust host so its data directory is chosen **before** React/localStorage starts;
+- Portable keeps profiles/preferences/cache under a hidden `PrintGuardianData` directory beside the EXE, while Installed keeps the normal application-specific Windows Local AppData scope;
+- exposes an explicit `portable-fallback` state if the Portable folder is not writable instead of falsely claiming full portability;
+- adds a desktop Update Centre in the top bar with version, distribution, Preview/Stable channel, last check state and local storage location;
+- checks only public PrintGuardian GitHub Releases metadata on a conservative interval and supports manual checks;
+- adds a development-only update-notification simulator so the future **Soon → update notification → New** feature lifecycle can be tested before a release feed exists;
+- keeps automatic Installed updates disabled until Tauri updater signing keys, signed artifacts and invalid-signature tests are complete;
+- keeps the browser `preview.html` as a development/testing surface; distribution-aware storage and update checks are desktop-only.
+
+See [`docs/PORTABLE_STORAGE.md`](docs/PORTABLE_STORAGE.md), [`docs/DESKTOP.md`](docs/DESKTOP.md) and [`docs/UPDATER.md`](docs/UPDATER.md).
+
 ### v0.3-dev.12 Tauri desktop shell + Windows build flavors
 
-- adds the real Tauri 2 desktop host under `src-tauri/` instead of treating the browser preview as the final application shell;
-- adds compile-time **Portable / Installed** distribution awareness so the application does not guess its mode from a Windows path;
-- shows the running desktop edition and application version in the top bar, while the browser preview remains clearly separate;
-- opens external support links through the Tauri opener plugin with an explicit allow-list instead of navigating the app webview;
-- adds dedicated commands for `tauri:dev`, portable build, NSIS installer build and combined clean Windows package staging;
-- adds a Windows GitHub Actions build job for the existing PR / manual CI path;
-- adds Tauri window, CSP, NSIS current-user installer and bilingual installer configuration;
-- keeps signed updater activation disabled until real signing keys and invalid-signature tests exist;
-- keeps portable settings/profile persistence as a release blocker until the browser local-storage layer is replaced by deliberate desktop storage.
-
-See [`docs/DESKTOP.md`](docs/DESKTOP.md) for the desktop build contract.
+- added the real Tauri 2 desktop host under `src-tauri/` instead of treating the browser preview as the final application shell;
+- added compile-time **Portable / Installed** distribution awareness so the application does not guess its mode from a Windows path;
+- added dedicated Portable + NSIS build/staging commands and Windows GitHub Actions CI;
+- established the external-link allow-list and Windows installer configuration used by later checkpoints.
 
 ### v0.3-dev.11 Release hardening + Windows distribution preparation
 

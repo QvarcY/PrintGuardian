@@ -113,3 +113,14 @@ PrintGuardian is under active development. Until v1.0, features and internal for
 - Added a Windows Authenticode/SmartScreen release blocker and signing plan; unsigned development binaries remain internal-test only.
 - Updated the GitHub artifact upload action to a Node 24 generation to remove the deprecated Node 20 warning.
 - Recorded the first successful real Portable + NSIS GitHub build and maintainer launch/install/real-3MF smoke test.
+
+## v0.3.0-dev.14 — Portable storage + update foundation
+
+- Moved Windows window creation into the Tauri Rust host so WebView2 data storage can be selected before the UI starts.
+- Portable builds now keep WebView2/localStorage state under a hidden `PrintGuardianData` directory beside the executable, allowing profiles/preferences to move with the extracted folder.
+- Installed builds keep the normal application-specific Windows Local AppData storage scope, preserving clean separation from Portable data.
+- Added a visible `portable-fallback` runtime state when the executable directory cannot be written, rather than silently pretending the copy is fully portable.
+- Added a desktop Update Centre control with current version, distribution, channel, last-check time and local storage location.
+- Added conservative GitHub Releases metadata checks against the PrintGuardian repository; print files, profile contents and slicer settings are not sent during update checks.
+- Added Preview/Stable channel filtering and a development-only notification simulator so the `Soon -> update -> New` UX can be exercised before a signed updater is enabled.
+- Kept automatic installation disabled: the Installed path still requires Tauri updater signing keys and signed artifacts before it can become a public updater.

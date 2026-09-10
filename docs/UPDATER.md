@@ -1,26 +1,28 @@
 # PrintGuardian updater architecture
 
-Status: **planned desktop implementation — not connected in the current browser preview**.
+Status: **metadata/update-notification foundation implemented in dev.14; signed Installed updates are not yet enabled**.
 
-The updater becomes active only after PrintGuardian is packaged as the Tauri 2 desktop application. The current `preview.html` must never pretend that it can self-update.
+The Windows desktop application now has a real Update Centre and can check the public PrintGuardian GitHub Releases metadata feed. The browser `preview.html` still does not self-update. Actual Installed update installation remains disabled until the signed Tauri updater path is configured and tested.
 
 ## One update experience, two distribution modes
 
 PrintGuardian will expose one user-facing **Update Centre**, but it must know whether the running build is **Installed** or **Portable**.
 
-Both modes may:
+Both desktop modes now:
 
-1. check a release/version feed at a conservative interval;
+1. check the public GitHub Releases metadata feed at a conservative interval;
 2. show a non-blocking “update available” notification;
-3. show release notes and newly available features;
+3. show release notes when a release provides them;
 4. offer a manual **Check for updates** action;
 5. keep update checking separate from print-file analysis and telemetry.
+
+Development builds also include an explicit **test notification** action. It creates a simulated next-version candidate locally and never pretends that a fake release was downloaded or signed.
 
 The action after the notification differs by distribution mode.
 
 ### Installed build
 
-The installed Windows build uses Tauri 2's signed updater flow. Tauri requires updater signatures; signature verification cannot be disabled. The release process therefore uses an embedded public key and a separately protected private signing key.
+The final installed Windows update path will use Tauri 2's signed updater flow. Tauri requires updater signatures; signature verification cannot be disabled. The release process therefore uses an embedded public key and a separately protected private signing key.
 
 Expected behavior:
 
@@ -36,9 +38,9 @@ The portable edition must not silently launch an installer or convert itself int
 
 Initial behavior:
 
-- use the same version/feature feed for update availability;
-- show the same “new version / new feature” notification UI;
-- offer the newer **portable** package for download;
+- uses the same GitHub Releases metadata check for update availability;
+- shows the same “new version / new feature” notification UI;
+- opens the matching Windows x64 ZIP asset when one is published;
 - clearly explain replacement/restart steps;
 - add automatic self-replacement only after a dedicated implementation can safely replace a portable executable and preserve portable data.
 
@@ -63,8 +65,8 @@ The `Soon` badge is therefore product-state information, not an unread-message b
 
 Planned channels:
 
-- **Stable** — normal default after the product matures;
-- **Beta / Preview** — opt-in/preview users willing to test earlier builds.
+- **Stable** — ignores GitHub pre-releases;
+- **Preview** — accepts both GitHub pre-releases and stable releases. Development/prerelease builds default to Preview.
 
 Development builds are never automatically offered to Stable users.
 
@@ -91,7 +93,7 @@ Only information needed to resolve a compatible release should be sent, such as 
 
 ## UI target
 
-The future Update Centre should show:
+The dev.14 Update Centre now shows:
 
 - installed version;
 - distribution type: Portable / Installed;
@@ -103,18 +105,18 @@ The future Update Centre should show:
 - **Check for updates**;
 - an action appropriate to the current distribution type.
 
-No forced silent installation is planned for the default experience.
+The current action opens the public release/download surface; signed in-app installation is deliberately withheld until the updater security gates pass. No forced silent installation is planned for the default experience.
 
 ## Implementation checkpoints
 
-- [ ] scaffold Tauri 2 desktop shell;
-- [ ] expose Installed / Portable distribution mode to the UI;
-- [ ] add Update Centre UI and feature-state notifications;
+- [x] scaffold Tauri 2 desktop shell;
+- [x] expose Installed / Portable distribution mode to the UI;
+- [x] add Update Centre UI, GitHub Releases metadata checks and development notification simulation;
 - [ ] add `tauri-plugin-updater` for the installed build;
 - [ ] generate and securely archive updater signing keys;
 - [ ] enable signed updater artifacts in Tauri bundle configuration;
-- [ ] implement/test portable update download + replacement guidance;
-- [ ] create Preview/Beta GitHub Release manifest flow;
+- [ ] complete portable update download + replacement guidance (release-page/ZIP handoff foundation exists; replacement guidance still needs the first real release test);
+- [ ] complete Preview GitHub Release flow (GitHub Releases discovery exists; signed updater manifest still pending);
 - [ ] verify Windows install/update/restart path;
 - [ ] verify portable update-notification path does not invoke the installer;
 - [ ] test invalid-signature rejection before first public updater-enabled build.
