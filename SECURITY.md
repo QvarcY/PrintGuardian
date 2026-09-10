@@ -18,10 +18,10 @@ Report security-sensitive findings to **info@craftin.lv** with:
 - a minimal test file when safe to share;
 - expected vs actual behavior.
 
-Non-sensitive bugs and compatibility problems can be reported through normal GitHub issues once the public preview is released.
+Non-sensitive bugs, compatibility problems and improvement ideas can be reported through the visible **Report / suggest** action in the application or through normal GitHub issues. The in-app action opens a pre-filled public GitHub issue and does not attach 3MF/profile contents automatically.
 
 ## Local-data boundary
 
 The standalone PrintGuardian preview performs 3MF inspection in the browser on the user's computer. Print files, extracted profiles and project settings are not intentionally uploaded by the current standalone workflow. Local preferences and print-profile snapshots may be stored in browser local storage.
 
-Update checks or other network features, if added later, must remain clearly separated from print-file processing and telemetry.
+Update checks are clearly separated from print-file processing: only public GitHub release metadata is requested. PrintGuardian does not intentionally upload 3MF contents, model geometry, slicer settings, print profiles or local project history during update checks or when opening the feedback form.

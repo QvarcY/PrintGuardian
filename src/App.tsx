@@ -7,6 +7,7 @@ import { DesktopEditionBadge } from './components/DesktopEditionBadge';
 import { UpdateCentreButton } from './components/UpdateCentreButton';
 import { DropZone } from './components/DropZone';
 import { SupportProject } from './components/SupportProject';
+import { FeedbackButton } from './components/FeedbackButton';
 import { ProjectWorkspace } from './components/ProjectWorkspace';
 import { PrintProfilesPanel } from './components/PrintProfilesPanel';
 import { HistoryPanel } from './components/HistoryPanel';
@@ -41,7 +42,7 @@ function App() {
   const [recentProject, setRecentProject] = useState<RecentProjectMetadata | null>(null);
   const [historyEntries, setHistoryEntries] = useState<ProjectHistoryEntry[]>(() => loadProjectHistory());
   const [newFeatures, setNewFeatures] = useState<FeatureId[]>([]);
-  const [runtimeVersion, setRuntimeVersion] = useState('0.3.0-dev.15');
+  const [runtimeVersion, setRuntimeVersion] = useState('0.3.0-preview.1');
   const [showUpdatedNotice, setShowUpdatedNotice] = useState(false);
 
   useEffect(() => {
@@ -49,7 +50,7 @@ function App() {
     void Promise.all([loadRecentProjectMetadata(), getDesktopRuntimeInfo()]).then(([metadata, runtime]) => {
       if (!active) return;
       setRecentProject(metadata);
-      const version = runtime.desktop ? runtime.version : '0.3.0-dev.15';
+      const version = runtime.desktop ? runtime.version : '0.3.0-preview.1';
       setRuntimeVersion(version);
       const discovery = initializeFeatureDiscovery(version, Boolean(metadata));
       setNewFeatures(discovery.newFeatures);
@@ -128,6 +129,7 @@ function App() {
           <DesktopEditionBadge />
           <UpdateCentreButton />
           <SupportProject prominent />
+          <FeedbackButton />
           <UiScaleControl />
           <LanguageSwitch />
         </div>
