@@ -15,9 +15,18 @@ const en = await read('src/locales/en.ts');
 const lv = await read('src/locales/lv.ts');
 const app = await read('src/App.tsx');
 const distribution = await read('docs/DISTRIBUTION.md');
+const desktopDoc = await read('docs/DESKTOP.md');
+const tauriConfig = JSON.parse(await read('src-tauri/tauri.conf.json'));
+const cargoToml = await read('src-tauri/Cargo.toml');
 
 if (packageJson.version === version) pass(`package.json version = ${version}`);
 else fail(`package.json (${packageJson.version}) does not match VERSION (${version})`);
+
+if (tauriConfig.version === version) pass(`tauri.conf.json version = ${version}`);
+else fail(`tauri.conf.json (${tauriConfig.version}) does not match VERSION (${version})`);
+
+if (new RegExp(`^version\\s*=\\s*\"${version.replaceAll('.', '\\.')}\"$`, 'm').test(cargoToml)) pass(`Cargo.toml version = ${version}`);
+else fail(`Cargo.toml package version does not match VERSION (${version})`);
 
 for (const [name, text] of [['preview.html', preview], ['README.md', readme], ['English locale', en], ['Latvian locale', lv]]) {
   if (text.includes(`v${version}`) || (name === 'README.md' && text.includes(`**v${version}**`))) pass(`${name} contains v${version}`);
@@ -41,6 +50,15 @@ else fail('README preview limitation language is missing');
 if (distribution.includes('PrintGuardian Portable.exe') && distribution.includes('Install PrintGuardian.exe')) pass('portable + installer distribution contract is documented');
 else fail('Windows distribution contract is incomplete');
 
+if (desktopDoc.includes('tauri:build:portable') && desktopDoc.includes('tauri:build:installer') && cargoToml.includes('portable = []')) pass('desktop build flavors are documented and declared');
+else fail('desktop build flavor contract is incomplete');
+
+if (packageJson.scripts?.['tauri:dev'] && packageJson.scripts?.['package:windows']) pass('desktop development/package scripts are present');
+else fail('desktop scripts are missing');
+
+if (tauriConfig.bundle?.windows?.nsis?.installMode === 'currentUser') pass('NSIS defaults to current-user installation');
+else fail('NSIS install mode is not currentUser');
+
 const scripts = [...preview.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/gi)].map((match) => match[1]);
 try {
   new vm.Script(scripts.join('\n'), { filename: 'preview-inline.js' });
@@ -54,7 +72,7 @@ for (const fixture of ['fixtures/bambu-style-smoke-test.3mf', 'fixtures/bambu-st
   catch { fail(`${fixture} is missing`); }
 }
 
-for (const file of ['SECURITY.md', 'docs/RELEASE_READINESS.md', 'docs/DISTRIBUTION.md', 'release/windows/START HERE - SĀC ŠEIT.txt', 'scripts/stage-windows-release.mjs']) {
+for (const file of ['SECURITY.md', 'docs/RELEASE_READINESS.md', 'docs/DISTRIBUTION.md', 'docs/DESKTOP.md', 'release/windows/START HERE - SĀC ŠEIT.txt', 'scripts/stage-windows-release.mjs', 'scripts/build-windows-flavors.mjs', 'src-tauri/src/lib.rs', 'src-tauri/capabilities/default.json', '.github/workflows/windows-desktop.yml']) {
   try { await access(new URL(file, root)); pass(`${file} exists`); }
   catch { fail(`${file} is missing`); }
 }

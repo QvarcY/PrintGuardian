@@ -1,0 +1,64 @@
+name: Windows desktop build
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'src-tauri/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'vite.config.ts'
+      - 'scripts/**'
+      - '.github/workflows/windows-desktop.yml'
+
+jobs:
+  windows-x64:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust build
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      - name: Install frontend dependencies
+        shell: pwsh
+        run: |
+          if (Test-Path package-lock.json) {
+            npm ci
+          } else {
+            Write-Warning 'package-lock.json is not committed yet; using npm install for development CI.'
+            npm install
+          }
+
+      - name: Release gate
+        run: npm run check:release
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Build portable + installer package
+        run: npm run package:windows
+
+      - name: Upload Windows development package
+        uses: actions/upload-artifact@v4
+        with:
+          name: PrintGuardian-Windows-${{ github.sha }}
+          path: release-out/PrintGuardian-v*-Windows-x64/
+          if-no-files-found: error
+          retention-days: 14
