@@ -1,4 +1,4 @@
-# Project Workspace — v0.3.0-dev.9
+# Project Workspace — v0.3.0-dev.10
 
 PrintGuardian's main project screen is organized by the user's mental model, not by internal parser modules.
 
@@ -64,3 +64,22 @@ Export is never disabled without context: the button exposes why the current pro
 ## Safety boundary
 
 This workspace is a clearer front end for the existing diff, decision, build-preview and verified-export engines. It does **not** expand current analysis coverage by itself. Full geometry and G-code safety auditing remains future work, and the UI must continue to state that limitation explicitly.
+
+
+## v0.3.0-dev.10 — navigation continuity and profile library
+
+The workspace keeps its category tab rail visible while the user opens the technical **Profile Diff** inside Advanced. Entering a deeper diagnostic tool must not make the user lose their location in the project.
+
+Displayed units are normalized before rendering. Values that already contain `%`, `mm` or `mm³/s` are not decorated a second time, preventing output such as `15%%`.
+
+The former single local reference has grown into a named **My print profiles** library. Users can:
+
+- add several trusted 3MF-derived reference profiles;
+- keep separate references for different printer / nozzle / material workflows;
+- rename profiles;
+- choose which profile is active for automatic comparison;
+- remove profiles without storing the source 3MF itself.
+
+Existing single-profile local data is migrated into the library when possible. The active profile is mirrored to the legacy baseline storage layer temporarily so the existing Advanced/Profile Diff and verified-export engines remain compatible during the transition.
+
+The support action is also intentionally more visible in the application chrome. It remains optional and visually separate from the actual project analysis/actions.

@@ -4,6 +4,12 @@ PrintGuardian is under active development. Until v1.0, features and internal for
 
 ## v0.3.0-dev — Profile Diff (in development)
 
+- Kept the Project Workspace tab rail visible when entering the technical **Profile Diff** view.
+- Normalized rendered units so values that already contain `%`, `mm` or `mm³/s` are not decorated twice.
+- Added a local named **My print profiles** library with add, rename, select-active and remove actions.
+- Added migration from the earlier single print-profile/baseline storage model and retained temporary compatibility with Advanced/Profile Diff.
+- Made the active print profile explicit and reusable across subsequently opened projects.
+- Increased Buy Me a Coffee visibility with a dedicated top-bar support action and stronger sidebar treatment.
 - Replaced the long single-page guided review with a category-based **Project Workspace** using Overview, Printer, Material, Print settings, Model & Supports and Advanced tabs.
 - Added persistent tab attention bubbles that represent unresolved findings; opening a tab does not clear them.
 - Reframed the old baseline concept as the optional user-facing **My print profile / Mans drukas profils**, while retaining baseline naming only as an internal implementation detail.

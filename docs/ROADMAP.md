@@ -64,7 +64,7 @@
 - ✅ type-aware manual editing for supported scalar settings
 - ✅ explicit acknowledgement for high-impact manual edits
 - ✅ sticky prepared-changes / unresolved-attention / verified-export action bar
-- ⏳ multiple named **My print profiles** / printer-material references
+- ✅ multiple named **My print profiles** / printer-material references with active-profile selection and local management
 
 ## v0.4 — Safe 3MF Builder
 - ✅ decision model and in-memory `project_settings.config` preview started in v0.3

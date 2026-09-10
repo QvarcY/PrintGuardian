@@ -52,6 +52,16 @@ The React source now uses the same real 3MF inspection model as the standalone p
 - CraftIN / QvarcY author attribution.
 
 
+### v0.3-dev.10 Print Profiles + UX polish
+
+- workspace tabs remain visible while entering **Advanced → Profile Diff**, so deeper diagnostics no longer replace the project navigation context;
+- unit rendering is normalized to prevent duplicated suffixes such as `15%%`;
+- **My print profiles** is now a real local library rather than a single opaque baseline: add, rename, select and remove several trusted 3MF-derived reference profiles;
+- one profile is explicitly active and is used automatically for the current project comparison;
+- legacy single-profile data is migrated when possible;
+- the source 3MF files are still not stored in the profile library;
+- Buy Me a Coffee support is deliberately more visible in the top bar and sidebar without becoming part of the print-safety workflow.
+
 ### v0.3-dev Project Workspace + Advanced Profile Diff
 
 - the normal project view is split into predictable category tabs instead of one long page;

@@ -28,7 +28,7 @@ export const en = {
     author: 'Created by CraftIN / QvarcY',
     support: 'Support the project',
     supportHint: 'Open the CraftIN Buy Me a Coffee page in a new tab.',
-    prototype: 'v0.3.0-dev.9 · Project Workspace',
+    prototype: 'v0.3.0-dev.10 · Print Profiles + UX polish',
     language: 'Language',
     sectionSoon: 'This section will be connected in a later development stage.',
     realData: 'REAL DATA',
