@@ -9,9 +9,9 @@
 
 PrintGuardian is a bilingual (Latvian / English) 3D-print project inspector by **CraftIN / QvarcY**.
 
-The current development branch is **v0.3.0-dev.9**. The parser, comparison engine, local print-profile reference, decision model and verified experimental 3MF export remain in place, but the normal interface is now a structured **Project Workspace** rather than one long diagnostic page.
+The current development branch is **v0.3.0-dev.11**. Feature expansion is temporarily frozen while PrintGuardian is hardened for its first usable Windows preview. The existing Project Workspace, print-profile library, manual supported edits, comparison tools and verified experimental 3MF export remain in place.
 
-The dev.9 checkpoint groups information into **Overview / Printer / Material / Print settings / Model & Supports / Advanced** tabs, adds persistent unresolved-attention badges, type-aware manual setting editors, high-impact confirmation and a sticky prepared-changes/export bar. The existing Compact / Standard / Large interface scaling remains available.
+Dev.11 keeps visible **History / Settings — Soon / Drīzumā** destinations as intentional planned-feature surfaces rather than dead controls, strengthens 3MF ZIP input handling, and defines the public Windows distribution contract: a clear **Portable** executable plus a clear **Installer** executable from the same codebase.
 
 ## Fastest way to test
 
@@ -51,6 +51,20 @@ The React source now uses the same real 3MF inspection model as the standalone p
 - localized hover explanations for slicer settings;
 - CraftIN / QvarcY author attribution.
 
+
+
+### v0.3-dev.11 Release hardening + Windows distribution preparation
+
+- keeps **History** and **Settings** visible with explicit **Soon / Drīzumā** badges; opening them shows an honest planned-feature surface instead of a dead destination;
+- reserves those planned-feature surfaces for future update-notification testing such as announcing when a previously unavailable feature becomes available;
+- advertises only `.3mf` as an implemented input format in the current UI;
+- hardens the local ZIP/3MF reader with size/entry/decompression/bounds checks and explicit rejection of unsupported encrypted, multi-disk and ZIP64 archives;
+- defines two Windows release choices: **PrintGuardian Portable.exe** and **Install PrintGuardian.exe**;
+- defines a clean release-folder contract so normal users do not need to see or touch application internals;
+- distinguishes installed-update behavior from portable-update behavior instead of pretending the two deployment types update identically;
+- adds release-readiness, real-file test, security and Windows release-staging documentation/scripts.
+
+The actual Tauri desktop host, portable binary, NSIS installer and signed updater flow are still **release blockers**. `preview.html` remains a development/testing surface, not the intended final public Windows package.
 
 ### v0.3-dev.10 Print Profiles + UX polish
 
@@ -99,7 +113,7 @@ PrintGuardian intentionally no longer presents a numeric “100/100” style saf
 - **Default data policy:** local processing
 - **Desktop updates:** signed Tauri updater flow with opt-in installation and Stable / Beta channels planned before v1.0
 
-Updater design notes are tracked in [`docs/UPDATER.md`](docs/UPDATER.md). The current browser prototype does **not** self-update.
+Updater design notes are tracked in [`docs/UPDATER.md`](docs/UPDATER.md), and the Windows package contract is tracked in [`docs/DISTRIBUTION.md`](docs/DISTRIBUTION.md). The current browser prototype does **not** self-update and is not the final public distribution format.
 
 
 ## Support the project

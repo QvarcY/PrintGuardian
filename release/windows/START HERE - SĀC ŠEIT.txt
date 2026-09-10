@@ -1,0 +1,17 @@
+PRINTGUARDIAN — WINDOWS
+======================
+
+Choose one option / Izvēlies vienu variantu:
+
+1) PrintGuardian Portable.exe
+   LV: Palaid programmu bez instalēšanas.
+   EN: Run PrintGuardian without installing it.
+
+2) Install PrintGuardian.exe
+   LV: Instalē PrintGuardian Windows datorā un izmanto instalētās versijas atjaunināšanas plūsmu.
+   EN: Install PrintGuardian on Windows and use the installed-edition update flow.
+
+You do NOT need to open or edit application system files.
+Aplikācijas sistēmas failus nav nepieciešams atvērt vai labot.
+
+Project files are processed locally by the application workflow unless a future feature explicitly says otherwise.

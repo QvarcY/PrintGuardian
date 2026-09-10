@@ -46,7 +46,7 @@ export function DropZone({ onFile, onDemo, busy = false, error }: Props) {
           ref={input}
           hidden
           type="file"
-          accept=".3mf,.gcode,.bgcode"
+          accept=".3mf"
           onChange={(e) => acceptFile(e.target.files?.[0])}
         />
       </section>

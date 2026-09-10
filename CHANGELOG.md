@@ -4,6 +4,15 @@ PrintGuardian is under active development. Until v1.0, features and internal for
 
 ## v0.3.0-dev — Profile Diff (in development)
 
+- Began pre-release hardening while intentionally freezing feature expansion.
+- Kept History / Settings visible with explicit Soon / Drīzumā markers and made them open explanatory planned-feature surfaces instead of dead controls.
+- Reserved coming-soon surfaces for future update-notification UX testing.
+- Restricted advertised file input to the currently implemented `.3mf` path.
+- Hardened ZIP/3MF parsing with archive size, entry count, decompression, bounds, encryption, multi-disk, ZIP64 and suspicious compression-ratio checks.
+- Defined a clean Windows release package with separate `PrintGuardian Portable.exe` and `Install PrintGuardian.exe` user-facing choices.
+- Defined distinct installed-vs-portable update behavior and added a release staging script that hides implementation clutter from the release root.
+- Added release readiness, real-file compatibility and security documentation.
+
 - Kept the Project Workspace tab rail visible when entering the technical **Profile Diff** view.
 - Normalized rendered units so values that already contain `%`, `mm` or `mm³/s` are not decorated twice.
 - Added a local named **My print profiles** library with add, rename, select-active and remove actions.
