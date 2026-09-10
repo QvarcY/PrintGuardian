@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.3.0-dev.15 — History + update notification UX
+
+- Added the first real local **History** view with a bounded 20-entry inspection-summary log.
+- History stores metadata only; older 3MF source files are not duplicated into the history list. The separate last-project resume cache remains one project.
+- Added persistent feature discovery for the **Soon → NEW → seen** lifecycle. Returning dev.14 users see History as NEW; opening History clears the NEW state.
+- Kept **Settings** as an explicit Soon/Drīzumā destination for the next update-cycle test.
+- Added a post-update notice when a returning user first launches a build containing a newly available feature.
+- Improved GitHub Releases parsing with concise What's New highlights and release publication metadata.
+- Added distribution-specific manual update guidance: Portable preserves `PrintGuardianData`; Installed uses the installer until the signed in-app updater is enabled.
+- Advanced the development notification simulator to the next build so pre-update notification UX remains testable without publishing a release.
+
 PrintGuardian is under active development. Until v1.0, features and internal formats may change substantially.
 
 ## v0.3.0-dev — Profile Diff (in development)

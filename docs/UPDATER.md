@@ -1,8 +1,8 @@
 # PrintGuardian updater architecture
 
-Status: **metadata/update-notification foundation implemented in dev.14; signed Installed updates are not yet enabled**.
+Status: **release-notification + post-update feature-discovery UX implemented through dev.15; signed Installed updates are not yet enabled**.
 
-The Windows desktop application now has a real Update Centre and can check the public PrintGuardian GitHub Releases metadata feed. The browser `preview.html` still does not self-update. Actual Installed update installation remains disabled until the signed Tauri updater path is configured and tested.
+The Windows desktop application has a real Update Centre that checks the public PrintGuardian GitHub Releases metadata feed, extracts concise release highlights and provides distribution-specific update handoff guidance. The browser `preview.html` still does not self-update. Actual Installed update installation remains disabled until the signed Tauri updater path is configured and tested.
 
 ## One update experience, two distribution modes
 
@@ -53,10 +53,11 @@ Preview builds intentionally keep selected planned destinations visible as **Soo
 This also gives the updater UI a concrete feature-announcement test case. Example lifecycle:
 
 ```text
-v0.3 preview:  History  [DRĪZUMĀ]
-new release:   Update available — “History is now available”
-after update:  History  [NEW]
+dev.14:         History  [DRĪZUMĀ]
+dev.15 launch:  “History is now available”
+dev.15 sidebar: History  [NEW]
 after user uses it: History
+next cycle:     Settings [DRĪZUMĀ]
 ```
 
 The `Soon` badge is therefore product-state information, not an unread-message badge.
@@ -93,7 +94,7 @@ Only information needed to resolve a compatible release should be sent, such as 
 
 ## UI target
 
-The dev.14 Update Centre now shows:
+The dev.15 Update Centre now shows:
 
 - installed version;
 - distribution type: Portable / Installed;
@@ -112,6 +113,8 @@ The current action opens the public release/download surface; signed in-app inst
 - [x] scaffold Tauri 2 desktop shell;
 - [x] expose Installed / Portable distribution mode to the UI;
 - [x] add Update Centre UI, GitHub Releases metadata checks and development notification simulation;
+- [x] add release-note highlight extraction and explicit Portable/Installed manual update handoff guidance;
+- [x] add persistent post-update feature discovery and verify the first Soon → NEW target in source (History);
 - [ ] add `tauri-plugin-updater` for the installed build;
 - [ ] generate and securely archive updater signing keys;
 - [ ] enable signed updater artifacts in Tauri bundle configuration;

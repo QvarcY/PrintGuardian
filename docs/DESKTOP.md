@@ -1,6 +1,6 @@
 # PrintGuardian desktop host
 
-Status: **Tauri 2 Windows desktop shell, Portable/Installed builds and distribution-aware storage are implemented; dev.14 storage behavior still requires runtime verification.**
+Status: **Tauri 2 Windows desktop shell, Portable/Installed builds and distribution-aware storage are implemented and dev.14 persistence/move behavior has passed maintainer runtime testing. Dev.15 adds History + feature-release UX.**
 
 PrintGuardian uses one React/TypeScript UI and two Windows build flavors from the same source tree:
 
@@ -90,6 +90,6 @@ Installed uses Tauri's application-specific Local AppData directory, which also 
 
 ## Updates
 
-Dev.14 includes the first desktop **Update Centre** and a narrowly scoped GitHub Releases metadata check. It can report version/channel/distribution state, run manual/periodic metadata checks and simulate an update notification in development builds.
+Dev.15 retains the desktop **Update Centre** and narrowly scoped GitHub Releases metadata check, and adds release-highlight parsing, distribution-specific manual update handoff guidance and post-update feature discovery. It can report version/channel/distribution state, run manual/periodic metadata checks and simulate an update notification in development builds.
 
 The Tauri updater plugin is intentionally **not enabled yet**. Automatic Installed updates still require a real signing key, signed updater artifacts and invalid-signature rejection tests. Portable updates remain notification/download guidance rather than installer-style self-update.

@@ -1,6 +1,6 @@
 # PrintGuardian desktop storage model
 
-Status: **implemented for v0.3.0-dev.14 and awaiting Windows runtime verification**.
+Status: **implemented in v0.3.0-dev.14 and verified on Windows: persistence, recent-project resume and whole-folder move passed maintainer testing.**
 
 PrintGuardian uses the same localStorage-based React persistence APIs in both Windows distributions, but the desktop host now chooses a different WebView2 data directory before the UI starts. This keeps existing print-profile/settings code simple while making the storage location distribution-aware.
 

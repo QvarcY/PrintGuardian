@@ -9,9 +9,9 @@
 
 PrintGuardian is a bilingual (Latvian / English) 3D-print project inspector by **CraftIN / QvarcY**.
 
-The current development branch is **v0.3.0-dev.14**. Feature expansion is temporarily frozen while PrintGuardian is hardened for its first usable Windows preview. The existing Project Workspace, print-profile library, manual supported edits, comparison tools and verified experimental 3MF export remain in place.
+The current development branch is **v0.3.0-dev.15**. Feature expansion is temporarily frozen while PrintGuardian is hardened for its first usable Windows preview. The existing Project Workspace, print-profile library, manual supported edits, comparison tools and verified experimental 3MF export remain in place.
 
-Dev.14 keeps the working **Tauri 2 Windows desktop build** and adds deliberate distribution-aware storage plus the first real Update Centre foundation. Portable now keeps WebView/localStorage state beside the executable, Installed stays in Windows Local AppData, and update metadata checks are limited to the public PrintGuardian GitHub Releases feed. Signed in-app installation is still disabled until updater signing is completed.
+Dev.15 builds on the verified Portable/Installed storage foundation and turns the update UX into a real feature-release lifecycle: published GitHub release notes are normalized into concise highlights, Portable/Installed handoff instructions are explicit, and returning dev.14 users see **History** graduate from Soon to **NEW**. The new History view stores only bounded local inspection-summary metadata; older 3MF files are not duplicated into the history log. Signed in-app installation is still disabled until updater signing is completed.
 
 ## Fastest way to test
 
@@ -52,6 +52,17 @@ The React source now uses the same real 3MF inspection model as the standalone p
 - CraftIN / QvarcY author attribution.
 
 
+
+### v0.3-dev.15 History + update notification UX
+
+- turns **History** into the first real feature to graduate from **Soon / Drīzumā** to **NEW**, giving the post-update feature-discovery flow an actual end-to-end target;
+- adds a bounded local history of up to 20 inspected 3MF project summaries without duplicating older source files;
+- records useful context such as printer, nozzle, material, object/plate counts and attention-item count;
+- clears the **NEW** marker only after the user actually opens History;
+- keeps **Settings** visible as the next explicit Soon/Drīzumā feature for a future update-cycle test;
+- improves GitHub Releases handling by extracting concise release highlights and showing publication metadata;
+- gives Portable and Installed users different, explicit update handoff instructions instead of a generic release link;
+- keeps the dev-only notification simulator, which now models the next dev.16 update so update-available UX can still be tested before a public release exists.
 
 ### v0.3-dev.14 Portable storage + Update Centre foundation
 

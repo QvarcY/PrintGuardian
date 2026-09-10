@@ -65,6 +65,8 @@
 - ✅ explicit acknowledgement for high-impact manual edits
 - ✅ sticky prepared-changes / unresolved-attention / verified-export action bar
 - ✅ multiple named **My print profiles** / printer-material references with active-profile selection and local management
+- ✅ first bounded local project-history summary with post-update **NEW** feature discovery
+- ✅ distribution-aware update-notification UX with GitHub Releases highlights and Portable/Installed handoff guidance
 
 ## v0.4 — Safe 3MF Builder
 - ✅ decision model and in-memory `project_settings.config` preview started in v0.3
@@ -89,4 +91,4 @@
 - `.bgcode`
 - geometry analysis: islands, bridges, overhangs, contact area
 - print-cost / purge-waste analysis
-- local print history / Print Memory
+- richer Print Memory / export history beyond the initial bounded inspection history

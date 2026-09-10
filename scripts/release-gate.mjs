@@ -22,6 +22,9 @@ const desktopRuntime = await read('src/lib/desktopRuntime.ts');
 const updateCentre = await read('src/components/UpdateCentreButton.tsx');
 const updateModel = await read('src/lib/updateCenter.ts');
 const recentProject = await read('src/lib/recentProject.ts');
+const projectHistory = await read('src/lib/projectHistory.ts');
+const featureDiscovery = await read('src/lib/featureDiscovery.ts');
+const historyPanel = await read('src/components/HistoryPanel.tsx');
 const dropZone = await read('src/components/DropZone.tsx');
 const rustHost = await read('src-tauri/src/lib.rs');
 const tauriConfig = JSON.parse(await read('src-tauri/tauri.conf.json'));
@@ -47,10 +50,11 @@ for (const [name, text] of [['preview.html', preview], ['README.md', readme], ['
 if (/accept="\.3mf"/.test(preview) && !/accept="\.3mf,\.gcode/.test(preview)) pass('standalone picker advertises only implemented .3mf input');
 else fail('standalone picker advertises unsupported input formats');
 
-const soonVisible = /drīzumā|soon/i.test(preview) && /drīzumā|soon/i.test(app);
-const soonClickable = preview.includes("ws10openSoon('history')") && preview.includes("ws10openSoon('settings')") && app.includes("setView('history')") && app.includes("setView('settings')");
-if (soonVisible && soonClickable) pass('coming-soon destinations remain explicit and open explanatory surfaces');
-else fail('coming-soon destinations are missing or behave like dead navigation');
+const previewSoonVisible = /drīzumā|soon/i.test(preview) && preview.includes("ws10openSoon('history')") && preview.includes("ws10openSoon('settings')");
+const desktopSettingsSoon = app.includes('kind="settings"') && app.includes('soon-badge');
+const desktopHistoryLive = app.includes('<HistoryPanel') && app.includes('new-badge') && featureDiscovery.includes("introducedIn: '0.3.0-dev.15'");
+if (previewSoonVisible && desktopSettingsSoon && desktopHistoryLive) pass('planned Settings remains explicit while desktop History has graduated to a real NEW feature');
+else fail('planned/new-feature navigation state is inconsistent');
 
 if (preview.includes('https://buymeacoffee.com/craftin')) pass('Buy Me a Coffee destination is present');
 else fail('Buy Me a Coffee destination is missing');
@@ -74,11 +78,20 @@ else fail('portable storage contract is incomplete');
 if (tauriConfig.app?.security?.csp?.includes('https://api.github.com') && updateModel.includes('api.github.com/repos/QvarcY/PrintGuardian/releases') && updateCentre.includes('Update Centre')) pass('desktop update metadata check is narrowly scoped to GitHub Releases');
 else fail('update metadata foundation or CSP scope is missing');
 
-if (updateCentre.includes('createSimulatedUpdate') && updateCentre.includes('Test update notification')) pass('development update notification simulation is available');
-else fail('update notification test path is missing');
+if (updateCentre.includes('createSimulatedUpdate') && updateCentre.includes('Test update notification') && updateCentre.includes('update-handoff')) pass('development update notification simulation and distribution-specific handoff guidance are available');
+else fail('update notification test/handoff path is missing');
+
+if (updateModel.includes('extractReleaseHighlights') && updateModel.includes('publishedAt') && updateModel.includes('assetName')) pass('published release metadata is normalized into update notes/highlights');
+else fail('published release metadata normalization is incomplete');
 
 if (recentProject.includes('indexedDB') && recentProject.includes("id: 'last'") && dropZone.includes('recentProject') && dropZone.includes('continueRecent')) pass('last-project local resume cache is implemented');
 else fail('last-project resume path is missing');
+
+if (projectHistory.includes('MAX_ENTRIES = 20') && projectHistory.includes('recordProjectInspection') && historyPanel.includes('LOKĀLĀ PROJEKTU VĒSTURE') && historyPanel.includes('metadata only')) pass('local bounded project-history summary is implemented without duplicating old 3MF files');
+else fail('project history is missing, unbounded, or unclear about file retention');
+
+if (featureDiscovery.includes('initializeFeatureDiscovery') && featureDiscovery.includes('markFeatureSeen') && app.includes("onFeatureSeen('history')")) pass('post-update NEW feature discovery is persistent and clears on actual feature use');
+else fail('post-update feature discovery lifecycle is incomplete');
 
 if (updateCentre.includes('createPortal') && updateCentre.includes('update-centre-backdrop') && updateCentre.includes('aria-modal="true"')) pass('Update Centre is isolated in a modal portal');
 else fail('Update Centre may visually blend with the underlying workspace');
@@ -125,7 +138,7 @@ for (const fixture of ['fixtures/bambu-style-smoke-test.3mf', 'fixtures/bambu-st
   catch { fail(`${fixture} is missing`); }
 }
 
-for (const file of ['SECURITY.md', 'docs/RELEASE_READINESS.md', 'docs/DISTRIBUTION.md', 'docs/DESKTOP.md', 'docs/PORTABLE_STORAGE.md', 'docs/WINDOWS_SIGNING.md', 'release/windows/START HERE - SĀC ŠEIT.txt', 'src-tauri/windows/Latvian.nsh', 'src-tauri/windows/nsis-hooks.nsh', 'scripts/stage-windows-release.mjs', 'scripts/build-windows-flavors.mjs', 'scripts/update-center-smoke.mjs', 'src/lib/recentProject.ts', 'src-tauri/src/lib.rs', 'src-tauri/capabilities/default.json', '.github/workflows/windows-desktop.yml']) {
+for (const file of ['SECURITY.md', 'docs/RELEASE_READINESS.md', 'docs/DISTRIBUTION.md', 'docs/DESKTOP.md', 'docs/PORTABLE_STORAGE.md', 'docs/WINDOWS_SIGNING.md', 'release/windows/START HERE - SĀC ŠEIT.txt', 'src-tauri/windows/Latvian.nsh', 'src-tauri/windows/nsis-hooks.nsh', 'scripts/stage-windows-release.mjs', 'scripts/build-windows-flavors.mjs', 'scripts/update-center-smoke.mjs', 'scripts/feature-discovery-smoke.mjs', 'src/lib/recentProject.ts', 'src/lib/projectHistory.ts', 'src/lib/featureDiscovery.ts', 'src/components/HistoryPanel.tsx', 'src/components/HistoryPanel.css', 'src-tauri/src/lib.rs', 'src-tauri/capabilities/default.json', '.github/workflows/windows-desktop.yml']) {
   try { await access(new URL(file, root)); pass(`${file} exists`); }
   catch { fail(`${file} is missing`); }
 }
@@ -134,4 +147,4 @@ if (errors.length) {
   console.error(`\nRelease gate failed with ${errors.length} issue(s).`);
   process.exit(1);
 }
-console.log('\nRelease gate checks passed. Manual desktop-build, real-file, update, license and clean-Windows blockers remain in docs/RELEASE_READINESS.md.');
+console.log('\nRelease gate checks passed. Manual Windows build, published-release update, real-file, signing and license blockers remain in docs/RELEASE_READINESS.md.');
