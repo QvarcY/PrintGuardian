@@ -126,3 +126,9 @@ PrintGuardian is under active development. Until v1.0, features and internal for
 - Added conservative GitHub Releases metadata checks against the PrintGuardian repository; print files, profile contents and slicer settings are not sent during update checks.
 - Added Preview/Stable channel filtering and a development-only notification simulator so the `Soon -> update -> New` UX can be exercised before a signed updater is enabled.
 - Kept automatic installation disabled: the Installed path still requires Tauri updater signing keys and signed artifacts before it can become a public updater.
+
+### v0.3.0-dev.14 usability hotfix
+- Cache the last successfully inspected 3MF locally in IndexedDB and offer a clear **Continue previous project** action after restart.
+- The cached project remains inside the selected desktop storage scope, so Portable keeps it with `PrintGuardianData` and Installed keeps it in its own WebView data directory.
+- Add a remove action for the cached project copy; invalid projects are never cached.
+- Render Update Centre as an opaque modal with a dimmed/blurred backdrop so landing/workspace content cannot visually bleed through the dialog.

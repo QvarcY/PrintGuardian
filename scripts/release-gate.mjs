@@ -21,6 +21,8 @@ const portableStorageDoc = await read('docs/PORTABLE_STORAGE.md');
 const desktopRuntime = await read('src/lib/desktopRuntime.ts');
 const updateCentre = await read('src/components/UpdateCentreButton.tsx');
 const updateModel = await read('src/lib/updateCenter.ts');
+const recentProject = await read('src/lib/recentProject.ts');
+const dropZone = await read('src/components/DropZone.tsx');
 const rustHost = await read('src-tauri/src/lib.rs');
 const tauriConfig = JSON.parse(await read('src-tauri/tauri.conf.json'));
 const cargoToml = await read('src-tauri/Cargo.toml');
@@ -75,6 +77,12 @@ else fail('update metadata foundation or CSP scope is missing');
 if (updateCentre.includes('createSimulatedUpdate') && updateCentre.includes('Test update notification')) pass('development update notification simulation is available');
 else fail('update notification test path is missing');
 
+if (recentProject.includes('indexedDB') && recentProject.includes("id: 'last'") && dropZone.includes('recentProject') && dropZone.includes('continueRecent')) pass('last-project local resume cache is implemented');
+else fail('last-project resume path is missing');
+
+if (updateCentre.includes('createPortal') && updateCentre.includes('update-centre-backdrop') && updateCentre.includes('aria-modal="true"')) pass('Update Centre is isolated in a modal portal');
+else fail('Update Centre may visually blend with the underlying workspace');
+
 if (packageJson.scripts?.['tauri:dev'] && packageJson.scripts?.['package:windows']) pass('desktop development/package scripts are present');
 else fail('desktop scripts are missing');
 
@@ -117,7 +125,7 @@ for (const fixture of ['fixtures/bambu-style-smoke-test.3mf', 'fixtures/bambu-st
   catch { fail(`${fixture} is missing`); }
 }
 
-for (const file of ['SECURITY.md', 'docs/RELEASE_READINESS.md', 'docs/DISTRIBUTION.md', 'docs/DESKTOP.md', 'docs/PORTABLE_STORAGE.md', 'docs/WINDOWS_SIGNING.md', 'release/windows/START HERE - SĀC ŠEIT.txt', 'src-tauri/windows/Latvian.nsh', 'src-tauri/windows/nsis-hooks.nsh', 'scripts/stage-windows-release.mjs', 'scripts/build-windows-flavors.mjs', 'scripts/update-center-smoke.mjs', 'src-tauri/src/lib.rs', 'src-tauri/capabilities/default.json', '.github/workflows/windows-desktop.yml']) {
+for (const file of ['SECURITY.md', 'docs/RELEASE_READINESS.md', 'docs/DISTRIBUTION.md', 'docs/DESKTOP.md', 'docs/PORTABLE_STORAGE.md', 'docs/WINDOWS_SIGNING.md', 'release/windows/START HERE - SĀC ŠEIT.txt', 'src-tauri/windows/Latvian.nsh', 'src-tauri/windows/nsis-hooks.nsh', 'scripts/stage-windows-release.mjs', 'scripts/build-windows-flavors.mjs', 'scripts/update-center-smoke.mjs', 'src/lib/recentProject.ts', 'src-tauri/src/lib.rs', 'src-tauri/capabilities/default.json', '.github/workflows/windows-desktop.yml']) {
   try { await access(new URL(file, root)); pass(`${file} exists`); }
   catch { fail(`${file} is missing`); }
 }

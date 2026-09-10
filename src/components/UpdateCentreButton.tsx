@@ -1,5 +1,6 @@
 import { Bell, Check, CircleAlert, CloudDownload, RefreshCw, ShieldCheck, X } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { getDesktopRuntimeInfo, openExternalUrl, type DesktopRuntimeInfo } from '../lib/desktopRuntime';
 import {
@@ -85,6 +86,20 @@ export function UpdateCentreButton() {
     return () => { active = false; };
   }, []);
 
+  useEffect(() => {
+    if (!open) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setOpen(false);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [open]);
+
   if (!runtime?.desktop) return null;
 
   const portable = runtime.distribution === 'portable';
@@ -134,8 +149,9 @@ export function UpdateCentreButton() {
         </div>
       )}
 
-      {open && (
-        <div className="update-centre-popover glass-panel">
+      {open && createPortal(
+        <div className="update-centre-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setOpen(false); }}>
+          <div className="update-centre-popover" role="dialog" aria-modal="true" aria-label={lv ? 'Atjauninājumu centrs' : 'Update Centre'}>
           <div className="update-centre-head">
             <div>
               <span className="eyebrow"><ShieldCheck size={13} /> {lv ? 'ATJAUNINĀJUMU CENTRS' : 'UPDATE CENTRE'}</span>
@@ -194,7 +210,9 @@ export function UpdateCentreButton() {
             {runtime.version.includes('-dev.') && <button className="ghost dev-update-test" onClick={simulate}>{lv ? 'Izmēģināt testa paziņojumu' : 'Test update notification'}</button>}
           </div>
           {message && candidate && <p className="update-inline-message">{message}</p>}
-        </div>
+          </div>
+        </div>,
+        document.body,
       )}
     </div>
   );

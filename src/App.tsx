@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Clock3, FolderOpen, Settings2, ShieldCheck, UserRoundCog } from 'lucide-react';
 import { LanguageSwitch } from './components/LanguageSwitch';
@@ -21,12 +21,28 @@ import {
   type PrintProfileLibrary,
 } from './lib/printProfiles';
 import { createDemoInspection, inspectThreeMf, type ThreeMfInspection } from './lib/threeMfInspector';
+import {
+  loadRecentProjectFile,
+  loadRecentProjectMetadata,
+  removeRecentProject,
+  saveRecentProject,
+  type RecentProjectMetadata,
+} from './lib/recentProject';
 
 function App() {
   const { t } = useTranslation();
   const [inspection, setInspection] = useState<ThreeMfInspection | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [recentProject, setRecentProject] = useState<RecentProjectMetadata | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    void loadRecentProjectMetadata().then((metadata) => {
+      if (active) setRecentProject(metadata);
+    });
+    return () => { active = false; };
+  }, []);
 
   const reset = () => {
     setInspection(null);
@@ -34,7 +50,7 @@ function App() {
     setBusy(false);
   };
 
-  const openFile = async (file: File) => {
+  const openFile = async (file: File, remember = true) => {
     setError(null);
     if (!file.name.toLowerCase().endsWith('.3mf')) {
       setError(t('app.unsupported'));
@@ -42,7 +58,15 @@ function App() {
     }
     setBusy(true);
     try {
-      setInspection(await inspectThreeMf(file));
+      const inspected = await inspectThreeMf(file);
+      setInspection(inspected);
+      if (remember) {
+        try {
+          setRecentProject(await saveRecentProject(file));
+        } catch (storageError) {
+          console.warn('PrintGuardian could not cache the recent project for one-click reopening.', storageError);
+        }
+      }
     } catch (reason) {
       const detail = reason instanceof Error ? reason.message : String(reason);
       console.error(reason);
@@ -50,6 +74,31 @@ function App() {
     } finally {
       setBusy(false);
     }
+  };
+
+  const continueRecentProject = async () => {
+    setError(null);
+    setBusy(true);
+    try {
+      const file = await loadRecentProjectFile();
+      if (!file) {
+        setRecentProject(null);
+        setError(t('app.recentMissing'));
+        return;
+      }
+      await openFile(file, false);
+    } catch (reason) {
+      console.error(reason);
+      setError(t('app.recentMissing'));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const forgetRecentProject = async () => {
+    try { await removeRecentProject(); }
+    catch (reason) { console.warn('PrintGuardian could not remove the recent-project cache.', reason); }
+    setRecentProject(null);
   };
 
   return (
@@ -70,7 +119,15 @@ function App() {
       </header>
 
       {!inspection
-        ? <DropZone onFile={openFile} onDemo={() => setInspection(createDemoInspection())} busy={busy} error={error} />
+        ? <DropZone
+            onFile={openFile}
+            onDemo={() => setInspection(createDemoInspection())}
+            busy={busy}
+            error={error}
+            recentProject={recentProject}
+            onContinueRecent={() => void continueRecentProject()}
+            onForgetRecent={() => void forgetRecentProject()}
+          />
         : <Dashboard inspection={inspection} />}
 
       <footer className="footer">

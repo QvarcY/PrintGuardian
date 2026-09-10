@@ -54,3 +54,12 @@ Portable verification must prove:
 7. reopen there and confirm the same data remains;
 8. launch the Installed edition and confirm it does not automatically inherit the Portable profile;
 9. test a deliberately non-writable Portable location and confirm the UI reports the fallback instead of silently claiming full portability.
+
+## Recent project resume
+
+The current development build may keep one local copy of the last successfully inspected 3MF so the landing screen can offer **Continue previous project** after restart. The copy is stored through IndexedDB inside the same WebView2 data root as the rest of the desktop state:
+
+- Portable: inside `PrintGuardianData\\WebView2` next to the executable;
+- Installed: inside the Installed edition's Local AppData WebView data directory.
+
+The user can remove this cached copy from the landing screen. Invalid/unreadable 3MF files are not cached. This is not the future multi-project History feature; it is a single-project convenience cache only.
