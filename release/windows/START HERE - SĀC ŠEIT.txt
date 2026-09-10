@@ -22,3 +22,17 @@ LV: Programmas augšējā joslā desktop versija rāda “Portable” vai “Ins
 EN: The desktop app shows “Portable” or “Installed” in the top bar.
 
 The Portable build will later keep its own data under PrintGuardianData beside the executable; that persistence path must be verified before the public preview.
+
+
+UNINSTALL / ATINSTALĒŠANA
+------------------------
+LV: Instalēto versiju vari noņemt Windows Iestatījumi > Programmas > Instalētās programmas > PrintGuardian > Atinstalēt.
+    Ērtībai izvēlnē Sākt tiek pievienota arī saīsne “Uninstall PrintGuardian”.
+    Atinstalētājs piedāvā atsevišķi izvēlēties, vai dzēst arī PrintGuardian lietotnes datus un iestatījumus.
+EN: Remove the installed edition from Windows Settings > Apps > Installed apps > PrintGuardian > Uninstall.
+    A “Uninstall PrintGuardian” Start Menu shortcut is also created for convenience.
+    The uninstaller separately lets you choose whether PrintGuardian application data and settings should also be deleted.
+
+WINDOWS SECURITY / WINDOWS DROŠĪBA
+----------------------------------
+Development builds may currently show a Microsoft Defender SmartScreen unknown-publisher warning because they are not code-signed yet. Public preview release readiness requires trusted code signing; do not treat an unsigned development build as the final public package.

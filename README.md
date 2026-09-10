@@ -9,7 +9,7 @@
 
 PrintGuardian is a bilingual (Latvian / English) 3D-print project inspector by **CraftIN / QvarcY**.
 
-The current development branch is **v0.3.0-dev.12**. Feature expansion is temporarily frozen while PrintGuardian is hardened for its first usable Windows preview. The existing Project Workspace, print-profile library, manual supported edits, comparison tools and verified experimental 3MF export remain in place.
+The current development branch is **v0.3.0-dev.13**. Feature expansion is temporarily frozen while PrintGuardian is hardened for its first usable Windows preview. The existing Project Workspace, print-profile library, manual supported edits, comparison tools and verified experimental 3MF export remain in place.
 
 Dev.12 adds the real **Tauri 2 desktop host source**, explicit **Portable / Installed** build flavors, runtime edition identity, native external-link handling and an automated Windows packaging/CI path. Windows binaries still require successful build and smoke-test verification before preview.1.
 
