@@ -26,11 +26,11 @@ This is the release gate for the first public testing build. `preview.1` is inte
 | Export → reopen slicer matrix | PUBLIC PREVIEW TESTING | Verified export remains explicitly experimental; slicer acceptance reports are part of preview feedback. |
 | Clean Windows portable test | PASS | Maintainer verified launch and persistence behavior on staged Windows builds. |
 | Clean Windows installer test | PASS | Maintainer verified install/uninstall/reinstall behavior. |
-| Feedback / issue reporting | PASS (source; runtime verify RC) | Visible `Report / suggest` action beside Buy Me a Coffee opens pre-filled GitHub problem/idea reports without attaching project contents. |
-| SmartScreen explanation | PASS (source) | Public-preview reason, meaning, official-source requirement, checksum guidance and future-signing policy are documented. |
+| Feedback / issue reporting | PASS | Exact preview.1 RC runtime test confirmed the visible `Report / suggest` action and both problem/idea GitHub handoffs. Project contents are not attached automatically. |
+| SmartScreen explanation | PASS (HTML source; exact package re-smoke pending) | The plain-text guide has been replaced with a self-contained bilingual `START HERE - SĀC ŠEIT.html` experience covering the warning, official source, checksums and future-signing policy. |
 | Source reuse license | DEFERRED | No open-source reuse license is asserted by this preview gate. Copyright remains with the project owner until an explicit license is chosen. |
 | Final preview release notes | PASS (draft) | `docs/releases/v0.3.0-preview.1.md` is ready to use as the GitHub pre-release description. |
-| Exact preview.1 Windows artifact | PENDING CI + maintainer smoke | Build the release-candidate commit, test the exact ZIP, then merge/tag/publish it unchanged. |
+| Exact preview.1 Windows artifact | PENDING refreshed CI artifact | The executable RC smoke test passed. Rebuild once with the final HTML start guide, then verify the exact staged ZIP before merge/tag/publication. |
 
 ## Public-preview test matrix
 

@@ -27,7 +27,7 @@ The Windows ZIP provides two user-facing choices:
 - `PrintGuardian Portable.exe` — run without installing; local state stays in the hidden `PrintGuardianData` folder beside the EXE;
 - `Install PrintGuardian.exe` — normal per-user Windows installation with Installed apps / Start Menu uninstall support.
 
-The ZIP also contains `START HERE - SĀC ŠEIT.txt` and `CHECKSUMS.txt`. Preview updates are currently manual: the in-app Update Centre announces a newer GitHub release, then Portable users replace the EXE while preserving `PrintGuardianData`, and Installed users run the newer installer over the existing installation.
+The ZIP also contains `START HERE - SĀC ŠEIT.html` and `CHECKSUMS.txt`. Preview updates are currently manual: the in-app Update Centre announces a newer GitHub release, then Portable users replace the EXE while preserving `PrintGuardianData`, and Installed users run the newer installer over the existing installation.
 
 ## Fastest way to test
 

@@ -10,6 +10,7 @@
 - Added SHA-256 verification guidance and an explicit warning not to weaken system-wide Windows security controls.
 - Kept automatic Installed update execution disabled while public preview binaries are unsigned; Update Centre continues to provide manual GitHub release handoff.
 - Moved broad Bambu Studio / OrcaSlicer compatibility coverage into the public tester phase while retaining explicit analysis-coverage limitations.
+- Replaced the plain-text START HERE file with a self-contained bilingual HTML launch guide that explains SmartScreen, Portable vs Installed, checksum verification, local data and update behavior with accessible motion and no remote UI dependencies.
 
 ## v0.3.0-dev.15 — History + update notification UX
 

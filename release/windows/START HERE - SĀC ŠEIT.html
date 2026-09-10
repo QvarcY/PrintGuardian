@@ -1,0 +1,670 @@
+<!doctype html>
+<html lang="lv">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#0a0f14" />
+  <title>PrintGuardian v{{VERSION}} — Start here / Sāc šeit</title>
+  <style>
+    :root {
+      --bg: #080d12;
+      --surface: #0e151c;
+      --surface-2: #111a22;
+      --surface-3: #151f29;
+      --line: rgba(170, 190, 205, 0.14);
+      --line-strong: rgba(170, 190, 205, 0.24);
+      --text: #f2f6f8;
+      --muted: #94a4b2;
+      --teal: #65e0c4;
+      --teal-soft: rgba(101, 224, 196, 0.12);
+      --amber: #e7b76d;
+      --amber-soft: rgba(231, 183, 109, 0.12);
+      --red: #ef9b9b;
+      --red-soft: rgba(239, 155, 155, 0.10);
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.30);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --max: 1180px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI Variable", "Segoe UI", Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 78% 5%, rgba(101, 224, 196, 0.07), transparent 28rem),
+        radial-gradient(circle at 8% 72%, rgba(231, 183, 109, 0.05), transparent 32rem),
+        var(--bg);
+      line-height: 1.58;
+    }
+
+    a { color: inherit; }
+    button, a.button { font: inherit; }
+
+    .shell {
+      width: min(calc(100% - 32px), var(--max));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid var(--line);
+      background: rgba(8, 13, 18, 0.92);
+      backdrop-filter: blur(16px);
+    }
+
+    .topbar-inner {
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      border: 1px solid rgba(101, 224, 196, 0.28);
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: var(--teal-soft);
+      color: var(--teal);
+      flex: 0 0 auto;
+    }
+
+    .brand-mark svg { width: 22px; height: 22px; }
+    .brand-copy strong { display: block; font-size: 17px; line-height: 1.15; letter-spacing: -0.01em; }
+    .brand-copy span { display: block; margin-top: 3px; color: var(--muted); font-size: 12px; }
+
+    .language-switch {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--surface);
+    }
+
+    .language-switch button {
+      border: 0;
+      border-radius: 999px;
+      padding: 8px 13px;
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+      font-weight: 750;
+      transition: background .18s ease, color .18s ease, transform .18s ease;
+    }
+
+    .language-switch button:hover { color: var(--text); }
+    .language-switch button:active { transform: scale(.96); }
+    .language-switch button.active { color: #08100f; background: var(--text); }
+
+    main { padding: 56px 0 72px; }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      background: linear-gradient(145deg, rgba(17, 26, 34, .98), rgba(9, 15, 20, .98));
+      box-shadow: var(--shadow);
+      padding: clamp(32px, 6vw, 72px);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -120px;
+      bottom: -140px;
+      width: 380px;
+      height: 380px;
+      border-radius: 50%;
+      background: rgba(101, 224, 196, .07);
+      filter: blur(8px);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--teal);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow svg { width: 16px; height: 16px; }
+
+    h1 {
+      max-width: 800px;
+      margin: 20px 0 18px;
+      font-size: clamp(42px, 7vw, 76px);
+      line-height: .98;
+      letter-spacing: -.055em;
+    }
+
+    .hero-lead {
+      max-width: 760px;
+      margin: 0;
+      color: #bec9d1;
+      font-size: clamp(17px, 2vw, 21px);
+    }
+
+    .pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 28px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 8px 11px;
+      color: #bec9d1;
+      background: rgba(255,255,255,.02);
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .pill b { color: var(--text); }
+    .pill svg { width: 15px; height: 15px; color: var(--teal); }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 34px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 48px;
+      padding: 0 18px;
+      border-radius: 13px;
+      border: 1px solid var(--line-strong);
+      text-decoration: none;
+      font-weight: 760;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+
+    .button:hover { transform: translateY(-2px); border-color: rgba(101, 224, 196, .38); }
+    .button svg { width: 18px; height: 18px; }
+    .button.primary { background: var(--text); color: #08100f; border-color: transparent; }
+    .button.secondary { background: var(--surface-2); color: var(--text); }
+
+    .section { margin-top: 28px; }
+    .section-head { margin: 0 0 16px; }
+    .section-kicker { color: var(--teal); font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    .section h2 { margin: 5px 0 0; font-size: clamp(25px, 3.5vw, 36px); letter-spacing: -.035em; }
+    .section-intro { margin: 8px 0 0; color: var(--muted); max-width: 780px; }
+
+    .warning {
+      border: 1px solid rgba(231, 183, 109, .32);
+      border-radius: var(--radius-xl);
+      background: linear-gradient(145deg, rgba(231, 183, 109, .08), rgba(14, 21, 28, .98) 42%);
+      padding: clamp(24px, 4vw, 42px);
+      box-shadow: var(--shadow);
+    }
+
+    .warning-heading {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .warning-icon {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      border-radius: 15px;
+      background: var(--amber-soft);
+      border: 1px solid rgba(231, 183, 109, .25);
+      color: var(--amber);
+    }
+
+    .warning-icon svg { width: 24px; height: 24px; }
+    .warning h2 { margin: 0; }
+    .warning p { color: #bec9d1; }
+
+    .meaning-grid, .choice-grid, .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      padding: 22px;
+    }
+
+    .card-number {
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      background: var(--teal-soft);
+      color: var(--teal);
+      font-size: 13px;
+      font-weight: 850;
+      margin-bottom: 16px;
+    }
+
+    .card h3 { margin: 0 0 8px; font-size: 17px; letter-spacing: -.02em; }
+    .card p { margin: 0; color: var(--muted); font-size: 14px; }
+
+    .truth {
+      margin-top: 18px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 15px 16px;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(101, 224, 196, .19);
+      background: var(--teal-soft);
+      color: #cbd7dd;
+    }
+    .truth svg { width: 20px; height: 20px; flex: 0 0 auto; color: var(--teal); margin-top: 2px; }
+    .truth strong { color: var(--text); }
+
+    .steps {
+      display: grid;
+      gap: 11px;
+      margin-top: 22px;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 40px minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 17px 18px;
+      background: var(--surface);
+    }
+
+    .step-badge {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      background: var(--surface-3);
+      color: var(--teal);
+      font-weight: 850;
+      border: 1px solid var(--line);
+    }
+
+    .step h3 { margin: 1px 0 4px; font-size: 16px; }
+    .step p { margin: 0; color: var(--muted); font-size: 14px; }
+
+    .choice-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .choice-card { position: relative; overflow: hidden; }
+    .choice-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 3px;
+      background: var(--teal);
+      opacity: .7;
+    }
+
+    .choice-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--teal);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .choice-label svg { width: 16px; height: 16px; }
+    .choice-card h3 { font-size: 24px; margin-top: 12px; }
+    .choice-card .button { margin-top: 20px; }
+
+    .note {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .detail-card {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .detail-icon {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      color: var(--teal);
+      background: var(--teal-soft);
+      border: 1px solid rgba(101, 224, 196, .16);
+      border-radius: 13px;
+    }
+    .detail-icon svg { width: 20px; height: 20px; }
+    .detail-card h3 { margin-top: 1px; }
+
+    .security {
+      border-color: rgba(239, 155, 155, .20);
+      background: linear-gradient(145deg, rgba(239,155,155,.055), rgba(14,21,28,.98) 36%);
+    }
+
+    .hash-box {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: center;
+      margin-top: 16px;
+      border: 1px dashed var(--line-strong);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      color: var(--muted);
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+    }
+
+    .footer {
+      margin-top: 34px;
+      padding: 24px 0 12px;
+      color: var(--muted);
+      font-size: 13px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .footer-links { display: flex; flex-wrap: wrap; gap: 14px; }
+    .footer a { color: #c4d0d7; text-decoration: none; }
+    .footer a:hover { color: var(--teal); }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(14px);
+      transition: opacity .55s ease, transform .55s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    [data-lang] { display: none; }
+    html[data-language="lv"] [data-lang="lv"],
+    html[data-language="en"] [data-lang="en"] { display: revert; }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 880px) {
+      .meaning-grid, .mini-grid { grid-template-columns: 1fr; }
+      .choice-grid, .details-grid { grid-template-columns: 1fr; }
+      main { padding-top: 28px; }
+    }
+
+    @media (max-width: 560px) {
+      .shell { width: min(calc(100% - 20px), var(--max)); }
+      .topbar-inner { min-height: 64px; }
+      .brand-copy span { display: none; }
+      .hero { padding: 30px 22px; border-radius: 22px; }
+      h1 { font-size: 42px; }
+      .warning { padding: 22px; border-radius: 22px; }
+      .warning-heading { grid-template-columns: 1fr; }
+      .hero-actions, .button { width: 100%; }
+      .hash-box { flex-direction: column; align-items: flex-start; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition-duration: .001ms !important; animation-duration: .001ms !important; animation-iteration-count: 1 !important; }
+      .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <div class="brand" aria-label="PrintGuardian">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 19 6v5c0 4.9-2.9 8.3-7 10-4.1-1.7-7-5.1-7-10V6l7-3Z"/><path d="m9 12 2 2 4-5"/></svg>
+        </div>
+        <div class="brand-copy"><strong>PrintGuardian</strong><span>v{{VERSION}} · Windows x64 public preview</span></div>
+      </div>
+      <div class="language-switch" role="group" aria-label="Language / Valoda">
+        <button type="button" data-set-language="lv">LV</button>
+        <button type="button" data-set-language="en">EN</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero reveal">
+      <div class="eyebrow">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 19 6v5c0 4.9-2.9 8.3-7 10-4.1-1.7-7-5.1-7-10V6l7-3Z"/><path d="m9 12 2 2 4-5"/></svg>
+        <span data-lang="lv">Sāc šeit</span><span data-lang="en">Start here</span>
+      </div>
+      <h1 data-lang="lv">Pirms palaišanas — 2 minūtes, kas visu padara skaidru.</h1>
+      <h1 data-lang="en">Before you run it — two minutes that make everything clear.</h1>
+      <p class="hero-lead" data-lang="lv">PrintGuardian ir publiska priekšskatījuma versija reālai 3MF testēšanai. Šeit ir īsi izskaidrots, kuru EXE izvēlēties, kāpēc Windows var brīdināt un kā droši pārbaudīt lejupielādi.</p>
+      <p class="hero-lead" data-lang="en">PrintGuardian is a public preview for real-world 3MF testing. This guide explains which EXE to choose, why Windows may warn you, and how to verify the download safely.</p>
+      <div class="pills" aria-label="Release facts">
+        <span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="5" width="16" height="11" rx="2"/><path d="M8 20h8"/></svg><b>Windows x64</b></span>
+        <span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5v14"/></svg><span data-lang="lv">Portable + Instalētā</span><span data-lang="en">Portable + Installed</span></span>
+        <span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 19 6v5c0 4.9-2.9 8.3-7 10-4.1-1.7-7-5.1-7-10V6l7-3Z"/></svg><span data-lang="lv">Faili tiek analizēti lokāli</span><span data-lang="en">Files are analyzed locally</span></span>
+      </div>
+      <div class="hero-actions">
+        <a class="button primary" href="#choose"><span data-lang="lv">Izvēlēties versiju</span><span data-lang="en">Choose a version</span></a>
+        <a class="button secondary" href="#smartscreen"><span data-lang="lv">Kas ir SmartScreen?</span><span data-lang="en">What is SmartScreen?</span></a>
+      </div>
+    </section>
+
+    <section class="section warning reveal" id="smartscreen">
+      <div class="warning-heading">
+        <div class="warning-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.3 3.6 2.7 17a2 2 0 0 0 1.7 3h15.2a2 2 0 0 0 1.7-3L13.7 3.6a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg></div>
+        <div>
+          <div class="section-kicker">Windows SmartScreen</div>
+          <h2 data-lang="lv">Jā, Windows var parādīt sarkanu vai zilu brīdinājumu.</h2>
+          <h2 data-lang="en">Yes, Windows may show a red or blue warning.</h2>
+          <p data-lang="lv">Šis <strong>v{{VERSION}}</strong> preview nav Authenticode digitāli parakstīts. Tāpēc Windows nevar pārbaudīt uzticamu izdevēja identitāti un var uzrādīt “Windows aizsargāja jūsu datoru” / “Unknown publisher”.</p>
+          <p data-lang="en">This <strong>v{{VERSION}}</strong> preview is not Authenticode-signed. Windows therefore cannot verify a trusted publisher identity and may show “Windows protected your PC” / “Unknown publisher”.</p>
+        </div>
+      </div>
+
+      <div class="meaning-grid">
+        <article class="card">
+          <div class="card-number">01</div>
+          <h3 data-lang="lv">Tas nav tas pats, kas vīrusa atrašana</h3><h3 data-lang="en">It is not the same as detecting a virus</h3>
+          <p data-lang="lv">SmartScreen reputācijas brīdinājums pats par sevi nenozīmē, ka Windows ir atradis ļaunprogrammatūru. Tas šeit signalizē par jaunu, neparakstītu izpildāmo failu.</p>
+          <p data-lang="en">A SmartScreen reputation warning does not by itself mean malware was detected. Here it signals a new unsigned executable with no trusted publisher identity.</p>
+        </article>
+        <article class="card">
+          <div class="card-number">02</div>
+          <h3 data-lang="lv">Kāpēc tas atkārtojas?</h3><h3 data-lang="en">Why can it happen again?</h3>
+          <p data-lang="lv">Katra jauna unsigned builda fails Windows reputācijas sistēmai ir jauns objekts. Bez viena uzticama izdevēja paraksta reputāciju starp versijām ir grūtāk pārnest.</p>
+          <p data-lang="en">Each new unsigned build is a new file to Windows reputation systems. Without one trusted publisher signature, reputation does not carry cleanly between versions.</p>
+        </article>
+        <article class="card">
+          <div class="card-number">03</div>
+          <h3 data-lang="lv">Vai tas mainīsies?</h3><h3 data-lang="en">Will this change?</h3>
+          <p data-lang="lv">Iespējams. Code signing tiks pārskatīts, ja būs piemērots bezmaksas/izmaksu ziņā pamatots risinājums vai projekta apjoms to attaisnos. Konkrēts datums netiek solīts.</p>
+          <p data-lang="en">Possibly. Code signing will be revisited if a suitable free/cost-effective option appears or project adoption justifies it. No date is promised.</p>
+        </article>
+      </div>
+
+      <div class="truth">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z"/><path d="M12 16v-4M12 8h.01"/></svg>
+        <div data-lang="lv"><strong>Galvenais princips:</strong> turpini tikai tad, ja PrintGuardian ZIP lejupielādēji no oficiālās <strong>QvarcY/PrintGuardian GitHub Releases</strong> lapas. Nekad neatslēdz Windows drošību globāli tikai šīs programmas dēļ.</div>
+        <div data-lang="en"><strong>The key rule:</strong> continue only if you downloaded the PrintGuardian ZIP from the official <strong>QvarcY/PrintGuardian GitHub Releases</strong> page. Never disable Windows security globally just for this app.</div>
+      </div>
+
+      <div class="steps" aria-label="SmartScreen steps">
+        <div class="step"><div class="step-badge">1</div><div><h3 data-lang="lv">Pārbaudi avotu</h3><h3 data-lang="en">Verify the source</h3><p data-lang="lv">Oficiālais avots: github.com/QvarcY/PrintGuardian/releases</p><p data-lang="en">Official source: github.com/QvarcY/PrintGuardian/releases</p></div></div>
+        <div class="step"><div class="step-badge">2</div><div><h3 data-lang="lv">Ja nepieciešams, pārbaudi SHA-256</h3><h3 data-lang="en">If needed, verify SHA-256</h3><p data-lang="lv">Šajā mapē esošais CHECKSUMS.txt satur precīzas Portable un Installer EXE kontrolsummas.</p><p data-lang="en">CHECKSUMS.txt in this folder contains the exact SHA-256 hashes for the Portable and Installer EXE files.</p></div></div>
+        <div class="step"><div class="step-badge">3</div><div><h3 data-lang="lv">Ja Windows piedāvā — “Papildinformācija” → “Palaist tik un tā”</h3><h3 data-lang="en">Where Windows allows it — “More info” → “Run anyway”</h3><p data-lang="lv">Dari to tikai pēc avota pārbaudes. Dažās Smart App Control vai uzņēmumu politiku konfigurācijās šāda iespēja var nebūt pieejama.</p><p data-lang="en">Do this only after verifying the source. Some Smart App Control or organization-policy configurations may not offer a bypass.</p></div></div>
+      </div>
+    </section>
+
+    <section class="section reveal" id="choose">
+      <div class="section-head">
+        <div class="section-kicker" data-lang="lv">Izvēlies palaišanas veidu</div><div class="section-kicker" data-lang="en">Choose how to run it</div>
+        <h2 data-lang="lv">Viena programma, divi ērti varianti.</h2><h2 data-lang="en">One app, two convenient options.</h2>
+        <p class="section-intro" data-lang="lv">Abos variantos darbojas tas pats PrintGuardian analīzes dzinējs un interfeiss.</p>
+        <p class="section-intro" data-lang="en">Both options use the same PrintGuardian analysis engine and interface.</p>
+      </div>
+      <div class="choice-grid">
+        <article class="card choice-card">
+          <div class="choice-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="5" width="16" height="11" rx="2"/><path d="M8 20h8"/></svg><span>Portable</span></div>
+          <h3 data-lang="lv">Palaid bez instalēšanas</h3><h3 data-lang="en">Run without installing</h3>
+          <p data-lang="lv">Labs variants testēšanai vai pārnēsāšanai. Profili, iestatījumi, pēdējais projekts un WebView dati paliek slēptajā <strong>PrintGuardianData</strong> mapē blakus EXE.</p>
+          <p data-lang="en">Ideal for testing or carrying with you. Profiles, settings, the recent project and WebView data stay in the hidden <strong>PrintGuardianData</strong> folder beside the EXE.</p>
+          <a class="button secondary" href="./PrintGuardian%20Portable.exe"><span data-lang="lv">Atvērt Portable EXE</span><span data-lang="en">Open Portable EXE</span></a>
+          <div class="note" data-lang="lv">Ja pārlūks nelaiž EXE no HTML saites, atver šo mapi Explorer un veic dubultklikšķi uz “PrintGuardian Portable.exe”.</div>
+          <div class="note" data-lang="en">If your browser will not launch an EXE from this local page, open this folder in Explorer and double-click “PrintGuardian Portable.exe”.</div>
+        </article>
+        <article class="card choice-card">
+          <div class="choice-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M5 21h14"/></svg><span data-lang="lv">Instalētā</span><span data-lang="en">Installed</span></div>
+          <h3 data-lang="lv">Parasta Windows instalācija</h3><h3 data-lang="en">Normal Windows installation</h3>
+          <p data-lang="lv">Instalējas lietotāja profilā, parādās Windows Installed apps un izvēlnē Sākt. Atinstalētājs var pēc izvēles izdzēst arī lietotnes datus.</p>
+          <p data-lang="en">Installs into your user profile, appears in Windows Installed apps and Start, and includes an uninstaller with optional app-data removal.</p>
+          <a class="button secondary" href="./Install%20PrintGuardian.exe"><span data-lang="lv">Atvērt instalatoru</span><span data-lang="en">Open installer</span></a>
+          <div class="note" data-lang="lv">Administratora tiesības normālai per-user instalācijai nav paredzētas kā obligātas.</div>
+          <div class="note" data-lang="en">Administrator rights are not intended to be required for the normal per-user installation.</div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section reveal">
+      <div class="section-head">
+        <div class="section-kicker" data-lang="lv">Ko vēl ir vērts zināt</div><div class="section-kicker" data-lang="en">Good to know</div>
+        <h2 data-lang="lv">Preview ir funkcionāls, bet vēl nav gala produkts.</h2><h2 data-lang="en">The preview is functional, but it is not the finished product.</h2>
+      </div>
+      <div class="details-grid">
+        <article class="card detail-card"><div class="detail-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16v10H4z"/><path d="M8 3h8M8 21h8"/></svg></div><div><h3 data-lang="lv">3MF tiek analizēts lokāli</h3><h3 data-lang="en">3MF is analyzed locally</h3><p data-lang="lv">PrintGuardian pats neaugšupielādē tavu 3MF, profilu vai projekta saturu uz GitHub vai citu servisu.</p><p data-lang="en">PrintGuardian does not upload your 3MF, profiles or project contents to GitHub or another service.</p></div></article>
+        <article class="card detail-card"><div class="detail-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M3 12h18"/><path d="m16 7 3 5-3 5M8 7l-3 5 3 5"/></svg></div><div><h3 data-lang="lv">Nav pilns geometry/G-code drošības audits</h3><h3 data-lang="en">Not a full geometry/G-code safety audit</h3><p data-lang="lv">“Nekas aizdomīgs netika atrasts” nozīmē tikai to, ka pašreizējās pārbaudes neatrada problēmu. Tas nav drošības sertifikāts vai izdošanās garantija.</p><p data-lang="en">“Nothing suspicious found” only means the checks implemented today found no issue. It is not a safety certificate or success guarantee.</p></div></article>
+        <article class="card detail-card"><div class="detail-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg></div><div><h3 data-lang="lv">Atjauninājumi pagaidām ir manuāli</h3><h3 data-lang="en">Updates are manual for now</h3><p data-lang="lv">Update Centre paziņo par jaunu GitHub laidienu. Portable gadījumā nomaini EXE un saglabā PrintGuardianData; Installed gadījumā palaid jaunāku instalatoru virs esošās instalācijas.</p><p data-lang="en">Update Centre announces new GitHub releases. For Portable, replace the EXE while keeping PrintGuardianData; for Installed, run the newer installer over the existing install.</p></div></article>
+        <article class="card detail-card"><div class="detail-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8Z"/><path d="M8 9h8M8 13h5"/></svg></div><div><h3 data-lang="lv">Ziņo par problēmām un idejām</h3><h3 data-lang="en">Report problems and ideas</h3><p data-lang="lv">Aplikācijas augšējā joslā blakus Buy Me a Coffee ir poga <strong>Ziņot / ieteikt</strong>. Tā sagatavo GitHub issue un automātiski nepievieno projekta saturu.</p><p data-lang="en">The app top bar includes <strong>Report / suggest</strong> beside Buy Me a Coffee. It prepares a GitHub issue and does not automatically attach project content.</p></div></article>
+      </div>
+    </section>
+
+    <section class="section card security reveal">
+      <div class="section-head">
+        <div class="section-kicker" data-lang="lv">Pārbaude un drošība</div><div class="section-kicker" data-lang="en">Verification & security</div>
+        <h2 data-lang="lv">Ja vēlies pārbaudīt tieši šo lejupielādi.</h2><h2 data-lang="en">If you want to verify this exact download.</h2>
+        <p class="section-intro" data-lang="lv">Atver blakus esošo <strong>CHECKSUMS.txt</strong>. Tajā ir abu EXE SHA-256. Drošības ievainojamības, kuras nevajadzētu publicēt GitHub Issues, sūti privāti uz <strong>info@craftin.lv</strong>.</p>
+        <p class="section-intro" data-lang="en">Open <strong>CHECKSUMS.txt</strong> beside this file. It contains SHA-256 hashes for both EXEs. Security-sensitive findings that should not be public on GitHub Issues can be sent privately to <strong>info@craftin.lv</strong>.</p>
+      </div>
+      <div class="hash-box"><span>SHA-256 → CHECKSUMS.txt</span><span>QvarcY / PrintGuardian · v{{VERSION}}</span></div>
+    </section>
+
+    <section class="section reveal">
+      <div class="mini-grid">
+        <article class="card"><div class="card-number">↺</div><h3 data-lang="lv">Atinstalēšana</h3><h3 data-lang="en">Uninstall</h3><p data-lang="lv">Windows Iestatījumi → Programmas → Instalētās programmas → PrintGuardian → Atinstalēt, vai izvēlnē Sākt “Uninstall PrintGuardian”.</p><p data-lang="en">Windows Settings → Apps → Installed apps → PrintGuardian → Uninstall, or use “Uninstall PrintGuardian” from Start.</p></article>
+        <article class="card"><div class="card-number">20</div><h3 data-lang="lv">Lokālā vēsture</h3><h3 data-lang="en">Local history</h3><p data-lang="lv">Vēsture glabā līdz 20 pārbaudes kopsavilkumiem. Vecie 3MF faili tur netiek dublēti; viena pēdējā projekta kopija tiek glabāta ātrai turpināšanai.</p><p data-lang="en">History keeps up to 20 inspection summaries. Old 3MF files are not duplicated there; one recent-project copy is kept for quick resume.</p></article>
+        <article class="card"><div class="card-number">↗</div><h3 data-lang="lv">Oficiālais avots</h3><h3 data-lang="en">Official source</h3><p><a href="https://github.com/QvarcY/PrintGuardian/releases" target="_blank" rel="noopener">github.com/QvarcY/PrintGuardian/releases</a></p></article>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div>© 2026 CraftIN / QvarcY · PrintGuardian v{{VERSION}}</div>
+      <div class="footer-links">
+        <a href="https://github.com/QvarcY/PrintGuardian" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://buymeacoffee.com/craftin" target="_blank" rel="noopener">Buy Me a Coffee</a>
+        <a href="mailto:info@craftin.lv">info@craftin.lv</a>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    (() => {
+      const root = document.documentElement;
+      const buttons = [...document.querySelectorAll('[data-set-language]')];
+      const setLanguage = (language) => {
+        root.dataset.language = language;
+        root.lang = language;
+        buttons.forEach((button) => {
+          const active = button.dataset.setLanguage === language;
+          button.classList.toggle('active', active);
+          button.setAttribute('aria-pressed', String(active));
+        });
+        try { localStorage.setItem('printguardian.startGuide.language', language); } catch {}
+      };
+
+      let saved = null;
+      try { saved = localStorage.getItem('printguardian.startGuide.language'); } catch {}
+      const preferred = saved === 'en' || saved === 'lv'
+        ? saved
+        : (navigator.language || '').toLowerCase().startsWith('lv') ? 'lv' : 'en';
+      setLanguage(preferred);
+      buttons.forEach((button) => button.addEventListener('click', () => setLanguage(button.dataset.setLanguage)));
+
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const reveals = [...document.querySelectorAll('.reveal')];
+      if (reduceMotion || !('IntersectionObserver' in window)) {
+        reveals.forEach((element) => element.classList.add('visible'));
+      } else {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.08, rootMargin: '0px 0px -30px' });
+        reveals.forEach((element, index) => {
+          if (index === 0) element.classList.add('visible');
+          else observer.observe(element);
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

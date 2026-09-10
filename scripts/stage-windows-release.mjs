@@ -24,7 +24,10 @@ const copy = async (source, name) => {
 };
 const portableOut = await copy(portable, 'PrintGuardian Portable.exe');
 const installerOut = await copy(installer, 'Install PrintGuardian.exe');
-await copy('release/windows/START HERE - SĀC ŠEIT.txt', 'START HERE - SĀC ŠEIT.txt');
+const version = (await readFile(resolve('VERSION'), 'utf8')).trim();
+const startGuideTemplate = await readFile(resolve('release/windows/START HERE - SĀC ŠEIT.html'), 'utf8');
+const startGuide = startGuideTemplate.replaceAll('{{VERSION}}', version);
+await writeFile(resolve(root, 'START HERE - SĀC ŠEIT.html'), startGuide, 'utf8');
 try { await copy('LICENSE', 'LICENSE.txt'); } catch {}
 const sha = async (path) => createHash('sha256').update(await readFile(path)).digest('hex');
 const lines = [

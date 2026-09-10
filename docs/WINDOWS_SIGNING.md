@@ -18,7 +18,7 @@ For `v0.3.0-preview.1`:
 
 1. publish only from the official `QvarcY/PrintGuardian` GitHub repository;
 2. publish SHA-256 checksums for the exact Portable and Installer binaries;
-3. explain SmartScreen before the download/run step in the GitHub release notes and `START HERE - SĀC ŠEIT.txt`;
+3. explain SmartScreen before the download/run step in the GitHub release notes and `START HERE - SĀC ŠEIT.html`;
 4. tell users to proceed only when they intentionally downloaded that exact official release;
 5. do not claim that bypassing SmartScreen is generally safe — it is only a conscious trust decision for the verified official artifact;
 6. keep automatic unsigned Installed updates disabled.

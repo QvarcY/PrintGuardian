@@ -10,11 +10,13 @@ The release ZIP should unpack to a folder whose top level contains only clear us
 
 ```text
 PrintGuardian-v0.3.0-preview.1-Windows-x64/
-├─ START HERE - SĀC ŠEIT.txt
+├─ START HERE - SĀC ŠEIT.html
 ├─ PrintGuardian Portable.exe
 ├─ Install PrintGuardian.exe
 └─ CHECKSUMS.txt
 ```
+
+The `START HERE - SĀC ŠEIT.html` guide is a self-contained offline bilingual page with no CDN, remote stylesheet, font or script dependency. It explains SmartScreen, Portable vs Installed, local-data behavior, updates and feedback before the user launches an EXE. The staging script injects the release version into the guide from `VERSION`.
 
 If an explicit project license is adopted later, staging may also add `LICENSE.txt`. No source files, JavaScript bundles, Rust build folders, DLL collections, package-manager files or other implementation details belong at the top level. If the final portable build ever requires companion runtime resources, they must be bundled into the executable where technically reasonable or placed in one clearly internal subdirectory created by the release packager. The preferred target is a single portable executable.
 
