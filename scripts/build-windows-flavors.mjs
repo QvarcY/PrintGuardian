@@ -8,7 +8,7 @@ if (process.platform !== 'win32') {
 }
 
 const root = process.cwd();
-const npm = 'npm.cmd';
+const commandShell = process.env.ComSpec || 'cmd.exe';
 const releaseVersion = (await readFile(resolve(root, 'VERSION'), 'utf8')).trim();
 const scratch = resolve(root, 'release-build', 'windows');
 const portableScratch = resolve(scratch, 'PrintGuardian-portable.exe');
@@ -20,16 +20,18 @@ const run = (command, args) => new Promise((resolveRun, reject) => {
   child.on('exit', (code) => code === 0 ? resolveRun() : reject(new Error(`${command} ${args.join(' ')} exited with ${code}`)));
 });
 
+const runNpmScript = (scriptName) => run(commandShell, ['/d', '/s', '/c', `npm run ${scriptName}`]);
+
 await rm(scratch, { recursive: true, force: true });
 await mkdir(scratch, { recursive: true });
 
 console.log('\n[1/3] Building portable desktop executable...');
-await run(npm, ['run', 'tauri:build:portable']);
+await runNpmScript('tauri:build:portable');
 const portableSource = resolve(root, 'src-tauri', 'target', 'release', 'printguardian.exe');
 await copyFile(portableSource, portableScratch);
 
 console.log('\n[2/3] Building installed NSIS edition...');
-await run(npm, ['run', 'tauri:build:installer']);
+await runNpmScript('tauri:build:installer');
 const nsisDir = resolve(root, 'src-tauri', 'target', 'release', 'bundle', 'nsis');
 const nsisFiles = (await readdir(nsisDir)).filter((name) => name.toLowerCase().endsWith('.exe') && name.toLowerCase().includes('setup'));
 if (nsisFiles.length !== 1) {

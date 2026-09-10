@@ -56,6 +56,10 @@ else fail('desktop build flavor contract is incomplete');
 if (packageJson.scripts?.['tauri:dev'] && packageJson.scripts?.['package:windows']) pass('desktop development/package scripts are present');
 else fail('desktop scripts are missing');
 
+const windowsFlavorBuilder = await read('scripts/build-windows-flavors.mjs');
+if (windowsFlavorBuilder.includes('process.env.ComSpec') && windowsFlavorBuilder.includes('runNpmScript')) pass('Windows packager invokes npm through the Windows command shell');
+else fail('Windows packager may fail to launch npm scripts on Windows');
+
 if (tauriConfig.bundle?.windows?.nsis?.installMode === 'currentUser') pass('NSIS defaults to current-user installation');
 else fail('NSIS install mode is not currentUser');
 
