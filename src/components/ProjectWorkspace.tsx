@@ -88,7 +88,7 @@ function workspaceCopy(lv: boolean) {
     reviewChanges: 'Pārskatīt izmaiņas', export: 'Izveidot jaunu 3MF', exporting: 'Pārbūvē un pārbauda…', reset: 'Atcelt izmaiņas',
     exportNoChanges: 'Vispirms sagatavo vismaz vienu atbalstītu izmaiņu.', exportCritical: 'Vispirms jāatrisina augstas ietekmes saderības jautājumi.',
     exportTechnical: 'Šo izmaiņu kopu vēl nevar droši eksportēt.', changesTitle: 'Sagatavotās izmaiņas', changesEmpty: 'Pašlaik nav sagatavotu izmaiņu.', before: 'Pirms', after: 'Pēc', sourceProfile: 'MANS PROFILS', sourceManual: 'MANUĀLI',
-    exportVerified: 'Jaunā 3MF kopija pārbaudīta', exportVerifiedText: 'Arhīva struktūra un pieprasītās izmaiņas tika pārbaudītas pirms faila saglabāšanas.', exportFailed: 'Jauno 3MF neizdevās droši izveidot.',
+    exportVerified: 'Jaunā 3MF kopija pārbaudīta un saglabāta', exportVerifiedText: 'Arhīva struktūra un pieprasītās izmaiņas tika pārbaudītas, un fails tika saglabāts izvēlētajā vietā.', exportFailed: 'Jauno 3MF neizdevās droši izveidot.',
     objects: 'Objekti', parts: 'Detaļas', plates: 'Plates', thumbnail: 'Preview image', archive: '3MF arhīva ieraksti',
     noFilaments: 'Filamenta profila dati failā nav atrasti.', profileDiffHint: 'Profile Diff ir papildu tehniskais rīks. Ikdienas darbam izmanto augšējos tabus.',
     auditNote: 'Pilns geometry/G-code drošības audits vēl nav pieejams šajā versijā.',
@@ -113,7 +113,7 @@ function workspaceCopy(lv: boolean) {
     attentionResolved: 'The prepared change resolves the attention point linked to this setting.',
     why: 'What it affects', high: 'High impact', medium: 'Medium impact', low: 'Low impact',
     highRiskTitle: 'This is a high-impact manual change', highRiskText: 'An incorrect value can materially affect print behaviour or compatibility. PrintGuardian validates format and range, but cannot know every mechanical or material constraint in your setup.', understand: 'I understand that I am manually changing a high-impact parameter.', cancel: 'Cancel', confirm: 'Apply change',
-    changePrepared: (n: number) => `${n} change${n === 1 ? '' : 's'} prepared`, unresolved: (n: number) => `${n} attention point${n === 1 ? '' : 's'} unresolved`, reviewChanges: 'Review changes', export: 'Create new 3MF', exporting: 'Rebuilding and verifying…', reset: 'Reset changes', exportNoChanges: 'Prepare at least one supported change first.', exportCritical: 'Resolve high-impact compatibility issues first.', exportTechnical: 'This set of changes cannot yet be exported safely.', changesTitle: 'Prepared changes', changesEmpty: 'No changes are currently prepared.', before: 'Before', after: 'After', sourceProfile: 'MY PROFILE', sourceManual: 'MANUAL', exportVerified: 'New 3MF copy verified', exportVerifiedText: 'Archive structure and requested changes were verified before saving the file.', exportFailed: 'The new 3MF could not be created safely.',
+    changePrepared: (n: number) => `${n} change${n === 1 ? '' : 's'} prepared`, unresolved: (n: number) => `${n} attention point${n === 1 ? '' : 's'} unresolved`, reviewChanges: 'Review changes', export: 'Create new 3MF', exporting: 'Rebuilding and verifying…', reset: 'Reset changes', exportNoChanges: 'Prepare at least one supported change first.', exportCritical: 'Resolve high-impact compatibility issues first.', exportTechnical: 'This set of changes cannot yet be exported safely.', changesTitle: 'Prepared changes', changesEmpty: 'No changes are currently prepared.', before: 'Before', after: 'After', sourceProfile: 'MY PROFILE', sourceManual: 'MANUAL', exportVerified: 'New 3MF copy verified and saved', exportVerifiedText: 'Archive structure and requested changes were verified, and the file was saved to the selected location.', exportFailed: 'The new 3MF could not be created safely.',
     objects: 'Objects', parts: 'Parts', plates: 'Plates', thumbnail: 'Preview image', archive: '3MF archive entries', noFilaments: 'No filament-profile data was found in the file.', profileDiffHint: 'Profile Diff is an advanced technical tool. Use the tabs above for normal day-to-day work.', auditNote: 'Full geometry/G-code safety auditing is not available in this version yet.',
     fileFinding: 'File inspection finding', validationError: 'The entered value is not valid for this setting or its supported range.',
   };
@@ -599,7 +599,9 @@ export function ProjectWorkspace({ inspection, profile, profileName, onProfileCh
     setExporting(true); setVerification(null); setExportError(null);
     try {
       const result = await buildVerifiedThreeMfExport(inspection, preview);
-      setVerification(result.verification); downloadThreeMf(result.file);
+      const savedPath = await downloadThreeMf(result.file);
+      if (!savedPath) return;
+      setVerification(result.verification);
     } catch (reason) { console.error(reason); setExportError(reason instanceof Error ? reason.message : text.exportFailed); }
     finally { setExporting(false); }
   };

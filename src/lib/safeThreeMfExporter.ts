@@ -1,3 +1,7 @@
+import { isTauri } from '@tauri-apps/api/core';
+import { downloadDir, join } from '@tauri-apps/api/path';
+import { save } from '@tauri-apps/plugin-dialog';
+import { writeFile } from '@tauri-apps/plugin-fs';
 import { inspectThreeMf, type ThreeMfInspection } from './threeMfInspector';
 import type { SafeThreeMfBuildPreview } from './safeThreeMfBuildPreview';
 import { crc32, rebuildZipWithReplacement } from './zipWriter';
@@ -118,7 +122,27 @@ export async function buildVerifiedThreeMfExport(
   return { file: output, verification };
 }
 
-export function downloadThreeMf(file: File) {
+export async function downloadThreeMf(file: File): Promise<string | null> {
+  if (isTauri()) {
+    let defaultPath = file.name;
+    try {
+      defaultPath = await join(await downloadDir(), file.name);
+    } catch {
+      // A native save dialog is still useful even if the Downloads directory cannot be resolved.
+    }
+
+    const targetPath = await save({
+      title: 'Save PrintGuardian 3MF',
+      defaultPath,
+      filters: [{ name: '3MF project', extensions: ['3mf'] }],
+    });
+    if (!targetPath) return null;
+
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    await writeFile(targetPath, bytes);
+    return targetPath;
+  }
+
   const url = URL.createObjectURL(file);
   const anchor = document.createElement('a');
   anchor.href = url;
@@ -128,4 +152,5 @@ export function downloadThreeMf(file: File) {
   anchor.click();
   anchor.remove();
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  return file.name;
 }

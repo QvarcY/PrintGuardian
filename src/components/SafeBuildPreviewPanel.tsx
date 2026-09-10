@@ -37,8 +37,8 @@ const copy = {
     exportLocked: 'Eksports būs pieejams, kad būs vismaz viena kartēta izmaiņa un nebūs nevienas bloķētas vai neatrisinātas izvēles.',
     sourceMissing: 'Demo projektam nav oriģinālā 3MF faila, tāpēc eksportu var pārbaudīt tikai ar reāli ielādētu 3MF.',
     exportFailed: 'Jaunais 3MF neizturēja validāciju, tāpēc lejupielāde netika piedāvāta.',
-    verifiedTitle: 'Eksports pārbaudīts',
-    verifiedText: 'Jaunais 3MF tika atkārtoti atvērts un pārbaudīts pirms lejupielādes.',
+    verifiedTitle: 'Eksports pārbaudīts un saglabāts',
+    verifiedText: 'Jaunais 3MF tika atkārtoti atvērts, pārbaudīts un saglabāts izvēlētajā vietā.',
     archive: 'Arhīva struktūra', preserved: 'Saglabāti citi ieraksti', mutations: 'Izmaiņas pārbaudītas', reinspection: 'Atkārtota inspekcija',
     disclaimer: 'Oriģinālais 3MF netiek pārrakstīts. PrintGuardian izveido jaunu failu ar sufiksu -printguardian. Tas nav drukas drošības sertifikāts.',
   },
@@ -66,8 +66,8 @@ const copy = {
     exportLocked: 'Export becomes available when at least one change is mapped and no selected choice is blocked or unresolved.',
     sourceMissing: 'The demo project has no original 3MF file, so export can only be tested with a real loaded 3MF.',
     exportFailed: 'The rebuilt 3MF did not pass verification, so no download was offered.',
-    verifiedTitle: 'Export verified',
-    verifiedText: 'The rebuilt 3MF was reopened and checked before the download was offered.',
+    verifiedTitle: 'Export verified and saved',
+    verifiedText: 'The rebuilt 3MF was reopened, checked and saved to the selected location.',
     archive: 'Archive structure', preserved: 'Other entries preserved', mutations: 'Changes verified', reinspection: 'Reinspection',
     disclaimer: 'The source 3MF is never overwritten. PrintGuardian creates a new file with the -printguardian suffix. This is not a print-safety certification.',
   },
@@ -103,8 +103,9 @@ export function SafeBuildPreviewPanel({
     setVerification(null);
     try {
       const result = await buildVerifiedThreeMfExport(inspection, preview);
+      const savedPath = await downloadThreeMf(result.file);
+      if (!savedPath) return;
       setVerification(result.verification);
-      downloadThreeMf(result.file);
     } catch (reason) {
       console.error(reason);
       setExportError(reason instanceof Error ? reason.message : text.exportFailed);
