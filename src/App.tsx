@@ -9,6 +9,7 @@ import { DropZone } from './components/DropZone';
 import { SupportProject } from './components/SupportProject';
 import { ProjectWorkspace } from './components/ProjectWorkspace';
 import { PrintProfilesPanel } from './components/PrintProfilesPanel';
+import { HistoryPanel } from './components/HistoryPanel';
 import { createProfileBaseline, type SavedProfileBaseline } from './lib/baselineProfile';
 import {
   addPrintProfile,
@@ -21,6 +22,9 @@ import {
   type PrintProfileLibrary,
 } from './lib/printProfiles';
 import { createDemoInspection, inspectThreeMf, type ThreeMfInspection } from './lib/threeMfInspector';
+import { clearProjectHistory, loadProjectHistory, recordProjectInspection, removeProjectHistoryEntry, type ProjectHistoryEntry } from './lib/projectHistory';
+import { initializeFeatureDiscovery, markFeatureSeen, type FeatureId } from './lib/featureDiscovery';
+import { getDesktopRuntimeInfo } from './lib/desktopRuntime';
 import {
   loadRecentProjectFile,
   loadRecentProjectMetadata,
@@ -35,11 +39,21 @@ function App() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [recentProject, setRecentProject] = useState<RecentProjectMetadata | null>(null);
+  const [historyEntries, setHistoryEntries] = useState<ProjectHistoryEntry[]>(() => loadProjectHistory());
+  const [newFeatures, setNewFeatures] = useState<FeatureId[]>([]);
+  const [runtimeVersion, setRuntimeVersion] = useState('0.3.0-dev.15');
+  const [showUpdatedNotice, setShowUpdatedNotice] = useState(false);
 
   useEffect(() => {
     let active = true;
-    void loadRecentProjectMetadata().then((metadata) => {
-      if (active) setRecentProject(metadata);
+    void Promise.all([loadRecentProjectMetadata(), getDesktopRuntimeInfo()]).then(([metadata, runtime]) => {
+      if (!active) return;
+      setRecentProject(metadata);
+      const version = runtime.desktop ? runtime.version : '0.3.0-dev.15';
+      setRuntimeVersion(version);
+      const discovery = initializeFeatureDiscovery(version, Boolean(metadata));
+      setNewFeatures(discovery.newFeatures);
+      setShowUpdatedNotice(discovery.newFeatures.length > 0);
     });
     return () => { active = false; };
   }, []);
@@ -60,6 +74,7 @@ function App() {
     try {
       const inspected = await inspectThreeMf(file);
       setInspection(inspected);
+      setHistoryEntries(recordProjectInspection(inspected));
       if (remember) {
         try {
           setRecentProject(await saveRecentProject(file));
@@ -118,6 +133,14 @@ function App() {
         </div>
       </header>
 
+      {showUpdatedNotice && newFeatures.includes('history') && (
+        <div className="feature-release-toast" role="status">
+          <Clock3 size={18} />
+          <div><strong>{t('app.updatedTitle')}</strong><span>{t('app.historyNowAvailable')}</span></div>
+          <button className="icon-only" onClick={() => setShowUpdatedNotice(false)} aria-label={t('app.dismiss')}>×</button>
+        </div>
+      )}
+
       {!inspection
         ? <DropZone
             onFile={openFile}
@@ -128,7 +151,18 @@ function App() {
             onContinueRecent={() => void continueRecentProject()}
             onForgetRecent={() => void forgetRecentProject()}
           />
-        : <Dashboard inspection={inspection} />}
+        : <Dashboard
+            inspection={inspection}
+            historyEntries={historyEntries}
+            newFeatures={newFeatures}
+            onFeatureSeen={(feature) => {
+              markFeatureSeen(feature, runtimeVersion);
+              setNewFeatures((items) => items.filter((item) => item !== feature));
+              if (feature === 'history') setShowUpdatedNotice(false);
+            }}
+            onClearHistory={() => setHistoryEntries(clearProjectHistory())}
+            onRemoveHistory={(id) => setHistoryEntries(removeProjectHistoryEntry(id))}
+          />}
 
       <footer className="footer">
         <span>{t('app.prototype')}</span>
@@ -140,7 +174,14 @@ function App() {
 
 type DashboardView = 'project' | 'profiles' | 'history' | 'settings';
 
-function Dashboard({ inspection }: { inspection: ThreeMfInspection }) {
+function Dashboard({ inspection, historyEntries, newFeatures, onFeatureSeen, onClearHistory, onRemoveHistory }: {
+  inspection: ThreeMfInspection;
+  historyEntries: ProjectHistoryEntry[];
+  newFeatures: FeatureId[];
+  onFeatureSeen: (feature: FeatureId) => void;
+  onClearHistory: () => void;
+  onRemoveHistory: (id: string) => void;
+}) {
   const { t, i18n } = useTranslation();
   const lv = i18n.language.startsWith('lv');
   const [library, setLibrary] = useState<PrintProfileLibrary>(() => loadPrintProfileLibrary());
@@ -177,6 +218,11 @@ function Dashboard({ inspection }: { inspection: ThreeMfInspection }) {
 
   const selectProfile = (id: string) => setLibrary(selectPrintProfile(id));
   const renameProfile = (id: string, name: string) => setLibrary(renamePrintProfile(id, name));
+  const openView = (next: DashboardView) => {
+    setView(next);
+    if (next === 'history' && newFeatures.includes('history')) onFeatureSeen('history');
+  };
+
   const deleteProfile = (id: string) => {
     const item = library.profiles.find((profile) => profile.id === id);
     if (!item) return;
@@ -188,10 +234,10 @@ function Dashboard({ inspection }: { inspection: ThreeMfInspection }) {
     <main className="workspace">
       <aside className="sidebar simplified-sidebar app-level-sidebar">
         <nav>
-          <button className={view === 'project' ? 'selected' : ''} onClick={() => setView('project')}><FolderOpen size={17} /><span>{lv ? 'Pašreizējais projekts' : 'Current project'}</span></button>
-          <button className={view === 'profiles' ? 'selected' : ''} onClick={() => setView('profiles')}><UserRoundCog size={17} /><span>{lv ? 'Mani drukas profili' : 'My print profiles'}</span>{library.profiles.length > 0 && <small>{library.profiles.length}</small>}</button>
-          <button className={view === 'history' ? 'selected' : ''} onClick={() => setView('history')}><Clock3 size={17} /><span>{lv ? 'Vēsture' : 'History'}</span><small className="soon-badge">{lv ? 'drīzumā' : 'soon'}</small></button>
-          <button className={view === 'settings' ? 'selected' : ''} onClick={() => setView('settings')}><Settings2 size={17} /><span>{lv ? 'Iestatījumi' : 'Settings'}</span><small className="soon-badge">{lv ? 'drīzumā' : 'soon'}</small></button>
+          <button className={view === 'project' ? 'selected' : ''} onClick={() => openView('project')}><FolderOpen size={17} /><span>{lv ? 'Pašreizējais projekts' : 'Current project'}</span></button>
+          <button className={view === 'profiles' ? 'selected' : ''} onClick={() => openView('profiles')}><UserRoundCog size={17} /><span>{lv ? 'Mani drukas profili' : 'My print profiles'}</span>{library.profiles.length > 0 && <small>{library.profiles.length}</small>}</button>
+          <button className={view === 'history' ? 'selected' : ''} onClick={() => openView('history')}><Clock3 size={17} /><span>{lv ? 'Vēsture' : 'History'}</span>{newFeatures.includes('history') && <small className="new-badge">NEW</small>}</button>
+          <button className={view === 'settings' ? 'selected' : ''} onClick={() => openView('settings')}><Settings2 size={17} /><span>{lv ? 'Iestatījumi' : 'Settings'}</span><small className="soon-badge">{lv ? 'drīzumā' : 'soon'}</small></button>
         </nav>
         <div className="sidebar-bottom">
           <SupportProject />
@@ -205,7 +251,7 @@ function Dashboard({ inspection }: { inspection: ThreeMfInspection }) {
             profile={activeProfile}
             profileName={activeNamedProfile?.name}
             onProfileChange={updateFromWorkspace}
-            onManageProfiles={() => setView('profiles')}
+            onManageProfiles={() => openView('profiles')}
           />
         ) : view === 'profiles' ? (
           <PrintProfilesPanel
@@ -216,24 +262,30 @@ function Dashboard({ inspection }: { inspection: ThreeMfInspection }) {
             onSelect={selectProfile}
             onRename={renameProfile}
             onRemove={deleteProfile}
-            onBack={() => setView('project')}
+            onBack={() => openView('project')}
+          />
+        ) : view === 'history' ? (
+          <HistoryPanel
+            entries={historyEntries}
+            onClear={() => {
+              if (window.confirm(lv ? 'Notīrīt visu lokālo projektu vēsturi?' : 'Clear all local project history?')) onClearHistory();
+            }}
+            onRemove={onRemoveHistory}
+            onBack={() => openView('project')}
           />
         ) : (
-          <ComingSoonPanel kind={view} onBack={() => setView('project')} />
+          <ComingSoonPanel kind="settings" onBack={() => openView('project')} />
         )}
       </section>
     </main>
   );
 }
 
-function ComingSoonPanel({ kind, onBack }: { kind: 'history' | 'settings'; onBack: () => void }) {
+function ComingSoonPanel({ kind, onBack }: { kind: 'settings'; onBack: () => void }) {
   const { i18n } = useTranslation();
   const lv = i18n.language.startsWith('lv');
-  const history = kind === 'history';
-  const title = history ? (lv ? 'Vēsture' : 'History') : (lv ? 'Iestatījumi' : 'Settings');
-  const description = history
-    ? (lv ? 'Šeit vēlāk būs redzami iepriekš pārbaudītie projekti, veiktās izmaiņas un eksporta vēsture.' : 'This area will show previously inspected projects, applied changes and export history.')
-    : (lv ? 'Šeit būs PrintGuardian uzvedības, privātuma, atjauninājumu un citi aplikācijas iestatījumi.' : 'This area will contain PrintGuardian behaviour, privacy, update and other application settings.');
+  const title = lv ? 'Iestatījumi' : 'Settings';
+  const description = lv ? 'Šeit būs PrintGuardian uzvedības, privātuma, atjauninājumu un citi aplikācijas iestatījumi.' : 'This area will contain PrintGuardian behaviour, privacy, update and other application settings.';
   return (
     <section className="coming-soon-view glass-panel">
       <span className="eyebrow">{lv ? 'PLĀNOTA FUNKCIJA' : 'PLANNED FEATURE'} · {lv ? 'DRĪZUMĀ' : 'COMING SOON'}</span>

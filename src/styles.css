@@ -569,3 +569,46 @@ html[data-ui-scale="large"] .desktop-edition-badge small { font-size: 11px; }
   .update-centre-backdrop { padding:62px 10px 10px; }
   .update-centre-backdrop .update-centre-popover { width:100%; max-height:calc(100vh - 72px); }
 }
+
+/* v0.3.0-dev.15 — feature discovery + update handoff */
+.app-level-sidebar .new-badge {
+  margin-left:auto;
+  padding:3px 7px;
+  border:1px solid rgba(100,230,187,.25);
+  border-radius:999px;
+  color:#8ff0cf;
+  background:rgba(100,230,187,.09);
+  font-size:calc(9px * var(--ui-scale));
+  font-weight:900;
+  letter-spacing:.08em;
+}
+.feature-release-toast {
+  position:fixed;
+  z-index:360;
+  left:24px;
+  top:86px;
+  width:min(440px,calc(100vw - 48px));
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:11px;
+  padding:13px 14px;
+  border:1px solid rgba(100,230,187,.23);
+  border-radius:15px;
+  background:#10171c;
+  box-shadow:0 22px 70px rgba(0,0,0,.48);
+}
+.feature-release-toast > svg { color:var(--accent); }
+.feature-release-toast strong,.feature-release-toast span { display:block; }
+.feature-release-toast strong { color:#e7f4ef; font-size:12px; }
+.feature-release-toast span { margin-top:3px; color:#87968f; font-size:10px; line-height:1.45; }
+.update-published { display:block; margin-top:6px; color:#6f7d8a; font-size:9px; }
+.update-highlights { margin-top:11px; padding:11px 12px; border:1px solid rgba(126,183,255,.13); border-radius:11px; background:rgba(126,183,255,.035); }
+.update-highlights > strong { color:#cbdcf1; font-size:10px; }
+.update-highlights ul { margin:7px 0 0 17px; }
+.update-handoff { margin-top:10px; padding:11px 12px; border-radius:11px; border:1px solid var(--border); background:rgba(255,255,255,.02); }
+.update-handoff.portable { border-color:rgba(100,230,187,.14); background:rgba(100,230,187,.025); }
+.update-handoff.installed { border-color:rgba(126,183,255,.14); background:rgba(126,183,255,.025); }
+.update-handoff strong,.update-handoff span { display:block; }
+.update-handoff strong { color:#cdd8df; font-size:10px; }
+.update-handoff span { margin-top:4px; color:#788793; font-size:9px; line-height:1.55; }

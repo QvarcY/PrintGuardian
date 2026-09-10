@@ -6,6 +6,7 @@ import { getDesktopRuntimeInfo, openExternalUrl, type DesktopRuntimeInfo } from 
 import {
   checkPublishedUpdates,
   createSimulatedUpdate,
+  isCandidateNewer,
   loadUpdatePreferences,
   saveUpdatePreferences,
   shouldRunAutomaticCheck,
@@ -23,7 +24,7 @@ export function UpdateCentreButton() {
   const [message, setMessage] = useState<string | null>(null);
 
   const candidate = useMemo(() => {
-    if (!runtime || !preferences.cachedCandidate) return null;
+    if (!runtime || !isCandidateNewer(preferences.cachedCandidate, runtime.version)) return null;
     if (preferences.dismissedVersion === preferences.cachedCandidate.version) return null;
     return preferences.cachedCandidate;
   }, [preferences, runtime]);
@@ -122,7 +123,8 @@ export function UpdateCentreButton() {
   };
 
   const openCandidate = async (item: UpdateCandidate) => {
-    await openExternalUrl(item.downloadUrl || item.releaseUrl);
+    const destination = portable && item.downloadUrl ? item.downloadUrl : item.releaseUrl;
+    await openExternalUrl(destination);
   };
 
   return (
@@ -185,13 +187,25 @@ export function UpdateCentreButton() {
           {candidate ? (
             <div className="update-candidate">
               <div className="update-candidate-title"><CloudDownload size={18} /><div><strong>v{candidate.version}</strong><span>{candidate.name}</span></div></div>
-              {candidate.notes && <p>{candidate.notes}</p>}
-              {candidate.highlights?.length ? <ul>{candidate.highlights.map((item) => <li key={item}>{item}</li>)}</ul> : null}
+              {candidate.publishedAt && !candidate.simulated && <span className="update-published">{lv ? 'Publicēts' : 'Published'}: {new Date(candidate.publishedAt).toLocaleString(lv ? 'lv-LV' : 'en-GB')}</span>}
+              {candidate.highlights?.length ? (
+                <div className="update-highlights">
+                  <strong>{lv ? 'Kas jauns' : "What's new"}</strong>
+                  <ul>{candidate.highlights.map((item) => <li key={item}>{item}</li>)}</ul>
+                </div>
+              ) : candidate.notes ? <p>{candidate.notes}</p> : null}
+              <div className={`update-handoff ${portable ? 'portable' : 'installed'}`}>
+                <strong>{portable ? (lv ? 'Portable atjaunināšana' : 'Portable update') : (lv ? 'Instalētās versijas atjaunināšana' : 'Installed update')}</strong>
+                <span>{candidate.simulated
+                  ? (lv ? 'Šis ir tikai izstrādes paziņojuma tests — nekas netiks lejupielādēts vai instalēts.' : 'This is only a development notification test — nothing will be downloaded or installed.')
+                  : portable
+                    ? (lv ? 'Lejupielādē jauno Windows ZIP, aizver PrintGuardian un nomaini tikai Portable EXE esošajā mapē. Neizdzēs slēpto PrintGuardianData mapi — tur ir tavi lokālie dati.' : 'Download the new Windows ZIP, close PrintGuardian and replace only the Portable EXE in the existing folder. Keep the hidden PrintGuardianData folder — it contains your local data.')
+                    : (lv ? 'Pašlaik atver laidiena lapu un palaid jauno instalatoru virs esošās instalācijas. Automātiska instalēšana tiks ieslēgta tikai pēc parakstītā Tauri updatera drošības pārbaudēm.' : 'For now, open the release page and run the new installer over the existing installation. Automatic installation will only be enabled after the signed Tauri updater security checks pass.')}</span>
+              </div>
               <div className="update-actions">
-                <button className="primary" onClick={() => void openCandidate(candidate)}>{candidate.simulated ? (lv ? 'Atvērt laidienu lapu' : 'Open releases page') : portable ? (lv ? 'Atvērt lejupielādi' : 'Open download') : (lv ? 'Atvērt laidiena lapu' : 'Open release page')}</button>
+                <button className="primary" onClick={() => void openCandidate(candidate)}>{candidate.simulated ? (lv ? 'Atvērt laidienu lapu' : 'Open releases page') : portable && candidate.downloadUrl ? (lv ? 'Lejupielādēt Windows ZIP' : 'Download Windows ZIP') : (lv ? 'Atvērt laidiena lapu' : 'Open release page')}</button>
                 <button className="ghost" onClick={dismiss}>{lv ? 'Paslēpt šo paziņojumu' : 'Dismiss this notification'}</button>
               </div>
-              {!candidate.simulated && !portable && <small>{lv ? 'Automātiska instalēšana vēl nav ieslēgta: publiskajam updateram nepieciešami parakstīti Tauri artefakti.' : 'Automatic installation is not enabled yet: the public updater requires signed Tauri artifacts.'}</small>}
             </div>
           ) : (
             <div className="update-empty-state">

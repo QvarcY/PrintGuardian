@@ -10,6 +10,7 @@ export type UpdateCandidate = {
   publishedAt?: string | null;
   simulated?: boolean;
   highlights?: string[];
+  assetName?: string | null;
 };
 
 export type UpdatePreferences = {
@@ -108,6 +109,34 @@ export function compareVersions(a: string, b: string): number {
   return 0;
 }
 
+
+function cleanMarkdownLine(value: string): string {
+  return value
+    .replace(/^[-*•]\s+/, '')
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1')
+    .trim();
+}
+
+export function extractReleaseHighlights(notes: string, limit = 5): string[] {
+  const lines = notes.split(/\r?\n/);
+  const headingIndex = lines.findIndex((line) => /^#{1,4}\s*(what['’]?s new|what is new|kas jauns|highlights?|changes?)\b/i.test(line.trim()));
+  const source = headingIndex >= 0 ? lines.slice(headingIndex + 1) : lines;
+  const result: string[] = [];
+
+  for (const raw of source) {
+    const line = raw.trim();
+    if (headingIndex >= 0 && /^#{1,4}\s+/.test(line)) break;
+    if (!/^[-*•]\s+/.test(line)) continue;
+    const cleaned = cleanMarkdownLine(line);
+    if (!cleaned || cleaned.length > 180) continue;
+    result.push(cleaned);
+    if (result.length >= limit) break;
+  }
+  return result;
+}
+
 type GitHubAsset = { name?: string; browser_download_url?: string };
 type GitHubRelease = {
   tag_name?: string;
@@ -130,11 +159,13 @@ function candidateFromRelease(release: GitHubRelease): UpdateCandidate | null {
   return {
     version: version.replace(/^v/i, ''),
     name: release.name?.trim() || version,
-    notes: release.body?.trim() || '',
+    notes: (release.body?.trim() || '').slice(0, 5000),
     releaseUrl: release.html_url || 'https://github.com/QvarcY/PrintGuardian/releases',
     downloadUrl: windowsAsset?.browser_download_url ?? null,
     prerelease: release.prerelease === true,
     publishedAt: release.published_at ?? null,
+    highlights: extractReleaseHighlights(release.body?.trim() || ''),
+    assetName: windowsAsset?.name ?? null,
   };
 }
 
@@ -159,6 +190,10 @@ export async function checkPublishedUpdates(currentVersion: string, channel: Upd
   return { result: candidate ? 'available' : 'current', candidate };
 }
 
+export function isCandidateNewer(candidate: UpdateCandidate | null, currentVersion: string): candidate is UpdateCandidate {
+  return Boolean(candidate && compareVersions(candidate.version, currentVersion) > 0);
+}
+
 export function createSimulatedUpdate(currentVersion: string): UpdateCandidate {
   const parsed = parseVersion(currentVersion);
   let version = '0.3.0-dev.15';
@@ -177,6 +212,6 @@ export function createSimulatedUpdate(currentVersion: string): UpdateCandidate {
     downloadUrl: null,
     prerelease: true,
     simulated: true,
-    highlights: ['History is now available', 'New project review coverage'],
+    highlights: ['Settings is now available', 'Improved update handoff guidance'],
   };
 }
