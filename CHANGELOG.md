@@ -11,6 +11,9 @@
 - Kept automatic Installed update execution disabled while public preview binaries are unsigned; Update Centre continues to provide manual GitHub release handoff.
 - Moved broad Bambu Studio / OrcaSlicer compatibility coverage into the public tester phase while retaining explicit analysis-coverage limitations.
 - Replaced the plain-text START HERE file with a self-contained bilingual HTML launch guide that explains SmartScreen, Portable vs Installed, checksum verification, local data and update behavior with accessible motion and no remote UI dependencies.
+- Fixed semantic slicer-value handling so unit-bearing manual edits preserve the source raw format (for example, `10% → 11%`) and semantic no-op edits are not counted as prepared changes.
+- Reworked verified 3MF export in the Windows desktop app to use a native **Save As** dialog and filesystem write instead of a browser-style download handoff; success is shown only after the file is actually saved.
+- Maintainer-tested the refreshed export path in both **Portable** and **Installed** builds and reopened generated 3MF copies in Bambu Studio with `Wall loops 1 → 2` and `Sparse infill density 10% → 11%` applied correctly.
 
 ## v0.3.0-dev.15 — History + update notification UX
 

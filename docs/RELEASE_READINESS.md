@@ -8,7 +8,7 @@ This is the release gate for the first public testing build. `preview.1` is inte
 
 | Gate | Status | Notes |
 | --- | --- | --- |
-| Project Workspace and core UX | PASS | Guided tabs, persistent attention badges, print profiles, supported manual edits and verified experimental export flow are present. |
+| Project Workspace and core UX | PASS | Guided tabs, persistent attention badges, print profiles and supported manual edits are present; semantic no-op edits are no longer misreported as prepared changes. |
 | Feature-release navigation lifecycle | PASS | dev.14 → dev.15 runtime test confirmed update notice, History `NEW`, clearing on actual use and retained Portable state. |
 | ZIP/3MF input hardening | PASS (initial) | Archive/file/entry/decompression/bounds checks, encryption/multi-disk/ZIP64 rejection and suspicious compression-ratio rejection are in place. |
 | Synthetic Bambu-style fixtures | PASS | Both included fixtures pass the hardened ZIP/3MF smoke tests. |
@@ -23,14 +23,15 @@ This is the release gate for the first public testing build. `preview.1` is inte
 | Signed automatic updater | DEFERRED | Not enabled in `preview.1`. Update Centre only announces/releases and hands off to manual replacement/install. |
 | Real Bambu Studio compatibility matrix | PUBLIC PREVIEW TESTING | Maintainer real-file smoke tests passed; broader single/multi-plate, AMS and edge-case coverage is intentionally collected from preview users. |
 | Real OrcaSlicer compatibility matrix | PUBLIC PREVIEW TESTING | Broader compatibility validation moves to testers; unsupported/incorrect cases should be reported through the in-app feedback action. |
-| Export → reopen slicer matrix | PUBLIC PREVIEW TESTING | Verified export remains explicitly experimental; slicer acceptance reports are part of preview feedback. |
-| Clean Windows portable test | PASS | Maintainer verified launch and persistence behavior on staged Windows builds. |
-| Clean Windows installer test | PASS | Maintainer verified install/uninstall/reinstall behavior. |
+| Native desktop Save As export | PASS | Verified 3MF export now uses the Windows-native Save As flow and writes only after the user selects a destination; cancelling does not report a false success. |
+| Export → reopen slicer matrix | PASS (maintainer smoke) / PUBLIC PREVIEW TESTING | Maintainer reopened exported Bambu Studio projects after `Wall loops 1 → 2` and `Sparse infill density 10% → 11%`; broader slicer coverage remains part of preview feedback. |
+| Clean Windows portable test | PASS | Maintainer verified launch, persistence, native Save As export and successful Bambu Studio reopen on the refreshed Portable build. |
+| Clean Windows installer test | PASS | Maintainer verified install/uninstall/reinstall previously and re-tested the refreshed Installed build with native Save As export and successful Bambu Studio reopen. |
 | Feedback / issue reporting | PASS | Exact preview.1 RC runtime test confirmed the visible `Report / suggest` action and both problem/idea GitHub handoffs. Project contents are not attached automatically. |
 | SmartScreen explanation | PASS (HTML source; exact package re-smoke pending) | The plain-text guide has been replaced with a self-contained bilingual `START HERE - SĀC ŠEIT.html` experience covering the warning, official source, checksums and future-signing policy. |
 | Source reuse license | DEFERRED | No open-source reuse license is asserted by this preview gate. Copyright remains with the project owner until an explicit license is chosen. |
-| Final preview release notes | PASS (draft) | `docs/releases/v0.3.0-preview.1.md` is ready to use as the GitHub pre-release description. |
-| Exact preview.1 Windows artifact | PENDING refreshed CI artifact | The executable RC smoke test passed. Rebuild once with the final HTML start guide, then verify the exact staged ZIP before merge/tag/publication. |
+| Final preview release notes | PASS | `docs/releases/v0.3.0-preview.1.md` includes the final semantic-value and native Save As export notes and is ready to use as the GitHub pre-release description. |
+| Exact preview.1 Windows artifact | PENDING final release-housekeeping CI artifact | Functional RC smoke tests passed in Portable and Installed builds. Rebuild once from the final documentation commit, then verify the exact staged ZIP before merge/tag/publication. |
 
 ## Public-preview test matrix
 
