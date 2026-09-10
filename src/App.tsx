@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Clock3, FolderOpen, Settings2, ShieldCheck, UserRoundCog } from 'lucide-react';
 import { LanguageSwitch } from './components/LanguageSwitch';
 import { UiScaleControl } from './components/UiScaleControl';
+import { DesktopEditionBadge } from './components/DesktopEditionBadge';
 import { DropZone } from './components/DropZone';
 import { SupportProject } from './components/SupportProject';
 import { ProjectWorkspace } from './components/ProjectWorkspace';
@@ -59,6 +60,7 @@ function App() {
         </button>
         <div className="top-actions">
           {inspection && <div className="project-chip"><span className="pulse-dot" />{inspection.fileName}</div>}
+          <DesktopEditionBadge />
           <SupportProject prominent />
           <UiScaleControl />
           <LanguageSwitch />

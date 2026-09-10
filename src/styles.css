@@ -463,3 +463,32 @@ html[data-ui-scale="large"] { --ui-scale: 1.14; }
 .coming-soon-update-note strong,
 .coming-soon-update-note span { display: block; }
 .coming-soon-update-note span { margin-top: 5px; color: var(--text-muted); line-height: 1.55; font-size: calc(13.5px * var(--ui-scale)); }
+
+/* v0.3.0-dev.12 desktop runtime identity */
+.desktop-edition-badge {
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px;
+  border: 1px solid rgba(126,183,255,.14);
+  border-radius: 10px;
+  background: rgba(126,183,255,.045);
+  color: #9eb4c9;
+  font-size: 11px;
+  font-weight: 760;
+  white-space: nowrap;
+}
+.desktop-edition-badge svg { color: var(--accent-2); }
+.desktop-edition-badge small {
+  color: #657585;
+  font-size: 9px;
+  font-weight: 700;
+}
+.desktop-edition-badge.portable {
+  border-color: rgba(100,230,187,.16);
+  background: rgba(100,230,187,.045);
+}
+.desktop-edition-badge.portable svg { color: var(--accent); }
+html[data-ui-scale="large"] .desktop-edition-badge { min-height: 39px; font-size: 13px; }
+html[data-ui-scale="large"] .desktop-edition-badge small { font-size: 11px; }

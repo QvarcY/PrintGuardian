@@ -1,14 +1,19 @@
 {
   "name": "printguardian-ui",
   "private": true,
-  "version": "0.3.0-dev.11",
+  "version": "0.3.0-dev.12",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "check:release": "node scripts/release-gate.mjs && node --experimental-strip-types scripts/zip-smoke.mjs",
-    "stage:windows": "node scripts/stage-windows-release.mjs"
+    "stage:windows": "node scripts/stage-windows-release.mjs",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build:portable": "tauri build --no-bundle --features portable",
+    "tauri:build:installer": "tauri build --bundles nsis",
+    "package:windows": "node scripts/build-windows-flavors.mjs"
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",
@@ -17,11 +22,14 @@
     "react": "latest",
     "react-dom": "latest",
     "react-i18next": "latest",
-    "vite": "latest"
+    "vite": "latest",
+    "@tauri-apps/api": "^2.0.0",
+    "@tauri-apps/plugin-opener": "^2.0.0"
   },
   "devDependencies": {
     "@types/react": "latest",
     "@types/react-dom": "latest",
-    "typescript": "latest"
+    "typescript": "latest",
+    "@tauri-apps/cli": "^2.10.1"
   }
 }

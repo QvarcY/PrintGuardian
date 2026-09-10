@@ -1,0 +1,23 @@
+[package]
+name = "printguardian"
+version = "0.3.0-dev.12"
+description = "Local-first 3D print project inspector"
+authors = ["CraftIN / QvarcY"]
+edition = "2021"
+rust-version = "1.77.2"
+
+[lib]
+name = "printguardian_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2" }
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+tauri = { version = "2" }
+tauri-plugin-opener = "2"
+
+[features]
+default = []
+portable = []

@@ -1,5 +1,6 @@
 import { Coffee, ExternalLink } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { isTauriRuntime, openExternalUrl } from '../lib/desktopRuntime';
 
 const SUPPORT_URL = 'https://buymeacoffee.com/craftin';
 
@@ -16,6 +17,11 @@ export function SupportProject({ compact = false, prominent = false }: SupportPr
       className={`support-project${compact ? ' compact' : ''}${prominent ? ' prominent' : ''}`}
       href={SUPPORT_URL}
       target="_blank"
+      onClick={(event) => {
+        if (!isTauriRuntime()) return;
+        event.preventDefault();
+        void openExternalUrl(SUPPORT_URL);
+      }}
       rel="noreferrer noopener"
       aria-label={`${t('app.support')} — Buy Me a Coffee`}
       title={t('app.supportHint')}
