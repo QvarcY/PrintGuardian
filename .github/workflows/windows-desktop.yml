@@ -56,7 +56,7 @@ jobs:
         run: npm run package:windows
 
       - name: Upload Windows development package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: PrintGuardian-Windows-${{ github.sha }}
           path: release-out/PrintGuardian-v*-Windows-x64/

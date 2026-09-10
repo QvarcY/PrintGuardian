@@ -39,6 +39,15 @@ The planned installed build uses Tauri 2's Windows NSIS installer. Tauri support
 
 The default installation should be per-user unless testing shows a reason to require machine-wide installation. Per-user install avoids an unnecessary Administrator prompt for normal users.
 
+
+## Uninstall contract
+
+The installed edition must be removable without hunting through application files. The NSIS build writes a real `uninstall.exe` and registers PrintGuardian in Windows **Installed apps**. PrintGuardian also adds a Start Menu shortcut named `Uninstall PrintGuardian` for discoverability.
+
+The uninstaller must remove the installed executable, installer-created shortcuts and uninstall registry entry. Its optional **Delete application data** checkbox is the explicit path for also removing PrintGuardian application data. The Latvian installer uses a project-owned Tauri custom-language file so this checkbox and the desktop-shortcut option never appear as blank controls.
+
+For the public preview, install -> launch -> uninstall -> reinstall must be tested using the exact staged installer.
+
 ## WebView2
 
 Tauri uses Microsoft WebView2 on Windows. Current Windows 10/11 systems commonly already provide it; the installer path can ensure the runtime is available. The exact installer WebView2 mode is selected and tested before preview.1. The portable build must detect or clearly report a missing runtime instead of simply failing silently.

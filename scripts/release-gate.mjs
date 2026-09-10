@@ -63,6 +63,25 @@ else fail('Windows packager may fail to launch npm scripts on Windows');
 if (tauriConfig.bundle?.windows?.nsis?.installMode === 'currentUser') pass('NSIS defaults to current-user installation');
 else fail('NSIS install mode is not currentUser');
 
+const nsis = tauriConfig.bundle?.windows?.nsis;
+if (nsis?.customLanguageFiles?.Latvian === 'windows/Latvian.nsh') pass('NSIS uses project-owned Latvian Tauri strings');
+else fail('NSIS Latvian Tauri-specific strings are not configured');
+
+if (nsis?.installerHooks === 'windows/nsis-hooks.nsh') pass('NSIS uninstall discoverability hook is configured');
+else fail('NSIS uninstall discoverability hook is missing');
+
+const lvNsis = await read('src-tauri/windows/Latvian.nsh');
+if (lvNsis.includes('LangString createDesktop ${LANG_LATVIAN}') && lvNsis.includes('LangString deleteAppData ${LANG_LATVIAN}')) pass('Latvian NSIS desktop/app-data labels are non-empty');
+else fail('Latvian NSIS labels are incomplete');
+
+const nsisHooks = await read('src-tauri/windows/nsis-hooks.nsh');
+if (nsisHooks.includes('Uninstall ${PRODUCTNAME}.lnk') && nsisHooks.includes('uninstall.exe')) pass('Start Menu uninstall shortcut is created and removable');
+else fail('NSIS uninstall shortcut hook is incomplete');
+
+const workflow = await read('.github/workflows/windows-desktop.yml');
+if (/actions\/upload-artifact@v(?:6|7)/.test(workflow)) pass('artifact upload action uses Node 24 generation');
+else fail('artifact upload action still targets deprecated Node runtime');
+
 const scripts = [...preview.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/gi)].map((match) => match[1]);
 try {
   new vm.Script(scripts.join('\n'), { filename: 'preview-inline.js' });
@@ -76,7 +95,7 @@ for (const fixture of ['fixtures/bambu-style-smoke-test.3mf', 'fixtures/bambu-st
   catch { fail(`${fixture} is missing`); }
 }
 
-for (const file of ['SECURITY.md', 'docs/RELEASE_READINESS.md', 'docs/DISTRIBUTION.md', 'docs/DESKTOP.md', 'release/windows/START HERE - SĀC ŠEIT.txt', 'scripts/stage-windows-release.mjs', 'scripts/build-windows-flavors.mjs', 'src-tauri/src/lib.rs', 'src-tauri/capabilities/default.json', '.github/workflows/windows-desktop.yml']) {
+for (const file of ['SECURITY.md', 'docs/RELEASE_READINESS.md', 'docs/DISTRIBUTION.md', 'docs/DESKTOP.md', 'docs/WINDOWS_SIGNING.md', 'release/windows/START HERE - SĀC ŠEIT.txt', 'src-tauri/windows/Latvian.nsh', 'src-tauri/windows/nsis-hooks.nsh', 'scripts/stage-windows-release.mjs', 'scripts/build-windows-flavors.mjs', 'src-tauri/src/lib.rs', 'src-tauri/capabilities/default.json', '.github/workflows/windows-desktop.yml']) {
   try { await access(new URL(file, root)); pass(`${file} exists`); }
   catch { fail(`${file} is missing`); }
 }

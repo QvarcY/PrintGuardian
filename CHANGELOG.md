@@ -104,3 +104,12 @@ PrintGuardian is under active development. Until v1.0, features and internal for
 - Added localized hover explanations for slicer terminology.
 - Added initial Drop Zone, Print Health, Profile Diff and Print DNA concepts.
 - Added CraftIN / QvarcY attribution and project documentation.
+
+## v0.3.0-dev.13 — Windows installer polish
+
+- Added complete project-owned Latvian translations for Tauri-specific NSIS labels, fixing the blank desktop-shortcut checkbox and future blank uninstall-data label.
+- Added an explicit `Uninstall PrintGuardian` Start Menu shortcut while retaining the standard Windows Installed apps uninstall registration.
+- Documented clean uninstall and optional application-data deletion as release requirements.
+- Added a Windows Authenticode/SmartScreen release blocker and signing plan; unsigned development binaries remain internal-test only.
+- Updated the GitHub artifact upload action to a Node 24 generation to remove the deprecated Node 20 warning.
+- Recorded the first successful real Portable + NSIS GitHub build and maintainer launch/install/real-3MF smoke test.
