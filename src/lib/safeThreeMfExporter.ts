@@ -3,6 +3,12 @@ import type { SafeThreeMfBuildPreview } from './safeThreeMfBuildPreview';
 import { crc32, rebuildZipWithReplacement } from './zipWriter';
 import { ZipArchive } from './zip';
 
+function bytesToArrayBuffer(bytes: Uint8Array): ArrayBuffer {
+  const copy = new Uint8Array(bytes.byteLength);
+  copy.set(bytes);
+  return copy.buffer;
+}
+
 const PROJECT_SETTINGS = 'Metadata/project_settings.config';
 
 export type SafeThreeMfExportVerification = {
@@ -58,7 +64,7 @@ export async function buildVerifiedThreeMfExport(
   JSON.parse(serialized);
   const replacementBytes = new TextEncoder().encode(serialized);
   const outputBytes = await rebuildZipWithReplacement(inspection.sourceFile, { name: PROJECT_SETTINGS, bytes: replacementBytes });
-  const output = new File([outputBytes], outputName(inspection.fileName), { type: 'model/3mf' });
+  const output = new File([bytesToArrayBuffer(outputBytes)], outputName(inspection.fileName), { type: 'model/3mf' });
 
   const sourceArchive = await ZipArchive.fromFile(inspection.sourceFile);
   const outputArchive = await ZipArchive.fromFile(output);

@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { CheckCircle2, FileUp2, Pencil, Save, Trash2, UserRoundCog, X } from 'lucide-react';
+import { CheckCircle2, FileUp, Pencil, Save, Trash2, UserRoundCog, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { NamedPrintProfile } from '../lib/printProfiles';
 import './PrintProfilesPanel.css';
@@ -53,7 +53,7 @@ export function PrintProfilesPanel({
         </div>
         <div className="profiles-hero-actions">
           <button className="ghost" onClick={onBack}>{lv ? 'Atpakaļ uz projektu' : 'Back to project'}</button>
-          <button className="primary" onClick={() => inputRef.current?.click()} disabled={busy}><FileUp2 size={15} /> {busy ? (lv ? 'Nolasa…' : 'Reading…') : (lv ? 'Pievienot profilu no 3MF' : 'Add profile from 3MF')}</button>
+          <button className="primary" onClick={() => inputRef.current?.click()} disabled={busy}><FileUp size={15} /> {busy ? (lv ? 'Nolasa…' : 'Reading…') : (lv ? 'Pievienot profilu no 3MF' : 'Add profile from 3MF')}</button>
           <input ref={inputRef} hidden type="file" accept=".3mf" onChange={(event) => { const file = event.target.files?.[0]; if (file) onAddFile(file); event.currentTarget.value = ''; }} />
         </div>
       </div>
@@ -63,7 +63,7 @@ export function PrintProfilesPanel({
           <UserRoundCog size={30} />
           <h2>{lv ? 'Vēl nav neviena drukas profila' : 'No print profiles yet'}</h2>
           <p>{lv ? 'Pievieno vienu uzticamu 3MF, kuru esi veiksmīgi izmantojis savā printerī. To varēsi vēlāk pārdēvēt, nomainīt vai dzēst.' : 'Add a trusted 3MF that has worked well on your printer. You can rename, replace or remove it later.'}</p>
-          <button className="primary" onClick={() => inputRef.current?.click()}><FileUp2 size={15} /> {lv ? 'Pievienot pirmo profilu' : 'Add first profile'}</button>
+          <button className="primary" onClick={() => inputRef.current?.click()}><FileUp size={15} /> {lv ? 'Pievienot pirmo profilu' : 'Add first profile'}</button>
         </div>
       ) : (
         <div className="profiles-grid">

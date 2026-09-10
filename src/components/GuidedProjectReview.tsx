@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  AlertTriangle, Check, CheckCircle2, ChevronDown, Download, FileCheck2, FileUp2,
+  AlertTriangle, Check, CheckCircle2, ChevronDown, Download, FileCheck2, FileUp,
   LoaderCircle, RotateCcw, Settings2, ShieldCheck, Trash2, Wrench,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -286,7 +286,7 @@ export function GuidedProjectReview({ inspection, baseline, onBaselineChange }: 
             {profileError && <div className="guided-error">{profileError}</div>}
           </div>
           <button className="primary profile-setup-action" disabled={loadingProfile} onClick={() => inputRef.current?.click()}>
-            {loadingProfile ? <LoaderCircle className="spin" size={15} /> : <FileUp2 size={15} />}
+            {loadingProfile ? <LoaderCircle className="spin" size={15} /> : <FileUp size={15} />}
             {loadingProfile ? text.setupReading : text.setupAction}
           </button>
           <input ref={inputRef} hidden type="file" accept=".3mf" onChange={(event) => loadTrustedProfile(event.target.files?.[0])} />
@@ -301,7 +301,7 @@ export function GuidedProjectReview({ inspection, baseline, onBaselineChange }: 
               <small>{text.profileFrom}: {baseline.sourceFileName}</small>
             </div>
             <div className="my-profile-actions">
-              <button className="ghost" onClick={() => inputRef.current?.click()}><FileUp2 size={14} /> {text.replace}</button>
+              <button className="ghost" onClick={() => inputRef.current?.click()}><FileUp size={14} /> {text.replace}</button>
               <button className="ghost danger" onClick={removeProfile}><Trash2 size={14} /> {text.remove}</button>
             </div>
             <input ref={inputRef} hidden type="file" accept=".3mf" onChange={(event) => loadTrustedProfile(event.target.files?.[0])} />

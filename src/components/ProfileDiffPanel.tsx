@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react';
 import {
-  ArrowRight, BookmarkCheck, Check, FileUp2, Filter, GitCompareArrows, Info,
+  ArrowRight, BookmarkCheck, Check, FileUp, Filter, GitCompareArrows, Info,
   RotateCcw, Save, Trash2, TriangleAlert,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -139,7 +139,7 @@ export function ProfileDiffPanel({ inspection }: { inspection: ThreeMfInspection
         {comparison
           ? <FileCard role={comparisonRole} name={comparison.fileName} meta={comparison.processProfile || comparison.printerProfile || t('app.unknown')} active />
           : <button className={`compare-drop glass-panel${busy ? ' busy' : ''}`} onClick={() => inputRef.current?.click()} disabled={busy}>
-              <FileUp2 size={24} />
+              <FileUp size={24} />
               <strong>{busy ? t('compare.reading') : t('compare.choose')}</strong>
               <small>{t('compare.chooseHint')}</small>
             </button>}

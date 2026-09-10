@@ -1,5 +1,11 @@
 import { ZipArchive } from './zip';
 
+function bytesToArrayBuffer(bytes: Uint8Array): ArrayBuffer {
+  const copy = new Uint8Array(bytes.byteLength);
+  copy.set(bytes);
+  return copy.buffer;
+}
+
 export type ZipReplacement = {
   name: string;
   bytes: Uint8Array;
@@ -49,7 +55,7 @@ function ensureClassicZip(value: number, label: string) {
 async function compressForZip(bytes: Uint8Array): Promise<{ method: 0 | 8; bytes: Uint8Array }> {
   if (typeof CompressionStream === 'undefined' || bytes.byteLength === 0) return { method: 0, bytes };
   try {
-    const stream = new Blob([bytes]).stream().pipeThrough(new CompressionStream('deflate-raw' as CompressionFormat));
+    const stream = new Blob([bytesToArrayBuffer(bytes)]).stream().pipeThrough(new CompressionStream('deflate-raw' as CompressionFormat));
     const compressed = new Uint8Array(await new Response(stream).arrayBuffer());
     return compressed.byteLength < bytes.byteLength ? { method: 8, bytes: compressed } : { method: 0, bytes };
   } catch {

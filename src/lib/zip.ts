@@ -1,3 +1,9 @@
+function bytesToArrayBuffer(bytes: Uint8Array): ArrayBuffer {
+  const copy = new Uint8Array(bytes.byteLength);
+  copy.set(bytes);
+  return copy.buffer;
+}
+
 export type ZipEntry = {
   name: string;
   compressionMethod: number;
@@ -61,7 +67,7 @@ async function inflateRawLimited(bytes: Uint8Array, expectedSize: number, name: 
     throw new Error('This browser does not support local ZIP decompression.');
   }
 
-  const stream = new Blob([bytes]).stream().pipeThrough(
+  const stream = new Blob([bytesToArrayBuffer(bytes)]).stream().pipeThrough(
     new DecompressionStream('deflate-raw' as CompressionFormat),
   );
   const reader = stream.getReader();
