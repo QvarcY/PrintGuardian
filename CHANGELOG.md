@@ -116,6 +116,8 @@ PrintGuardian is under active development. Until v1.0, features and internal for
 
 ## v0.3.0-dev.14 — Portable storage + update foundation
 
+- Added the CI-generated `package-lock.json` and switched Windows CI to `npm ci` for reproducible frontend dependency resolution.
+
 - Moved Windows window creation into the Tauri Rust host so WebView2 data storage can be selected before the UI starts.
 - Portable builds now keep WebView2/localStorage state under a hidden `PrintGuardianData` directory beside the executable, allowing profiles/preferences to move with the extracted folder.
 - Installed builds keep the normal application-specific Windows Local AppData storage scope, preserving clean separation from Portable data.

@@ -9,6 +9,7 @@ const fail = (message) => { errors.push(message); console.error(`FAIL  ${message
 
 const version = (await read('VERSION')).trim();
 const packageJson = JSON.parse(await read('package.json'));
+const packageLock = JSON.parse(await read('package-lock.json'));
 const preview = await read('preview.html');
 const readme = await read('README.md');
 const en = await read('src/locales/en.ts');
@@ -26,6 +27,9 @@ const cargoToml = await read('src-tauri/Cargo.toml');
 
 if (packageJson.version === version) pass(`package.json version = ${version}`);
 else fail(`package.json (${packageJson.version}) does not match VERSION (${version})`);
+
+if (packageLock.lockfileVersion === 3 && packageLock.version === version && packageLock.packages?.['']?.version === version) pass(`package-lock.json locks ${version} with lockfileVersion 3`);
+else fail(`package-lock.json is missing, stale, or does not match VERSION (${version})`);
 
 if (tauriConfig.version === version) pass(`tauri.conf.json version = ${version}`);
 else fail(`tauri.conf.json (${tauriConfig.version}) does not match VERSION (${version})`);

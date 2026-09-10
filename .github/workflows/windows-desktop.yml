@@ -37,23 +37,7 @@ jobs:
           workspaces: './src-tauri -> target'
 
       - name: Install frontend dependencies
-        shell: pwsh
-        run: |
-          if (Test-Path package-lock.json) {
-            npm ci
-          } else {
-            Write-Warning 'package-lock.json is not committed yet; using npm install for development CI.'
-            npm install
-          }
-
-      - name: Upload dependency lock candidate
-        if: ${{ hashFiles('package-lock.json') != '' }}
-        uses: actions/upload-artifact@v6
-        with:
-          name: PrintGuardian-package-lock-${{ github.sha }}
-          path: package-lock.json
-          if-no-files-found: error
-          retention-days: 7
+        run: npm ci
 
       - name: Release gate
         run: npm run check:release
