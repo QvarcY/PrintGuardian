@@ -1,6 +1,8 @@
 import type { ThreeMfInspection } from './threeMfInspector';
 import type { ComparableInspection, ProfileDiffRow } from './profileDiff';
 import type { ProfileDecision } from './profileDecisionPlan';
+
+export type SafeBuildDecision = ProfileDecision | 'manual';
 import {
   builderField,
   cloneProjectSettings,
@@ -21,7 +23,7 @@ export type BuildPreviewMutation = {
   targetKey?: string;
   before?: unknown;
   after?: unknown;
-  reason?: 'compound-metadata' | 'material-index' | 'missing-mapping' | 'missing-project-key' | 'missing-baseline-raw-value' | 'type-mismatch';
+  reason?: 'compound-metadata' | 'material-index' | 'missing-mapping' | 'missing-project-key' | 'missing-baseline-raw-value' | 'missing-manual-value' | 'type-mismatch';
 };
 
 export type SafeThreeMfBuildPreview = {
@@ -29,6 +31,7 @@ export type SafeThreeMfBuildPreview = {
   sourceSettingsCount: number;
   previewSettingsCount: number;
   selectedBaselineCount: number;
+  selectedManualCount: number;
   readyCount: number;
   blockedCount: number;
   unresolvedCount: number;
@@ -74,7 +77,8 @@ export function createSafeThreeMfBuildPreview(
   inspection: ThreeMfInspection,
   baseline: ComparableInspection,
   rows: ProfileDiffRow[],
-  decisions: Record<string, ProfileDecision>,
+  decisions: Record<string, SafeBuildDecision>,
+  manualValues: Record<string, unknown> = {},
 ): SafeThreeMfBuildPreview {
   const source = inspection.projectSettings;
   const baselineValues = baseline.builderValues;
@@ -86,9 +90,10 @@ export function createSafeThreeMfBuildPreview(
       sourceSettingsCount: inspection.projectSettingsCount,
       previewSettingsCount: inspection.projectSettingsCount,
       selectedBaselineCount: Object.values(decisions).filter((decision) => decision === 'baseline').length,
+      selectedManualCount: Object.values(decisions).filter((decision) => decision === 'manual').length,
       readyCount: 0,
       blockedCount: 0,
-      unresolvedCount: Object.values(decisions).filter((decision) => decision === 'baseline').length,
+      unresolvedCount: Object.values(decisions).filter((decision) => decision !== 'project').length,
       sourceUntouched: true,
       serializes: false,
       serializedBytes: 0,
@@ -104,11 +109,11 @@ export function createSafeThreeMfBuildPreview(
   const preview = cloneProjectSettings(source);
   const mutations: BuildPreviewMutation[] = [];
 
-  for (const row of rows.filter((item) => item.status !== 'same')) {
+  for (const row of rows.filter((item) => item.status !== 'same' || decisions[item.key] === 'manual')) {
     const requested = decisions[row.key] ?? 'project';
     const canonical = canonicalKey(row);
 
-    if (requested !== 'baseline') {
+    if (requested === 'project') {
       mutations.push({
         rowKey: row.key,
         label: row.label,
@@ -137,19 +142,29 @@ export function createSafeThreeMfBuildPreview(
       continue;
     }
 
-    const baselineRaw = baselineValues?.[canonical as keyof typeof baselineValues];
-    if (baselineRaw === undefined) {
-      mutations.push({ rowKey: row.key, label: row.label, impact: row.impact, status: 'unresolved', canonicalKey: canonical, targetKey, reason: 'missing-baseline-raw-value' });
+    const nextRaw = requested === 'manual'
+      ? manualValues[row.key]
+      : baselineValues?.[canonical as keyof typeof baselineValues];
+    if (nextRaw === undefined) {
+      mutations.push({
+        rowKey: row.key,
+        label: row.label,
+        impact: row.impact,
+        status: 'unresolved',
+        canonicalKey: canonical,
+        targetKey,
+        reason: requested === 'manual' ? 'missing-manual-value' : 'missing-baseline-raw-value',
+      });
       continue;
     }
 
     const before = source[targetKey];
-    if (!compatibleKinds(before, baselineRaw)) {
-      mutations.push({ rowKey: row.key, label: row.label, impact: row.impact, status: 'blocked', canonicalKey: canonical, targetKey, before, after: baselineRaw, reason: 'type-mismatch' });
+    if (!compatibleKinds(before, nextRaw)) {
+      mutations.push({ rowKey: row.key, label: row.label, impact: row.impact, status: 'blocked', canonicalKey: canonical, targetKey, before, after: nextRaw, reason: 'type-mismatch' });
       continue;
     }
 
-    preview[targetKey] = cloneProjectSettings({ value: baselineRaw }).value;
+    preview[targetKey] = cloneProjectSettings({ value: nextRaw }).value;
     mutations.push({
       rowKey: row.key,
       label: row.label,
@@ -158,7 +173,7 @@ export function createSafeThreeMfBuildPreview(
       canonicalKey: canonical,
       targetKey,
       before,
-      after: baselineRaw,
+      after: nextRaw,
     });
   }
 
@@ -180,7 +195,8 @@ export function createSafeThreeMfBuildPreview(
     sourceFileName: inspection.fileName,
     sourceSettingsCount: Object.keys(source).length,
     previewSettingsCount: Object.keys(preview).length,
-    selectedBaselineCount: selected.length,
+    selectedBaselineCount: mutations.filter((mutation) => decisions[mutation.rowKey] === 'baseline' && mutation.status !== 'kept-project').length,
+    selectedManualCount: mutations.filter((mutation) => decisions[mutation.rowKey] === 'manual' && mutation.status !== 'kept-project').length,
     readyCount: mutations.filter((mutation) => mutation.status === 'ready').length,
     blockedCount: mutations.filter((mutation) => mutation.status === 'blocked').length,
     unresolvedCount: mutations.filter((mutation) => mutation.status === 'unresolved').length,

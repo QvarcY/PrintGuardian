@@ -75,3 +75,70 @@ export function jsonValueKind(value: unknown): 'array' | 'null' | 'string' | 'nu
   if (typeof value === 'boolean') return 'boolean';
   return 'object';
 }
+
+
+export type ManualEditorKind = 'number' | 'integer' | 'boolean';
+
+export type ManualEditorDefinition = {
+  key: BuilderCanonicalKey;
+  kind: ManualEditorKind;
+  unit?: string;
+  min?: number;
+  max?: number;
+  step?: number;
+};
+
+const MANUAL_EDITORS: Partial<Record<BuilderCanonicalKey, ManualEditorDefinition>> = {
+  layer_height: { key: 'layer_height', kind: 'number', unit: 'mm', min: 0.04, max: 1.2, step: 0.01 },
+  wall_loops: { key: 'wall_loops', kind: 'integer', min: 1, max: 20, step: 1 },
+  sparse_infill_density: { key: 'sparse_infill_density', kind: 'number', unit: '%', min: 0, max: 100, step: 1 },
+  enable_support: { key: 'enable_support', kind: 'boolean' },
+  brim_width: { key: 'brim_width', kind: 'number', unit: 'mm', min: 0, max: 50, step: 0.5 },
+};
+
+export function manualEditorFor(key: string): ManualEditorDefinition | undefined {
+  return MANUAL_EDITORS[key as BuilderCanonicalKey];
+}
+
+function rawBooleanLike(source: unknown, enabled: boolean): unknown {
+  if (typeof source === 'boolean') return enabled;
+  if (typeof source === 'number') return enabled ? 1 : 0;
+  if (typeof source === 'string') {
+    const lower = source.toLowerCase();
+    if (lower === 'true' || lower === 'false') return enabled ? 'true' : 'false';
+    if (lower === 'yes' || lower === 'no') return enabled ? 'yes' : 'no';
+    if (lower === 'on' || lower === 'off') return enabled ? 'on' : 'off';
+    return enabled ? '1' : '0';
+  }
+  return enabled;
+}
+
+function rawNumberLike(source: unknown, value: number): unknown {
+  if (typeof source === 'number') return value;
+  if (typeof source === 'string') return String(value);
+  return value;
+}
+
+export function coerceManualBuilderValue(
+  project: ProjectSettings,
+  canonicalKey: string,
+  input: number | boolean,
+): { ok: true; rawValue: unknown } | { ok: false; reason: string } {
+  const editor = manualEditorFor(canonicalKey);
+  if (!editor) return { ok: false, reason: 'manual-edit-not-supported' };
+  const targetKey = findExistingProjectSettingsKey(project, canonicalKey);
+  if (!targetKey) return { ok: false, reason: 'missing-project-key' };
+  const source = project[targetKey];
+  if (Array.isArray(source) || (source != null && typeof source === 'object')) return { ok: false, reason: 'compound-value' };
+
+  if (editor.kind === 'boolean') {
+    if (typeof input !== 'boolean') return { ok: false, reason: 'invalid-boolean' };
+    return { ok: true, rawValue: rawBooleanLike(source, input) };
+  }
+
+  if (typeof input !== 'number' || !Number.isFinite(input)) return { ok: false, reason: 'invalid-number' };
+  const normalized = editor.kind === 'integer' ? Math.round(input) : input;
+  if (editor.min != null && normalized < editor.min) return { ok: false, reason: 'below-minimum' };
+  if (editor.max != null && normalized > editor.max) return { ok: false, reason: 'above-maximum' };
+  return { ok: true, rawValue: rawNumberLike(source, normalized) };
+}
