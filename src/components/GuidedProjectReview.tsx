@@ -66,6 +66,7 @@ const copy = {
     preserved: 'Citi arhīva ieraksti saglabāti',
     notFullAudit: 'Svarīgi: šis vēl nav pilns ģeometrijas vai G-code drošības audits.',
     why: 'Ko tas nozīmē',
+    impact: { high: 'Augsta ietekme', medium: 'Vidēja ietekme', low: 'Zema ietekme', none: 'Bez ietekmes' },
     effects: {
       printer_profile: 'Projekts ir sagatavots citam printera profilam. Tas var ietekmēt darba laukumu, ātrumus, paātrinājumus un starta/beigu G-code.',
       nozzle_diameter: 'Atšķirīgs nozzle diametrs ietekmē derīgu Layer height, line width, plūsmu un detaļu smalkumu.',
@@ -121,6 +122,7 @@ const copy = {
     preserved: 'Other archive entries preserved',
     notFullAudit: 'Important: this is not yet a full geometry or G-code safety audit.',
     why: 'What this means',
+    impact: { high: 'High impact', medium: 'Medium impact', low: 'Low impact', none: 'No impact' },
     effects: {
       printer_profile: 'The project was prepared for a different printer profile. This can affect build volume, speeds, acceleration and start/end G-code.',
       nozzle_diameter: 'A different nozzle diameter affects valid Layer height, line width, flow and printable detail.',
@@ -320,7 +322,7 @@ export function GuidedProjectReview({ inspection, baseline, onBaselineChange }: 
                   <article className={`guided-difference glass-panel ${row.impact}`} key={row.key}>
                     <div className="guided-difference-top">
                       <div>
-                        <div className="guided-setting-name"><strong>{row.label}</strong><span className={`impact-badge ${row.impact}`}>{row.impact.toUpperCase()}</span></div>
+                        <div className="guided-setting-name"><strong>{row.label}</strong><span className={`impact-badge ${row.impact}`}>{text.impact[row.impact]}</span></div>
                         {effect && <p><b>{text.why}:</b> {effect}</p>}
                       </div>
                       {row.delta && <span className="guided-delta">{row.delta}</span>}
