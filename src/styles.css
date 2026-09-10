@@ -622,7 +622,7 @@ html[data-ui-scale="large"] .desktop-edition-badge small { font-size: 11px; }
   border:1px solid rgba(126,183,255,.30);
   border-radius:999px;
   padding:7px 11px;
-  background:linear-gradient(135deg,rgba(126,183,255,.12),rgba(100,230,187,.055));
+  background:rgba(126,183,255,.085);
   color:#d9eaff;
   cursor:pointer;
   font-size:10.5px;
@@ -633,7 +633,7 @@ html[data-ui-scale="large"] .desktop-edition-badge small { font-size: 11px; }
 }
 .feedback-trigger:hover,.feedback-trigger:focus-visible {
   border-color:rgba(126,183,255,.58);
-  background:linear-gradient(135deg,rgba(126,183,255,.19),rgba(100,230,187,.08));
+  background:rgba(126,183,255,.145);
   color:#fff;
   outline:none;
   transform:translateY(-1px);

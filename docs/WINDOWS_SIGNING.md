@@ -1,32 +1,37 @@
 # Windows signing and SmartScreen
 
-Status: **public-preview blocker**.
+Status: **accepted public-preview limitation; signing deferred**.
 
-Development builds may be unsigned. Public Windows releases must not be presented as release-ready while Windows identifies the publisher as unknown.
+`v0.3.0-preview.1` is intentionally distributed unsigned. PrintGuardian does not use a self-signed certificate because that does not create public Windows trust and would not solve the SmartScreen experience for ordinary users.
 
-## What the current warning means
+## What the warning means
 
-The development EXE and NSIS installer are not Authenticode-signed yet. Windows Defender SmartScreen can therefore show an unknown/unrecognized application warning. This is expected during internal testing, but it is not an acceptable first-run experience for the public preview.
+The Portable EXE and NSIS installer are not Authenticode-signed. Windows Defender SmartScreen can therefore show an unknown/unrecognized application or unknown-publisher warning.
 
-The `publisher` value in `tauri.conf.json` brands installer metadata and the Windows uninstall entry; it does **not** create a trusted Authenticode publisher signature.
+A SmartScreen reputation warning is **not, by itself, a malware detection**. SmartScreen evaluates reputation signals including the exact downloaded file and a trusted publisher signature. With an unsigned binary there is no trusted publisher identity whose reputation can be carried across releases, so a new unsigned build may trigger the warning again even when an earlier build became familiar to Windows users.
 
-## Release requirement
+The `publisher` value in `tauri.conf.json` brands installer/uninstall metadata only. It does **not** create a trusted Authenticode signature.
 
-Before `v0.3.0-preview.1`:
+## Public-preview policy
 
-1. choose a trusted Windows code-signing path;
-2. sign the portable executable, installed application executable, uninstaller and installer through the build/release pipeline as applicable;
-3. timestamp signatures;
-4. verify the Authenticode signature on the exact staged release files;
-5. never modify a signed binary after signing;
-6. repeat the clean-Windows launch/install/uninstall test using the signed artifacts.
+For `v0.3.0-preview.1`:
 
-A valid signature identifies the publisher but does not guarantee that a brand-new application immediately has SmartScreen reputation. Early preview users may still see an unrecognized-app prompt while reputation builds.
+1. publish only from the official `QvarcY/PrintGuardian` GitHub repository;
+2. publish SHA-256 checksums for the exact Portable and Installer binaries;
+3. explain SmartScreen before the download/run step in the GitHub release notes and `START HERE - SĀC ŠEIT.txt`;
+4. tell users to proceed only when they intentionally downloaded that exact official release;
+5. do not claim that bypassing SmartScreen is generally safe — it is only a conscious trust decision for the verified official artifact;
+6. keep automatic unsigned Installed updates disabled.
 
-## Candidate signing paths
+Some Windows environments, Smart App Control configurations, or organization policies can block unsigned applications without offering **Run anyway**. PrintGuardian will not instruct users to weaken system-wide security settings to work around that.
 
-- SignPath Foundation is worth evaluating for an eligible open-source project because it provides free code signing tied to the public source/build process.
-- A conventional OV code-signing certificate is the fallback for direct distribution when an open-source signing service is not suitable.
-- Microsoft Store distribution can be evaluated later as a separate channel; it is not required for the GitHub preview.
+## Will this change?
 
-No private signing key or credential belongs in the repository.
+Possibly. Trusted signing remains desirable for a later release, but it is not required for the first public preview. The project will revisit signing if a suitable free/cost-effective route becomes available or if project adoption justifies a commercial signing cost. No signing date is promised.
+
+If trusted signing is introduced later, the release pipeline should sign and timestamp the exact public binaries and verify those signatures before checksums/release publication. Private signing credentials must never be stored in the repository.
+
+## References
+
+- Microsoft: SmartScreen reputation for Windows app developers — https://learn.microsoft.com/windows/apps/package-and-deploy/smartscreen-reputation
+- Microsoft: Code signing options for Windows app developers — https://learn.microsoft.com/windows/apps/package-and-deploy/code-signing-options

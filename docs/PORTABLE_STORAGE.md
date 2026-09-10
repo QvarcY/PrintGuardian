@@ -37,11 +37,11 @@ The storage location can contain WebView2 runtime/cache internals plus PrintGuar
 - named print-profile snapshots (not the original 3MF files);
 - comparison/builder decision state;
 - update-check preferences and cached release metadata;
-- future history/preferences as those features are implemented.
+- bounded local project-history summaries and update/feature-discovery preferences.
 
 PrintGuardian does not copy the source 3MF into persistent storage merely because it was inspected.
 
-## Runtime verification before preview.1
+## Runtime verification — passed for preview.1 foundation
 
 Portable verification must prove:
 
@@ -57,9 +57,9 @@ Portable verification must prove:
 
 ## Recent project resume
 
-The current development build may keep one local copy of the last successfully inspected 3MF so the landing screen can offer **Continue previous project** after restart. The copy is stored through IndexedDB inside the same WebView2 data root as the rest of the desktop state:
+The public preview may keep one local copy of the last successfully inspected 3MF so the landing screen can offer **Continue previous project** after restart. The copy is stored through IndexedDB inside the same WebView2 data root as the rest of the desktop state:
 
 - Portable: inside `PrintGuardianData\\WebView2` next to the executable;
 - Installed: inside the Installed edition's Local AppData WebView data directory.
 
-The user can remove this cached copy from the landing screen. Invalid/unreadable 3MF files are not cached. This is not the future multi-project History feature; it is a single-project convenience cache only.
+The user can remove this cached copy from the landing screen. Invalid/unreadable 3MF files are not cached. This is separate from the multi-project History summary list: History stores bounded metadata summaries, while the recent-project cache keeps only one actual 3MF copy for one-click resume.

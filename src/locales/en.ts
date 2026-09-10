@@ -32,7 +32,7 @@ export const en = {
     author: 'Created by CraftIN / QvarcY',
     support: 'Support the project',
     supportHint: 'Open the CraftIN Buy Me a Coffee page in a new tab.',
-    prototype: 'v0.3.0-dev.15 · History + update notification UX',
+    prototype: 'v0.3.0-preview.1 · public preview',
     updatedTitle: 'PrintGuardian was updated',
     historyNowAvailable: 'History is now available. Open a project and look for the NEW marker in the sidebar.',
     dismiss: 'Dismiss notification',

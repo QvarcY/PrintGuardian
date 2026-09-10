@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.3.0-preview.1 — First public Windows preview
+
+- Promoted the tested dev.15 line to the first public Windows x64 preview candidate.
+- Added a prominent **Report / suggest** action beside Buy Me a Coffee with separate problem-report and improvement-idea flows.
+- Feedback opens a pre-filled public GitHub issue containing only app version/distribution context; PrintGuardian never attaches 3MF/profile contents automatically.
+- Added explicit private reporting guidance for security-sensitive findings.
+- Documented the intentional **unsigned** Windows preview policy: SmartScreen/Unknown publisher is expected, is not by itself a malware detection, and users should proceed only with the official GitHub Release artifact.
+- Added SHA-256 verification guidance and an explicit warning not to weaken system-wide Windows security controls.
+- Kept automatic Installed update execution disabled while public preview binaries are unsigned; Update Centre continues to provide manual GitHub release handoff.
+- Moved broad Bambu Studio / OrcaSlicer compatibility coverage into the public tester phase while retaining explicit analysis-coverage limitations.
+
 ## v0.3.0-dev.15 — History + update notification UX
 
 - Added the first real local **History** view with a bounded 20-entry inspection-summary log.

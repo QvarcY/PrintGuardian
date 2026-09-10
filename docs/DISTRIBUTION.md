@@ -13,11 +13,10 @@ PrintGuardian-v0.3.0-preview.1-Windows-x64/
 ├─ START HERE - SĀC ŠEIT.txt
 ├─ PrintGuardian Portable.exe
 ├─ Install PrintGuardian.exe
-├─ LICENSE.txt
 └─ CHECKSUMS.txt
 ```
 
-No source files, JavaScript bundles, Rust build folders, DLL collections, package-manager files or other implementation details belong at the top level. If the final portable build ever requires companion runtime resources, they must be bundled into the executable where technically reasonable or placed in one clearly internal subdirectory created by the release packager. The preferred target is a single portable executable.
+If an explicit project license is adopted later, staging may also add `LICENSE.txt`. No source files, JavaScript bundles, Rust build folders, DLL collections, package-manager files or other implementation details belong at the top level. If the final portable build ever requires companion runtime resources, they must be bundled into the executable where technically reasonable or placed in one clearly internal subdirectory created by the release packager. The preferred target is a single portable executable.
 
 ## Option 1 — Portable
 
@@ -27,16 +26,16 @@ No source files, JavaScript bundles, Rust build folders, DLL collections, packag
 - does not register an uninstall entry merely to run;
 - keeps portable-specific WebView/localStorage data in a dedicated hidden `PrintGuardianData` location beside the executable when that location is writable;
 - reports an explicit `portable-fallback` state and uses Windows Local AppData if the executable folder is not writable;
-- must not be called fully portable until the dev.14 move/reopen/separation test in `PORTABLE_STORAGE.md` passes;
+- passed the dev.14 move/reopen/separation maintainer test documented in `PORTABLE_STORAGE.md`;
 - uses the same analysis engine and UI as the installed build.
 
-The browser preview still uses ordinary browser storage, but the Windows Portable build now redirects its WebView2/localStorage directory beside the EXE. Runtime portability verification remains a release blocker until the move/reopen/separation test passes.
+The browser preview still uses ordinary browser storage, while the Windows Portable build redirects its WebView2/localStorage directory beside the EXE. The maintainer move/reopen/separation test has passed.
 
 ## Option 2 — Installed
 
 `Install PrintGuardian.exe`
 
-The planned installed build uses Tauri 2's Windows NSIS installer. Tauri supports Windows setup executables and MSI packages; PrintGuardian's primary friendly installer asset will be the NSIS `-setup.exe` renamed at release staging time to `Install PrintGuardian.exe`.
+The installed build uses Tauri 2's Windows NSIS installer. Tauri supports Windows setup executables and MSI packages; PrintGuardian's primary friendly installer asset will be the NSIS `-setup.exe` renamed at release staging time to `Install PrintGuardian.exe`.
 
 The default installation should be per-user unless testing shows a reason to require machine-wide installation. Per-user install avoids an unnecessary Administrator prompt for normal users.
 
@@ -51,7 +50,7 @@ For the public preview, install -> launch -> uninstall -> reinstall must be test
 
 ## WebView2
 
-Tauri uses Microsoft WebView2 on Windows. Current Windows 10/11 systems commonly already provide it; the installer path can ensure the runtime is available. The exact installer WebView2 mode is selected and tested before preview.1. The portable build must detect or clearly report a missing runtime instead of simply failing silently.
+Tauri uses Microsoft WebView2 on Windows. Current Windows 10/11 systems commonly already provide it; the installer path can ensure the runtime is available. The exact Windows package is smoke-tested before publication. A missing/unsupported runtime must be reported clearly rather than failing silently.
 
 ## Update behavior by distribution type
 
@@ -61,9 +60,9 @@ Dev.14 introduces one desktop **Update Centre** visual model and a GitHub Releas
 
 - notify non-intrusively that a newer version is available;
 - show release notes;
-- download/install only after user confirmation;
-- verify signed updater artifacts before installation;
-- restart only as part of the explicit update flow.
+- open the official GitHub release after user confirmation;
+- let the user run the newer installer manually over the existing installation;
+- keep automatic execution disabled while public preview binaries are unsigned.
 
 ### Portable build
 

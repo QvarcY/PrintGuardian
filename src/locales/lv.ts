@@ -32,7 +32,7 @@ export const lv = {
     author: 'Izveidoja CraftIN / QvarcY',
     support: 'Atbalstīt projektu',
     supportHint: 'Atvērt CraftIN Buy Me a Coffee lapu jaunā cilnē.',
-    prototype: 'v0.3.0-dev.15 · History + update notification UX',
+    prototype: 'v0.3.0-preview.1 · publiskais priekšskatījums',
     updatedTitle: 'PrintGuardian ir atjaunināts',
     historyNowAvailable: 'Vēsture tagad ir pieejama. Atver projektu un apskati jauno sadaļu ar NEW marķējumu.',
     dismiss: 'Paslēpt paziņojumu',

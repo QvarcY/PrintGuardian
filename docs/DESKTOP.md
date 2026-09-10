@@ -92,4 +92,4 @@ Installed uses Tauri's application-specific Local AppData directory, which also 
 
 Dev.15 retains the desktop **Update Centre** and narrowly scoped GitHub Releases metadata check, and adds release-highlight parsing, distribution-specific manual update handoff guidance and post-update feature discovery. It can report version/channel/distribution state, run manual/periodic metadata checks and simulate an update notification in development builds.
 
-The Tauri updater plugin is intentionally **not enabled yet**. Automatic Installed updates still require a real signing key, signed updater artifacts and invalid-signature rejection tests. Portable updates remain notification/download guidance rather than installer-style self-update.
+The Tauri updater plugin is intentionally **not enabled for v0.3.0-preview.1**. Public preview binaries are unsigned, so Installed updates remain a manual GitHub Release → installer handoff. Portable updates remain notification/download guidance with explicit `PrintGuardianData` preservation rather than installer-style self-update. A future automatic updater may be added only together with an appropriate trusted-signing design.

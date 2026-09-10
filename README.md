@@ -9,9 +9,25 @@
 
 PrintGuardian is a bilingual (Latvian / English) 3D-print project inspector by **CraftIN / QvarcY**.
 
-The current development branch is **v0.3.0-dev.15**. Feature expansion is temporarily frozen while PrintGuardian is hardened for its first usable Windows preview. The existing Project Workspace, print-profile library, manual supported edits, comparison tools and verified experimental 3MF export remain in place.
+The release-candidate branch is now prepared as **v0.3.0-preview.1**, the first public Windows x64 preview. It includes the Project Workspace, print-profile library, supported manual edits, comparison tools, verified experimental 3MF export, Portable/Installed builds, local project history and the Update Centre.
 
-Dev.15 builds on the verified Portable/Installed storage foundation and turns the update UX into a real feature-release lifecycle: published GitHub release notes are normalized into concise highlights, Portable/Installed handoff instructions are explicit, and returning dev.14 users see **History** graduate from Soon to **NEW**. The new History view stores only bounded local inspection-summary metadata; older 3MF files are not duplicated into the history log. Signed in-app installation is still disabled until updater signing is completed.
+> [!IMPORTANT]
+> **Windows SmartScreen / unsigned preview:** `v0.3.0-preview.1` is intentionally distributed without an Authenticode code-signing certificate. Windows may show **Windows protected your PC / Unknown publisher**. This reputation warning does not by itself mean malware was detected. Only run binaries downloaded from the official `QvarcY/PrintGuardian` GitHub Releases page and verify `CHECKSUMS.txt` when in doubt. Unsigned new builds may trigger the warning again. Signing may be revisited later if a suitable free/cost-effective route becomes available; no date is promised. See [`docs/WINDOWS_SIGNING.md`](docs/WINDOWS_SIGNING.md).
+
+Public-preview compatibility testing is intentionally real-world driven: Bambu Studio and OrcaSlicer edge cases are expected to be reported by testers rather than treated as a prerequisite for claiming complete slicer coverage. The app therefore keeps its limitation language explicit and never equates a clean basic inspection with a print-safety guarantee.
+
+The top bar includes a visible **Report / suggest** action beside Buy Me a Coffee. It opens a pre-filled GitHub issue for either a problem report or improvement idea and never attaches 3MF/profile contents automatically.
+
+## Windows public preview
+
+Official releases: **https://github.com/QvarcY/PrintGuardian/releases**
+
+The Windows ZIP provides two user-facing choices:
+
+- `PrintGuardian Portable.exe` — run without installing; local state stays in the hidden `PrintGuardianData` folder beside the EXE;
+- `Install PrintGuardian.exe` — normal per-user Windows installation with Installed apps / Start Menu uninstall support.
+
+The ZIP also contains `START HERE - SĀC ŠEIT.txt` and `CHECKSUMS.txt`. Preview updates are currently manual: the in-app Update Centre announces a newer GitHub release, then Portable users replace the EXE while preserving `PrintGuardianData`, and Installed users run the newer installer over the existing installation.
 
 ## Fastest way to test
 
@@ -95,7 +111,7 @@ See [`docs/PORTABLE_STORAGE.md`](docs/PORTABLE_STORAGE.md), [`docs/DESKTOP.md`](
 - distinguishes installed-update behavior from portable-update behavior instead of pretending the two deployment types update identically;
 - adds release-readiness, real-file test, security and Windows release-staging documentation/scripts.
 
-The Tauri desktop host source now exists in dev.12. The actual portable binary, NSIS installer, desktop storage behavior and signed updater flow are still **release blockers**. `preview.html` remains a development/testing surface, not the intended final public Windows package.
+The real Portable and NSIS builds now exist and have been maintainer-tested. Signed automatic updater installation remains deferred; `preview.html` remains a development/testing surface rather than the public Windows package.
 
 ### v0.3-dev.10 Print Profiles + UX polish
 

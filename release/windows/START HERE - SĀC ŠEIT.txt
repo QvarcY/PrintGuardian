@@ -1,39 +1,76 @@
-PRINTGUARDIAN — WINDOWS
-======================
+PRINTGUARDIAN v0.3.0-preview.1 — WINDOWS x64
+===========================================
 
-Choose one option / Izvēlies vienu variantu:
+PUBLIC PREVIEW / PUBLISKAIS PRIEKŠSKATĪJUMS
+This is preview software for real-world testing. It is not a full geometry/G-code safety audit.
+Šī ir priekšskatījuma versija reālai testēšanai. Tā vēl neveic pilnu geometry/G-code drošības auditu.
 
+CHOOSE ONE / IZVĒLIES VIENU VARIANTU
+-------------------------------------
 1) PrintGuardian Portable.exe
    LV: Palaid programmu bez instalēšanas.
    EN: Run PrintGuardian without installing it.
 
 2) Install PrintGuardian.exe
-   LV: Instalē PrintGuardian Windows datorā un izmanto instalētās versijas atjaunināšanas plūsmu.
-   EN: Install PrintGuardian on Windows and use the installed-edition update flow.
+   LV: Instalē PrintGuardian Windows datorā.
+   EN: Install PrintGuardian on Windows.
 
-You do NOT need to open or edit application system files.
-Aplikācijas sistēmas failus nav nepieciešams atvērt vai labot.
+WINDOWS SMARTSCREEN — SVARĪGI / IMPORTANT
+------------------------------------------
+LV:
+Šis publiskais preview pašlaik NAV Authenticode digitāli parakstīts. Tāpēc Windows var parādīt Microsoft Defender SmartScreen logu “Windows aizsargāja jūsu datoru” un norādīt nezināmu izdevēju.
 
-Project files are processed locally by the application workflow unless a future feature explicitly says otherwise.
+Šis SmartScreen reputācijas brīdinājums pats par sevi nenozīmē, ka Windows ir atradis vīrusu. PrintGuardian ir jauna, neparakstīta programma, un Windows nevar izmantot uzticama izdevēja parakstu, lai pārnestu reputāciju starp jaunām versijām.
 
-HOW TO CONFIRM WHICH ONE YOU OPENED / KĀ PĀRBAUDĪT, KURU ATVĒRI
-----------------------------------------------------------------
-LV: Programmas augšējā joslā desktop versija rāda “Portable” vai “Instalētā”.
-EN: The desktop app shows “Portable” or “Installed” in the top bar.
+Turpini TIKAI tad, ja šo ZIP lejupielādēji no oficiālās:
+https://github.com/QvarcY/PrintGuardian/releases
 
-LV: Portable versija glabā savus profilus, iestatījumus un WebView datus slēptā PrintGuardianData mapē blakus EXE. Ja vēlies pārvietot Portable versiju kopā ar tās datiem, kopē visu izpakoto PrintGuardian mapi, ne tikai EXE.
-EN: The Portable edition keeps its profiles, settings and WebView data in a hidden PrintGuardianData folder beside the EXE. To move Portable together with its data, copy the whole extracted PrintGuardian folder, not only the EXE.
+Ja Windows piedāvā šo iespēju, pēc avota pārbaudes vari izvēlēties:
+Papildinformācija (More info) -> Palaist tik un tā (Run anyway)
 
+Dažās Windows drošības konfigurācijās unsigned aplikāciju palaišana var būt pilnībā bloķēta. Neatslēdz sistēmas drošību globāli PrintGuardian dēļ.
+
+EN:
+This public preview is NOT Authenticode-signed. Windows may therefore show a Microsoft Defender SmartScreen “Windows protected your PC” / unknown publisher warning.
+
+A SmartScreen reputation warning does not by itself mean that Windows detected malware. PrintGuardian is a new unsigned application, so Windows cannot use a trusted publisher signature to carry reputation between new builds.
+
+Continue ONLY if you downloaded this ZIP from the official release page:
+https://github.com/QvarcY/PrintGuardian/releases
+
+Where Windows allows it, after verifying the source choose:
+More info -> Run anyway
+
+Some Windows security configurations can block unsigned applications entirely. Do not weaken system-wide security settings just to run PrintGuardian.
+
+WILL SIGNING CHANGE? / VAI TAS MAINĪSIES?
+-----------------------------------------
+LV: Iespējams. Parakstīšanu pārskatīsim, ja būs piemērots bezmaksas/izmaksu ziņā pamatots risinājums vai projekta apjoms to attaisnos. Konkrēts termiņš netiek solīts, tāpēc nākamajos unsigned preview laidienos SmartScreen var parādīties atkārtoti.
+EN: Possibly. Signing will be revisited if a suitable free/cost-effective option becomes available or project adoption justifies it. No date is promised, so SmartScreen may reappear on later unsigned preview releases.
+
+VERIFY THE FILES / PĀRBAUDI FAILUS
+-----------------------------------
+CHECKSUMS.txt contains SHA-256 hashes for the exact Portable and Installer EXE files.
+CHECKSUMS.txt satur precīzo Portable un Installer EXE SHA-256 kontrolsummas.
+
+PORTABLE DATA / PORTABLE DATI
+------------------------------
+LV: Portable versija glabā profilus, iestatījumus, pēdējā projekta kopiju un WebView datus slēptā PrintGuardianData mapē blakus EXE. Lai pārvietotu Portable kopā ar datiem, kopē visu izpakoto PrintGuardian mapi.
+EN: Portable keeps profiles, settings, the recent-project copy and WebView data in a hidden PrintGuardianData folder beside the EXE. To move Portable with its data, copy the whole extracted PrintGuardian folder.
+
+UPDATES / ATJAUNINĀJUMI
+------------------------
+LV: Preview atjauninājumi pašlaik ir manuāli. Update Centre paziņo par jaunu GitHub laidienu. Portable gadījumā nomaini EXE, saglabājot PrintGuardianData. Installed gadījumā palaid jaunā laidiena instalatoru virs esošās instalācijas.
+EN: Preview updates are currently manual. Update Centre announces new GitHub releases. For Portable, replace the EXE while keeping PrintGuardianData. For Installed, run the newer installer over the existing installation.
+
+REPORT / SUGGEST — ZIŅOT / IETEIKT
+-----------------------------------
+LV: Aplikācijas augšējā joslā blakus Buy Me a Coffee ir poga “Ziņot / ieteikt”. Tā atver sagatavotu GitHub issue kļūdai vai idejai. PrintGuardian pats nepievieno tavu 3MF vai profilu saturu.
+EN: The top bar includes “Report / suggest” beside Buy Me a Coffee. It opens a pre-filled GitHub issue for a bug or idea. PrintGuardian does not attach your 3MF or profile contents automatically.
+
+Security-sensitive findings / Drošības ievainojamības: info@craftin.lv
 
 UNINSTALL / ATINSTALĒŠANA
-------------------------
-LV: Instalēto versiju vari noņemt Windows Iestatījumi > Programmas > Instalētās programmas > PrintGuardian > Atinstalēt.
-    Ērtībai izvēlnē Sākt tiek pievienota arī saīsne “Uninstall PrintGuardian”.
-    Atinstalētājs piedāvā atsevišķi izvēlēties, vai dzēst arī PrintGuardian lietotnes datus un iestatījumus.
-EN: Remove the installed edition from Windows Settings > Apps > Installed apps > PrintGuardian > Uninstall.
-    A “Uninstall PrintGuardian” Start Menu shortcut is also created for convenience.
-    The uninstaller separately lets you choose whether PrintGuardian application data and settings should also be deleted.
-
-WINDOWS SECURITY / WINDOWS DROŠĪBA
-----------------------------------
-Development builds may currently show a Microsoft Defender SmartScreen unknown-publisher warning because they are not code-signed yet. Public preview release readiness requires trusted code signing; do not treat an unsigned development build as the final public package.
+--------------------------
+LV: Windows Iestatījumi > Programmas > Instalētās programmas > PrintGuardian > Atinstalēt, vai izvēlnē Sākt “Uninstall PrintGuardian”. Atinstalētājs ļauj atsevišķi izvēlēties, vai dzēst arī lietotnes datus.
+EN: Windows Settings > Apps > Installed apps > PrintGuardian > Uninstall, or use “Uninstall PrintGuardian” from Start. The uninstaller separately lets you choose whether app data should also be deleted.

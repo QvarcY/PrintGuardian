@@ -1,8 +1,8 @@
 # PrintGuardian updater architecture
 
-Status: **release-notification + post-update feature-discovery UX implemented through dev.15; signed Installed updates are not yet enabled**.
+Status: **release notification is enabled for preview.1; automatic Installed updates are deliberately deferred while public builds remain unsigned**.
 
-The Windows desktop application has a real Update Centre that checks the public PrintGuardian GitHub Releases metadata feed, extracts concise release highlights and provides distribution-specific update handoff guidance. The browser `preview.html` still does not self-update. Actual Installed update installation remains disabled until the signed Tauri updater path is configured and tested.
+The Windows desktop application has a real Update Centre that checks the public PrintGuardian GitHub Releases metadata feed, extracts concise release highlights and provides distribution-specific update handoff guidance. The browser `preview.html` still does not self-update. Actual Installed update installation remains disabled in the unsigned public preview. Updates are announced in-app, then handed off to the official GitHub release for a manual install/replacement.
 
 ## One update experience, two distribution modes
 
@@ -16,21 +16,20 @@ Both desktop modes now:
 4. offer a manual **Check for updates** action;
 5. keep update checking separate from print-file analysis and telemetry.
 
-Development builds also include an explicit **test notification** action. It creates a simulated next-version candidate locally and never pretends that a fake release was downloaded or signed.
+Development (`-dev.*`) builds include an explicit **test notification** action. Public `preview.*` builds do not expose that simulator.
 
 The action after the notification differs by distribution mode.
 
 ### Installed build
 
-The final installed Windows update path will use Tauri 2's signed updater flow. Tauri requires updater signatures; signature verification cannot be disabled. The release process therefore uses an embedded public key and a separately protected private signing key.
+A later signed release may use Tauri 2's signed updater flow. Tauri requires updater signatures; signature verification cannot be disabled. Because `preview.1` is intentionally unsigned, PrintGuardian does not enable automatic Installed update execution in this release.
 
 Expected behavior:
 
 - show update + release notes;
-- download/install only after explicit user action;
-- reject unsigned/invalidly signed updater artifacts;
-- use the tested NSIS updater artifact on Windows;
-- restart only as part of the explicit update flow.
+- open the official GitHub release on explicit user action;
+- let the user run the newer installer manually over the existing installation;
+- keep automatic execution disabled until a future trusted-signing design is implemented and tested.
 
 ### Portable build
 
@@ -73,18 +72,14 @@ Development builds are never automatically offered to Stable users.
 
 ## Security model
 
-- updater public key embedded in packaged application configuration;
-- private updater key never stored in the repository;
-- production update endpoint over HTTPS;
-- signatures verified before installed-build update execution;
-- release checksum published for human/manual verification as an additional distribution aid;
-- invalid-signature rejection tested before auto-update is enabled publicly.
+- update discovery uses the official GitHub Releases API over HTTPS;
+- public preview automatic Installed execution is disabled;
+- release checksums are published for manual artifact verification;
+- if automatic updater execution is added later, it must require verified signatures and keep private signing credentials outside the repository.
 
 ## GitHub Releases target
 
-Initial release backend can use GitHub Releases with a static updater manifest for the installed build and the same release metadata for portable update notifications.
-
-Windows release assets are expected to include the human-facing Windows ZIP, installed updater artifacts/signatures and the version manifest required by the desktop updater.
+The first public preview uses GitHub Releases as the update-discovery backend. The human-facing Windows x64 ZIP is the update target for both distribution modes; Portable replaces its EXE while keeping `PrintGuardianData`, and Installed users run the newer installer manually. Signed updater manifests/assets are deferred.
 
 ## Privacy
 
@@ -94,7 +89,7 @@ Only information needed to resolve a compatible release should be sent, such as 
 
 ## UI target
 
-The dev.15 Update Centre now shows:
+The Preview Update Centre shows:
 
 - installed version;
 - distribution type: Portable / Installed;
@@ -106,7 +101,7 @@ The dev.15 Update Centre now shows:
 - **Check for updates**;
 - an action appropriate to the current distribution type.
 
-The current action opens the public release/download surface; signed in-app installation is deliberately withheld until the updater security gates pass. No forced silent installation is planned for the default experience.
+The current public-preview action opens the official release/download surface. Automatic in-app installation is deliberately not part of the unsigned preview. No forced silent installation is planned for the default experience.
 
 ## Implementation checkpoints
 
@@ -115,11 +110,10 @@ The current action opens the public release/download surface; signed in-app inst
 - [x] add Update Centre UI, GitHub Releases metadata checks and development notification simulation;
 - [x] add release-note highlight extraction and explicit Portable/Installed manual update handoff guidance;
 - [x] add persistent post-update feature discovery and verify the first Soon → NEW target in source (History);
-- [ ] add `tauri-plugin-updater` for the installed build;
-- [ ] generate and securely archive updater signing keys;
-- [ ] enable signed updater artifacts in Tauri bundle configuration;
-- [ ] complete portable update download + replacement guidance (release-page/ZIP handoff foundation exists; replacement guidance still needs the first real release test);
-- [ ] complete Preview GitHub Release flow (GitHub Releases discovery exists; signed updater manifest still pending);
-- [ ] verify Windows install/update/restart path;
-- [ ] verify portable update-notification path does not invoke the installer;
-- [ ] test invalid-signature rejection before first public updater-enabled build.
+- [x] keep `v0.3.0-preview.1` update execution manual while binaries are unsigned;
+- [x] provide explicit Portable replacement guidance that preserves `PrintGuardianData`;
+- [x] provide explicit Installed guidance to run the newer official installer manually;
+- [ ] publish the first GitHub Preview release and verify the real release-discovery path from an older build;
+- [ ] verify the published Portable update notification opens the Windows x64 ZIP rather than the installer;
+- [ ] verify the published Installed update notification opens the official release page;
+- [ ] if trusted signing is introduced later, evaluate `tauri-plugin-updater`, signing keys and invalid-signature rejection before enabling automatic execution.

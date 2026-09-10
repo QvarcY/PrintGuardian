@@ -25,6 +25,9 @@ const recentProject = await read('src/lib/recentProject.ts');
 const projectHistory = await read('src/lib/projectHistory.ts');
 const featureDiscovery = await read('src/lib/featureDiscovery.ts');
 const historyPanel = await read('src/components/HistoryPanel.tsx');
+const feedbackButton = await read('src/components/FeedbackButton.tsx');
+const windowsSigning = await read('docs/WINDOWS_SIGNING.md');
+const previewReleaseNotes = await read('docs/releases/v0.3.0-preview.1.md');
 const dropZone = await read('src/components/DropZone.tsx');
 const rustHost = await read('src-tauri/src/lib.rs');
 const tauriConfig = JSON.parse(await read('src-tauri/tauri.conf.json'));
@@ -58,6 +61,12 @@ else fail('planned/new-feature navigation state is inconsistent');
 
 if (preview.includes('https://buymeacoffee.com/craftin')) pass('Buy Me a Coffee destination is present');
 else fail('Buy Me a Coffee destination is missing');
+
+if (app.includes('<FeedbackButton />') && feedbackButton.includes('Report / suggest') && feedbackButton.includes('issues/new') && feedbackButton.includes('does not attach')) pass('public preview has a visible local-safe problem/idea feedback handoff');
+else fail('public preview feedback entry point is missing or unclear');
+
+if (windowsSigning.includes('accepted public-preview limitation') && windowsSigning.includes('SmartScreen') && previewReleaseNotes.includes('does not by itself mean') && previewReleaseNotes.includes('CHECKSUMS.txt')) pass('unsigned preview SmartScreen limitation is explicitly documented');
+else fail('unsigned preview SmartScreen disclosure is incomplete');
 
 if (readme.includes('pre-release software') && (readme.includes('not** a guarantee') || readme.includes('not a guarantee'))) pass('README keeps explicit preview limitation language');
 else fail('README preview limitation language is missing');
@@ -138,7 +147,7 @@ for (const fixture of ['fixtures/bambu-style-smoke-test.3mf', 'fixtures/bambu-st
   catch { fail(`${fixture} is missing`); }
 }
 
-for (const file of ['SECURITY.md', 'docs/RELEASE_READINESS.md', 'docs/DISTRIBUTION.md', 'docs/DESKTOP.md', 'docs/PORTABLE_STORAGE.md', 'docs/WINDOWS_SIGNING.md', 'release/windows/START HERE - SĀC ŠEIT.txt', 'src-tauri/windows/Latvian.nsh', 'src-tauri/windows/nsis-hooks.nsh', 'scripts/stage-windows-release.mjs', 'scripts/build-windows-flavors.mjs', 'scripts/update-center-smoke.mjs', 'scripts/feature-discovery-smoke.mjs', 'src/lib/recentProject.ts', 'src/lib/projectHistory.ts', 'src/lib/featureDiscovery.ts', 'src/components/HistoryPanel.tsx', 'src/components/HistoryPanel.css', 'src-tauri/src/lib.rs', 'src-tauri/capabilities/default.json', '.github/workflows/windows-desktop.yml']) {
+for (const file of ['SECURITY.md', 'docs/RELEASE_READINESS.md', 'docs/DISTRIBUTION.md', 'docs/DESKTOP.md', 'docs/PORTABLE_STORAGE.md', 'docs/WINDOWS_SIGNING.md', 'release/windows/START HERE - SĀC ŠEIT.txt', 'src-tauri/windows/Latvian.nsh', 'src-tauri/windows/nsis-hooks.nsh', 'scripts/stage-windows-release.mjs', 'scripts/build-windows-flavors.mjs', 'scripts/update-center-smoke.mjs', 'scripts/feature-discovery-smoke.mjs', 'src/lib/recentProject.ts', 'src/lib/projectHistory.ts', 'src/lib/featureDiscovery.ts', 'src/components/HistoryPanel.tsx', 'src/components/HistoryPanel.css', 'src/components/FeedbackButton.tsx', 'docs/releases/v0.3.0-preview.1.md', 'src-tauri/src/lib.rs', 'src-tauri/capabilities/default.json', '.github/workflows/windows-desktop.yml']) {
   try { await access(new URL(file, root)); pass(`${file} exists`); }
   catch { fail(`${file} is missing`); }
 }
@@ -147,4 +156,4 @@ if (errors.length) {
   console.error(`\nRelease gate failed with ${errors.length} issue(s).`);
   process.exit(1);
 }
-console.log('\nRelease gate checks passed. Manual Windows build, published-release update, real-file, signing and license blockers remain in docs/RELEASE_READINESS.md.');
+console.log('\nRelease gate checks passed. Build and smoke-test the exact preview.1 Windows artifact before merge/tag/publication; broader slicer compatibility remains public-preview testing.');
