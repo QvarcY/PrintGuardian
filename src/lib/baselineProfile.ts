@@ -86,6 +86,17 @@ export function saveProfileBaseline(inspection: ThreeMfInspection): SavedProfile
   }
 }
 
+export function storeProfileBaseline(baseline: SavedProfileBaseline): boolean {
+  const store = storage();
+  if (!store) return false;
+  try {
+    store.setItem(STORAGE_KEY, JSON.stringify(baseline));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function removeProfileBaseline(): boolean {
   const store = storage();
   if (!store) return false;

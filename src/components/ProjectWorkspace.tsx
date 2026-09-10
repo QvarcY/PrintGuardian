@@ -54,7 +54,7 @@ function workspaceCopy(lv: boolean) {
     openTab: 'Atvērt sadaļu',
     profileTitle: 'Ko nozīmē “Mans drukas profils”?',
     profileExplain: 'Tas ir lokāls atskaites profils, ko PrintGuardian izveido no tava uzticama 3MF. Tas palīdz salīdzināt svešu projektu ar tavu printeri un ierastajiem iestatījumiem. Tas nav “drošības sertifikāts” un nav obligāts faila analīzei.',
-    profileSet: 'Iestatīt manu drukas profilu', profileReplace: 'Nomainīt profilu', profileRemove: 'Dzēst profilu', profileLoading: 'Nolasa profilu…',
+    profileSet: 'Iestatīt manu drukas profilu', profileReplace: 'Atjaunināt aktīvo profilu', profileRemove: 'Dzēst aktīvo profilu', profileManage: 'Pārvaldīt profilus', profileLoading: 'Nolasa profilu…',
     profileFrom: 'Izveidots no', profileNone: 'Nav iestatīts — PrintGuardian joprojām analizēs pašu projektu.', profileRemoveConfirm: 'Dzēst saglabāto drukas profilu?',
     profileError: 'Drukas profilu neizdevās saglabāt.',
     printerTitle: 'Printera saderība', printerSub: 'Svarīgākie printera, nozzle un build plate dati vienuviet.',
@@ -88,7 +88,7 @@ function workspaceCopy(lv: boolean) {
     reviewText: (count: number) => `${count} unresolved attention points are grouped into the tabs below. A setting badge clears only after a real change; structural warnings remain until the file state changes.`,
     identity: 'Project identity', attention: 'Needs attention', noAttention: 'There are no unresolved attention points in the checks currently supported.', openTab: 'Open section',
     profileTitle: 'What is “My print profile”?', profileExplain: 'It is a local reference profile created from one of your trusted 3MF files. PrintGuardian uses it to compare another project with your printer and normal settings. It is not a safety certificate and is not required for file analysis.',
-    profileSet: 'Set up my print profile', profileReplace: 'Replace profile', profileRemove: 'Remove profile', profileLoading: 'Reading profile…', profileFrom: 'Created from', profileNone: 'Not set — PrintGuardian will still analyze the project itself.', profileRemoveConfirm: 'Remove the saved print profile?', profileError: 'The print profile could not be saved.',
+    profileSet: 'Set up my print profile', profileReplace: 'Update active profile', profileRemove: 'Remove active profile', profileManage: 'Manage profiles', profileLoading: 'Reading profile…', profileFrom: 'Created from', profileNone: 'Not set — PrintGuardian will still analyze the project itself.', profileRemoveConfirm: 'Remove the saved print profile?', profileError: 'The print profile could not be saved.',
     printerTitle: 'Printer compatibility', printerSub: 'Printer, nozzle and build-plate information in one place.', materialTitle: 'Material and flow', materialSub: 'Filament profiles, materials and flow-related parameters.', settingsTitle: 'Print settings', settingsSub: 'Edit supported values where you can also see what they do and why they matter.', modelTitle: 'Model, supports and adhesion', modelSub: 'Model structure and settings that affect supports and first-layer stability.', advancedTitle: 'Advanced diagnostics', advancedSub: 'Technical tools and Profile Diff for users who want to go deeper.',
     current: 'In this project', mine: 'In my profile', same: 'Matches', differs: 'Differs', attentionNeeded: 'Review', resolved: 'Changed', useMine: 'Use my profile value', cannotUseMine: 'This value cannot yet be rewritten automatically with enough confidence.', manual: 'Manual', apply: 'Apply', manualUnsupported: 'Manual editing is not safely supported for this field yet.', why: 'What it affects', high: 'High impact', medium: 'Medium impact', low: 'Low impact',
     highRiskTitle: 'This is a high-impact manual change', highRiskText: 'An incorrect value can materially affect print behaviour or compatibility. PrintGuardian validates format and range, but cannot know every mechanical or material constraint in your setup.', understand: 'I understand that I am manually changing a high-impact parameter.', cancel: 'Cancel', confirm: 'Apply change',
@@ -146,10 +146,11 @@ function displayRaw(value: unknown, row: ProfileDiffRow): string {
     const enabled = value === true || value === 1 || value === '1' || String(value).toLowerCase() === 'true';
     return enabled ? 'Enabled' : 'Disabled';
   }
-  const scalar = Array.isArray(value) ? value.join(', ') : String(value ?? '—');
-  if (key === 'layer_height' || key === 'brim_width') return `${scalar} mm`;
-  if (key === 'sparse_infill_density') return `${scalar}%`;
-  if (key === 'max_volumetric_speed') return `${scalar} mm³/s`;
+  const scalar = Array.isArray(value) ? value.join(', ') : String(value ?? '—').trim();
+  if (scalar === '—') return scalar;
+  if (key === 'layer_height' || key === 'brim_width') return /\bmm\s*$/i.test(scalar) ? scalar : `${scalar} mm`;
+  if (key === 'sparse_infill_density') return /%\s*$/.test(scalar) ? scalar : `${scalar}%`;
+  if (key === 'max_volumetric_speed') return /mm(?:³|\^3)?\s*\/\s*s\s*$/i.test(scalar) ? scalar : `${scalar} mm³/s`;
   return scalar;
 }
 
@@ -245,7 +246,7 @@ function SettingCard({ row, inspection, profile, choice, manualValue, onChoosePr
   );
 }
 
-export function ProjectWorkspace({ inspection, profile, onProfileChange }:{ inspection: ThreeMfInspection; profile: SavedProfileBaseline | null; onProfileChange: (profile: SavedProfileBaseline | null) => void }) {
+export function ProjectWorkspace({ inspection, profile, profileName, onProfileChange, onManageProfiles }:{ inspection: ThreeMfInspection; profile: SavedProfileBaseline | null; profileName?: string; onProfileChange: (profile: SavedProfileBaseline | null) => void; onManageProfiles: () => void }) {
   const { i18n, t } = useTranslation();
   const lv = i18n.language.startsWith('lv');
   const text = workspaceCopy(lv);
@@ -416,8 +417,8 @@ export function ProjectWorkspace({ inspection, profile, onProfileChange }:{ insp
           <Identity label="Printer profile" value={inspection.printerProfile || inspection.printerModel || '—'}/><Identity label="Nozzle diameter" value={inspection.nozzleDiameter ? `${inspection.nozzleDiameter} mm` : '—'}/><Identity label="Build plate" value={inspection.buildPlate || '—'}/><Identity label="Process profile" value={inspection.processProfile || '—'}/><Identity label="Filament" value={inspection.filaments.map((f)=>f.type).filter(Boolean).join(', ') || '—'}/><Identity label="Geometry" value={`${inspection.objectCount} ${text.objects.toLowerCase()} · ${inspection.plateCount} ${text.plates.toLowerCase()}`}/>
         </div></section>
         <section className="overview-card profile-explainer glass-panel"><div className="profile-explainer-head"><div><span className="eyebrow">{text.profile}</span><h2>{text.profileTitle}</h2></div>{profile && <CheckCircle2 size={20}/>}</div><p>{text.profileExplain}</p>
-          {profile ? <div className="profile-current"><div><strong>{profile.profile.printerProfile || profile.profile.printerModel || profile.sourceFileName}</strong><span>{[profile.profile.nozzleDiameter ? `${profile.profile.nozzleDiameter} mm nozzle` : '', profile.profile.processProfile].filter(Boolean).join(' · ')}</span><small>{text.profileFrom}: {profile.sourceFileName}</small></div><div><button className="ghost" onClick={()=>inputRef.current?.click()}><FileUp2 size={14}/>{text.profileReplace}</button><button className="ghost danger" onClick={removeProfile}><Trash2 size={14}/>{text.profileRemove}</button></div></div>
-          : <div className="profile-empty"><span>{text.profileNone}</span><button className="primary" disabled={loadingProfile} onClick={()=>inputRef.current?.click()}>{loadingProfile?<LoaderCircle className="spin" size={14}/>:<FileUp2 size={14}/>} {loadingProfile?text.profileLoading:text.profileSet}</button></div>}
+          {profile ? <div className="profile-current"><div><strong>{profileName || profile.profile.printerProfile || profile.profile.printerModel || profile.sourceFileName}</strong><span>{[profile.profile.printerProfile || profile.profile.printerModel, profile.profile.nozzleDiameter ? `${profile.profile.nozzleDiameter} mm nozzle` : '', profile.profile.processProfile].filter(Boolean).join(' · ')}</span><small>{text.profileFrom}: {profile.sourceFileName}</small></div><div><button className="ghost profile-manage" onClick={onManageProfiles}><Settings2 size={14}/>{text.profileManage}</button><button className="ghost" onClick={()=>inputRef.current?.click()}><FileUp2 size={14}/>{text.profileReplace}</button><button className="ghost danger" onClick={removeProfile}><Trash2 size={14}/>{text.profileRemove}</button></div></div>
+          : <div className="profile-empty"><span>{text.profileNone}</span><div className="profile-empty-actions"><button className="ghost" onClick={onManageProfiles}><Settings2 size={14}/>{text.profileManage}</button><button className="primary" disabled={loadingProfile} onClick={()=>inputRef.current?.click()}>{loadingProfile?<LoaderCircle className="spin" size={14}/>:<FileUp2 size={14}/>} {loadingProfile?text.profileLoading:text.profileSet}</button></div></div>}
           {profileError && <div className="workspace-error">{profileError}</div>}<input ref={inputRef} hidden type="file" accept=".3mf" onChange={(e)=>loadProfile(e.target.files?.[0])}/>
         </section>
       </div>

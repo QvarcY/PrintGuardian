@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Clock3, FolderOpen, Settings2, ShieldCheck, UserRoundCog } from 'lucide-react';
 import { LanguageSwitch } from './components/LanguageSwitch';
@@ -6,7 +6,18 @@ import { UiScaleControl } from './components/UiScaleControl';
 import { DropZone } from './components/DropZone';
 import { SupportProject } from './components/SupportProject';
 import { ProjectWorkspace } from './components/ProjectWorkspace';
-import { loadProfileBaseline, type SavedProfileBaseline } from './lib/baselineProfile';
+import { PrintProfilesPanel } from './components/PrintProfilesPanel';
+import { createProfileBaseline, type SavedProfileBaseline } from './lib/baselineProfile';
+import {
+  addPrintProfile,
+  loadPrintProfileLibrary,
+  removePrintProfile,
+  renamePrintProfile,
+  replacePrintProfile,
+  selectPrintProfile,
+  type NamedPrintProfile,
+  type PrintProfileLibrary,
+} from './lib/printProfiles';
 import { createDemoInspection, inspectThreeMf, type ThreeMfInspection } from './lib/threeMfInspector';
 
 function App() {
@@ -48,6 +59,7 @@ function App() {
         </button>
         <div className="top-actions">
           {inspection && <div className="project-chip"><span className="pulse-dot" />{inspection.fileName}</div>}
+          <SupportProject prominent />
           <UiScaleControl />
           <LanguageSwitch />
         </div>
@@ -65,17 +77,58 @@ function App() {
   );
 }
 
+type DashboardView = 'project' | 'profiles';
+
 function Dashboard({ inspection }: { inspection: ThreeMfInspection }) {
   const { t, i18n } = useTranslation();
   const lv = i18n.language.startsWith('lv');
-  const [profile, setProfile] = useState<SavedProfileBaseline | null>(() => loadProfileBaseline());
+  const [library, setLibrary] = useState<PrintProfileLibrary>(() => loadPrintProfileLibrary());
+  const [view, setView] = useState<DashboardView>('project');
+  const [profileBusy, setProfileBusy] = useState(false);
+
+  const activeNamedProfile = useMemo<NamedPrintProfile | null>(
+    () => library.profiles.find((profile) => profile.id === library.activeId) ?? null,
+    [library],
+  );
+  const activeProfile = activeNamedProfile?.snapshot ?? null;
+
+  const updateFromWorkspace = (snapshot: SavedProfileBaseline | null) => {
+    if (!snapshot) {
+      if (!library.activeId) return;
+      setLibrary(removePrintProfile(library.activeId));
+      return;
+    }
+    setLibrary(library.activeId ? replacePrintProfile(library.activeId, snapshot) : addPrintProfile(snapshot));
+  };
+
+  const addProfileFile = async (file: File) => {
+    setProfileBusy(true);
+    try {
+      const inspected = await inspectThreeMf(file);
+      setLibrary(addPrintProfile(createProfileBaseline(inspected)));
+    } catch (reason) {
+      console.error(reason);
+      window.alert(lv ? 'Šo 3MF neizdevās pievienot kā drukas profilu.' : 'This 3MF could not be added as a print profile.');
+    } finally {
+      setProfileBusy(false);
+    }
+  };
+
+  const selectProfile = (id: string) => setLibrary(selectPrintProfile(id));
+  const renameProfile = (id: string, name: string) => setLibrary(renamePrintProfile(id, name));
+  const deleteProfile = (id: string) => {
+    const item = library.profiles.find((profile) => profile.id === id);
+    if (!item) return;
+    if (!window.confirm(lv ? `Dzēst drukas profilu “${item.name}”?` : `Remove print profile “${item.name}”?`)) return;
+    setLibrary(removePrintProfile(id));
+  };
 
   return (
     <main className="workspace">
       <aside className="sidebar simplified-sidebar app-level-sidebar">
         <nav>
-          <button className="selected"><FolderOpen size={17} /><span>{lv ? 'Pašreizējais projekts' : 'Current project'}</span></button>
-          <button disabled title={lv ? 'Vairāku profilu pārvaldība sekos nākamajā posmā.' : 'Multi-profile management will follow in a later stage.'}><UserRoundCog size={17} /><span>{lv ? 'Mani drukas profili' : 'My print profiles'}</span><small>{lv ? 'drīzumā' : 'soon'}</small></button>
+          <button className={view === 'project' ? 'selected' : ''} onClick={() => setView('project')}><FolderOpen size={17} /><span>{lv ? 'Pašreizējais projekts' : 'Current project'}</span></button>
+          <button className={view === 'profiles' ? 'selected' : ''} onClick={() => setView('profiles')}><UserRoundCog size={17} /><span>{lv ? 'Mani drukas profili' : 'My print profiles'}</span>{library.profiles.length > 0 && <small>{library.profiles.length}</small>}</button>
           <button disabled><Clock3 size={17} /><span>{lv ? 'Vēsture' : 'History'}</span><small>{lv ? 'drīzumā' : 'soon'}</small></button>
           <button disabled><Settings2 size={17} /><span>{lv ? 'Iestatījumi' : 'Settings'}</span><small>{lv ? 'drīzumā' : 'soon'}</small></button>
         </nav>
@@ -85,7 +138,26 @@ function Dashboard({ inspection }: { inspection: ThreeMfInspection }) {
         </div>
       </aside>
       <section className="dashboard workspace-dashboard">
-        <ProjectWorkspace inspection={inspection} profile={profile} onProfileChange={setProfile} />
+        {view === 'project' ? (
+          <ProjectWorkspace
+            inspection={inspection}
+            profile={activeProfile}
+            profileName={activeNamedProfile?.name}
+            onProfileChange={updateFromWorkspace}
+            onManageProfiles={() => setView('profiles')}
+          />
+        ) : (
+          <PrintProfilesPanel
+            profiles={library.profiles}
+            activeId={library.activeId}
+            busy={profileBusy}
+            onAddFile={addProfileFile}
+            onSelect={selectProfile}
+            onRename={renameProfile}
+            onRemove={deleteProfile}
+            onBack={() => setView('project')}
+          />
+        )}
       </section>
     </main>
   );
