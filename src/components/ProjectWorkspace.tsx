@@ -12,6 +12,7 @@ import {
   coerceManualBuilderValue,
   findExistingProjectSettingsKey,
   manualEditorFor,
+  type BuilderCanonicalKey,
 } from '../lib/projectSettingsBridge';
 import {
   createSafeThreeMfBuildPreview,
@@ -35,7 +36,15 @@ import { ProfileDiffPanel } from './ProfileDiffPanel';
 import './ProjectWorkspace.css';
 
 type WorkspaceTab = 'overview' | 'printer' | 'material' | 'settings' | 'model' | 'advanced';
-type TabIssue = { id: string; tab: Exclude<WorkspaceTab, 'overview' | 'advanced'>; rowKey?: string; impact: 'high' | 'medium' | 'low'; label: string };
+type TabIssue = {
+  id: string;
+  tab: Exclude<WorkspaceTab, 'overview' | 'advanced'>;
+  rowKey?: string;
+  impact: 'high' | 'medium' | 'low';
+  label: string;
+  detail?: string;
+  guidance?: string;
+};
 
 type Copy = ReturnType<typeof workspaceCopy>;
 
@@ -62,9 +71,14 @@ function workspaceCopy(lv: boolean) {
     settingsTitle: 'Drukas iestatījumi', settingsSub: 'Maini atbalstītos parametrus turpat, kur redzi to nozīmi un ietekmi.',
     modelTitle: 'Modelis, supports un saķere', modelSub: 'Modeļa struktūra un parametri, kas ietekmē supportus un pirmā slāņa stabilitāti.',
     advancedTitle: 'Papildu diagnostika', advancedSub: 'Tehniskie rīki un Profile Diff tiem, kas vēlas iedziļināties.',
-    current: 'Šajā projektā', mine: 'Manā profilā', same: 'Sakrīt', differs: 'Atšķiras', attentionNeeded: 'Jāpārbauda', resolved: 'Mainīts',
+    current: 'Šajā projektā', mine: 'Manā profilā', same: 'Sakrīt', differs: 'Atšķiras', attentionNeeded: 'Nepieciešama uzmanība', resolved: 'Sagatavots',
     useMine: 'Izmantot mana profila vērtību', cannotUseMine: 'Šo vērtību pagaidām nevar droši pārrakstīt automātiski.',
-    manual: 'Manuāli', apply: 'Pielietot', manualUnsupported: 'Manuāla maiņa šim laukam vēl nav droši atbalstīta.',
+    manual: 'Manuāli', apply: 'Pielietot', applied: 'Pielietots', updatePrepared: 'Atjaunināt', original: 'Sākotnēji',
+    editedValue: 'Rediģētā vērtība', preparedValue: 'Sagatavotā vērtība', cancelDraft: 'Atcelt ievadi', keepOriginal: 'Atgriezt sākotnējo',
+    draftPending: 'Rediģēts — vēl nav pielietots.', preparedState: 'Izmaiņa sagatavota jaunajai 3MF kopijai.',
+    manualUnsupported: 'Šo vērtību PrintGuardian pašlaik nemaina automātiski.',
+    attentionFlagged: (n: number) => n === 1 ? 'PrintGuardian šo iestatījumu atzīmēja kā saistītu ar pašreizējo uzmanības punktu.' : `PrintGuardian šo iestatījumu saista ar ${n} neatrisinātiem uzmanības punktiem.`,
+    attentionResolved: 'Sagatavotā izmaiņa novērš ar šo iestatījumu saistīto uzmanības punktu.',
     why: 'Ko tas ietekmē', high: 'Augsta ietekme', medium: 'Vidēja ietekme', low: 'Zema ietekme',
     highRiskTitle: 'Šī ir augstas ietekmes manuāla izmaiņa',
     highRiskText: 'Nepareiza vērtība var būtiski ietekmēt drukas rezultātu vai saderību. PrintGuardian pārbaudīs formātu un diapazonu, bet nevar zināt tavu konkrēto mehānisko vai materiāla situāciju.',
@@ -90,7 +104,14 @@ function workspaceCopy(lv: boolean) {
     profileTitle: 'What is “My print profile”?', profileExplain: 'It is a local reference profile created from one of your trusted 3MF files. PrintGuardian uses it to compare another project with your printer and normal settings. It is not a safety certificate and is not required for file analysis.',
     profileSet: 'Set up my print profile', profileReplace: 'Update active profile', profileRemove: 'Remove active profile', profileManage: 'Manage profiles', profileLoading: 'Reading profile…', profileFrom: 'Created from', profileNone: 'Not set — PrintGuardian will still analyze the project itself.', profileRemoveConfirm: 'Remove the saved print profile?', profileError: 'The print profile could not be saved.',
     printerTitle: 'Printer compatibility', printerSub: 'Printer, nozzle and build-plate information in one place.', materialTitle: 'Material and flow', materialSub: 'Filament profiles, materials and flow-related parameters.', settingsTitle: 'Print settings', settingsSub: 'Edit supported values where you can also see what they do and why they matter.', modelTitle: 'Model, supports and adhesion', modelSub: 'Model structure and settings that affect supports and first-layer stability.', advancedTitle: 'Advanced diagnostics', advancedSub: 'Technical tools and Profile Diff for users who want to go deeper.',
-    current: 'In this project', mine: 'In my profile', same: 'Matches', differs: 'Differs', attentionNeeded: 'Review', resolved: 'Changed', useMine: 'Use my profile value', cannotUseMine: 'This value cannot yet be rewritten automatically with enough confidence.', manual: 'Manual', apply: 'Apply', manualUnsupported: 'Manual editing is not safely supported for this field yet.', why: 'What it affects', high: 'High impact', medium: 'Medium impact', low: 'Low impact',
+    current: 'In this project', mine: 'In my profile', same: 'Matches', differs: 'Differs', attentionNeeded: 'Needs attention', resolved: 'Prepared', useMine: 'Use my profile value', cannotUseMine: 'This value cannot yet be rewritten automatically with enough confidence.',
+    manual: 'Manual', apply: 'Apply', applied: 'Applied', updatePrepared: 'Update', original: 'Originally',
+    editedValue: 'Edited value', preparedValue: 'Prepared value', cancelDraft: 'Cancel edit', keepOriginal: 'Restore original',
+    draftPending: 'Edited — not applied yet.', preparedState: 'Change prepared for the new 3MF copy.',
+    manualUnsupported: 'PrintGuardian does not currently change this value automatically.',
+    attentionFlagged: (n: number) => n === 1 ? 'PrintGuardian marked this setting as related to the current attention point.' : `PrintGuardian links this setting to ${n} unresolved attention points.`,
+    attentionResolved: 'The prepared change resolves the attention point linked to this setting.',
+    why: 'What it affects', high: 'High impact', medium: 'Medium impact', low: 'Low impact',
     highRiskTitle: 'This is a high-impact manual change', highRiskText: 'An incorrect value can materially affect print behaviour or compatibility. PrintGuardian validates format and range, but cannot know every mechanical or material constraint in your setup.', understand: 'I understand that I am manually changing a high-impact parameter.', cancel: 'Cancel', confirm: 'Apply change',
     changePrepared: (n: number) => `${n} change${n === 1 ? '' : 's'} prepared`, unresolved: (n: number) => `${n} attention point${n === 1 ? '' : 's'} unresolved`, reviewChanges: 'Review changes', export: 'Create new 3MF', exporting: 'Rebuilding and verifying…', reset: 'Reset changes', exportNoChanges: 'Prepare at least one supported change first.', exportCritical: 'Resolve high-impact compatibility issues first.', exportTechnical: 'This set of changes cannot yet be exported safely.', changesTitle: 'Prepared changes', changesEmpty: 'No changes are currently prepared.', before: 'Before', after: 'After', sourceProfile: 'MY PROFILE', sourceManual: 'MANUAL', exportVerified: 'New 3MF copy verified', exportVerifiedText: 'Archive structure and requested changes were verified before saving the file.', exportFailed: 'The new 3MF could not be created safely.',
     objects: 'Objects', parts: 'Parts', plates: 'Plates', thumbnail: 'Preview image', archive: '3MF archive entries', noFilaments: 'No filament-profile data was found in the file.', profileDiffHint: 'Profile Diff is an advanced technical tool. Use the tabs above for normal day-to-day work.', auditNote: 'Full geometry/G-code safety auditing is not available in this version yet.',
@@ -140,6 +161,14 @@ function currentRaw(inspection: ThreeMfInspection, row: ProfileDiffRow): unknown
   return key ? inspection.projectSettings?.[key] : undefined;
 }
 function sameRaw(a: unknown, b: unknown): boolean { return JSON.stringify(a) === JSON.stringify(b); }
+function numericRaw(value: unknown): number | undefined {
+  const scalar = Array.isArray(value) ? value[0] : value;
+  const parsed = Number(scalar);
+  return Number.isFinite(parsed) ? parsed : undefined;
+}
+function settingCardDomId(rowKey: string): string {
+  return `setting-card-${rowKey.replace(/[^a-z0-9_-]/gi, '-')}`;
+}
 function displayRaw(value: unknown, row: ProfileDiffRow): string {
   const key = canonicalKey(row);
   if (key === 'enable_support') {
@@ -167,25 +196,45 @@ function noticeRowKey(id: string): string | undefined {
   return undefined;
 }
 
-function SettingCard({ row, inspection, profile, choice, manualValue, onChooseProfile, onApplyManual, text, lv }:{
-  row: ProfileDiffRow; inspection: ThreeMfInspection; profile: SavedProfileBaseline | null; choice: WorkspaceChoice; manualValue?: unknown;
-  onChooseProfile: () => void; onApplyManual: (raw: unknown, display: string) => void; text: Copy; lv: boolean;
+function SettingCard({
+  row, inspection, profile, choice, manualValue, linkedIssues, unresolvedLinkedIssues, highlighted,
+  onChooseProfile, onKeepProject, onApplyManual, text, lv,
+}:{
+  row: ProfileDiffRow;
+  inspection: ThreeMfInspection;
+  profile: SavedProfileBaseline | null;
+  choice: WorkspaceChoice;
+  manualValue?: unknown;
+  linkedIssues: TabIssue[];
+  unresolvedLinkedIssues: TabIssue[];
+  highlighted: boolean;
+  onChooseProfile: () => void;
+  onKeepProject: () => void;
+  onApplyManual: (raw: unknown, display: string) => void;
+  text: Copy;
+  lv: boolean;
 }) {
   const editor = manualEditorFor(canonicalKey(row));
+  const sourceRaw = currentRaw(inspection, row);
+  const sourceSignature = JSON.stringify(sourceRaw);
   const [manualError, setManualError] = useState<string | null>(null);
-  const [draft, setDraft] = useState(() => {
-    const raw = manualValue ?? currentRaw(inspection, row);
+
+  const draftFor = (raw: unknown) => {
     const numeric = Array.isArray(raw) ? raw[0] : raw;
-    if (canonicalKey(row) === 'enable_support') return (raw === true || raw === 1 || raw === '1' || String(raw).toLowerCase() === 'true') ? 'true' : 'false';
+    if (canonicalKey(row) === 'enable_support') {
+      return (raw === true || raw === 1 || raw === '1' || String(raw).toLowerCase() === 'true') ? 'true' : 'false';
+    }
     return String(numeric ?? '').replace(/[^0-9+-.]/g, '');
-  });
+  };
+
+  const activeEditorRaw = choice === 'manual' ? manualValue : sourceRaw;
+  const [draft, setDraft] = useState(() => draftFor(activeEditorRaw));
 
   useEffect(() => {
-    if (choice !== 'manual') return;
-    const raw = manualValue;
-    if (canonicalKey(row) === 'enable_support') setDraft((raw === true || raw === 1 || raw === '1' || String(raw).toLowerCase() === 'true') ? 'true' : 'false');
-    else if (raw != null) setDraft(String(Array.isArray(raw) ? raw[0] : raw));
-  }, [choice, manualValue, row.key]);
+    const raw = choice === 'manual' ? manualValue : sourceRaw;
+    setDraft(draftFor(raw));
+    setManualError(null);
+  }, [choice, manualValue, row.key, sourceSignature]);
 
   const canUseProfile = useMemo(() => {
     if (!profile || row.status === 'same' || !row.compareValue) return false;
@@ -193,55 +242,150 @@ function SettingCard({ row, inspection, profile, choice, manualValue, onChoosePr
     return preview.readyCount === 1 && preview.blockedCount === 0 && preview.unresolvedCount === 0;
   }, [inspection, profile, row]);
 
+  const activeDraft = draftFor(activeEditorRaw);
+  const draftDirty = Boolean(editor) && draft !== activeDraft;
+  const manualPrepared = choice === 'manual';
+  const changed = choice !== 'project';
+  const impact = impactForRow(row);
+  const effect = effectKeys[canonicalKey(row)];
+  const unresolvedCount = unresolvedLinkedIssues.length;
+  const linkedAttentionResolved = linkedIssues.length > 0 && unresolvedCount === 0 && changed;
+
+  const resetDraft = () => {
+    setDraft(activeDraft);
+    setManualError(null);
+  };
+
   const apply = () => {
     if (!inspection.projectSettings || !editor) return;
     const logical: number | boolean = editor.kind === 'boolean' ? draft === 'true' : Number(draft);
     const coerced = coerceManualBuilderValue(inspection.projectSettings, canonicalKey(row), logical);
-    if (!coerced.ok) { setManualError(text.validationError); return; }
+    if (!coerced.ok) {
+      setManualError(text.validationError);
+      return;
+    }
     setManualError(null);
     onApplyManual(coerced.rawValue, displayRaw(coerced.rawValue, row));
   };
 
-  const changed = choice !== 'project';
-  const impact = impactForRow(row);
-  const effect = effectKeys[canonicalKey(row)];
+  const state = unresolvedCount > 0
+    ? { tone: 'attention', label: text.attentionNeeded }
+    : changed
+      ? { tone: 'resolved', label: text.resolved }
+      : row.status !== 'same'
+        ? { tone: 'differs', label: text.differs }
+        : null;
+
+  const editorLabel = draftDirty ? text.editedValue : manualPrepared ? text.preparedValue : text.current;
+  const applyLabel = manualPrepared && !draftDirty ? text.applied : manualPrepared && draftDirty ? text.updatePrepared : text.apply;
+
   return (
-    <article className={`workspace-setting-card glass-panel${changed ? ' changed' : ''}${impact === 'high' && row.status !== 'same' ? ' high-attention' : ''}`}>
+    <article
+      id={settingCardDomId(row.key)}
+      tabIndex={-1}
+      className={`workspace-setting-card glass-panel${changed ? ' changed' : ''}${unresolvedCount > 0 ? ' needs-attention' : ''}${highlighted ? ' focus-target' : ''}`}
+    >
       <div className="workspace-setting-head">
         <div>
-          <div className="workspace-setting-title"><strong>{row.label}</strong>{row.status !== 'same' && <span className={`workspace-state ${changed ? 'resolved' : 'attention'}`}>{changed ? text.resolved : text.attentionNeeded}</span>}</div>
+          <div className="workspace-setting-title">
+            <strong>{row.label}</strong>
+            {state && (
+              <span className={`workspace-state ${state.tone}`}>
+                {state.tone === 'attention' && <AlertTriangle size={11}/>}
+                {state.tone === 'resolved' && <Check size={11}/>}
+                {state.label}{state.tone === 'attention' && unresolvedCount > 1 ? ` · ${unresolvedCount}` : ''}
+              </span>
+            )}
+          </div>
           {effect && <p><b>{text.why}:</b> {lv ? effect.lv : effect.en}</p>}
         </div>
         <span className={`impact-badge ${impact}`}>{impact === 'high' ? text.high : impact === 'medium' ? text.medium : text.low}</span>
       </div>
 
-      <div className="workspace-value-grid">
-        <div className={`workspace-value-card${choice === 'project' ? ' selected' : ''}`}>
-          <span>{text.current}</span><strong>{row.baseValue || '—'}</strong>
+      <div className={`workspace-value-grid${profile ? ' has-profile' : ' single'}`}>
+        <div className={`workspace-value-card workspace-project-editor${choice === 'project' ? ' active-project' : ''}${manualPrepared ? ' prepared' : ''}${draftDirty ? ' staged' : ''}`}>
+          <div className="workspace-editor-caption">
+            <span>{editorLabel}</span>
+            {(draftDirty || manualPrepared) && <small>{text.original}: {row.baseValue || '—'}</small>}
+          </div>
+
+          {!editor ? (
+            <>
+              <strong className="workspace-static-value">{row.baseValue || '—'}</strong>
+              <small className="workspace-unsupported-note">{text.manualUnsupported}</small>
+            </>
+          ) : (
+            <>
+              <div className="workspace-inline-editor">
+                {editor.kind === 'boolean' ? (
+                  <div className="boolean-editor">
+                    <button className={draft === 'true' ? 'selected' : ''} onClick={() => setDraft('true')}>Enabled</button>
+                    <button className={draft === 'false' ? 'selected' : ''} onClick={() => setDraft('false')}>Disabled</button>
+                  </div>
+                ) : (
+                  <div className="numeric-editor">
+                    <button aria-label={`${row.label} −`} onClick={() => setDraft(String(Math.max(editor.min ?? -Infinity, (Number(draft) || 0) - (editor.step ?? 1))))}>−</button>
+                    <div className="numeric-input-wrap">
+                      <input aria-label={row.label} inputMode="decimal" value={draft} onChange={(event) => setDraft(event.target.value.replace(',', '.'))}/>
+                      <span>{editor.unit || ''}</span>
+                    </div>
+                    <button aria-label={`${row.label} +`} onClick={() => setDraft(String(Math.min(editor.max ?? Infinity, (Number(draft) || 0) + (editor.step ?? 1))))}>+</button>
+                  </div>
+                )}
+
+                <div className="workspace-inline-actions">
+                  {draftDirty && <button className="ghost compact-action" onClick={resetDraft}>{text.cancelDraft}</button>}
+                  {!draftDirty && choice !== 'project' && <button className="ghost compact-action" onClick={onKeepProject}>{text.keepOriginal}</button>}
+                  <button className="primary compact-action" disabled={!draftDirty} onClick={apply}>
+                    {manualPrepared && !draftDirty && <Check size={12}/>}
+                    {applyLabel}
+                  </button>
+                </div>
+              </div>
+
+              {(draftDirty || manualPrepared) && (
+                <div className={`workspace-editor-state ${draftDirty ? 'staged' : 'prepared'}`}>
+                  {draftDirty ? <CircleAlert size={12}/> : <CheckCircle2 size={12}/>}
+                  <span>{draftDirty ? text.draftPending : text.preparedState}</span>
+                </div>
+              )}
+            </>
+          )}
+
+          {manualError && <div className="manual-validation-error"><AlertTriangle size={13}/><span>{manualError}</span></div>}
         </div>
-        {profile && <button className={`workspace-value-card profile${choice === 'profile' ? ' selected' : ''}`} disabled={!canUseProfile} onClick={onChooseProfile} title={!canUseProfile ? text.cannotUseMine : undefined}>
-          <span>{text.mine}</span><strong>{row.compareValue || '—'}</strong><small>{row.status === 'same' ? text.same : canUseProfile ? text.useMine : text.cannotUseMine}</small>
-        </button>}
+
+        {profile && (
+          <button
+            className={`workspace-value-card profile${choice === 'profile' ? ' selected' : ''}`}
+            disabled={!canUseProfile}
+            onClick={onChooseProfile}
+            title={!canUseProfile ? text.cannotUseMine : undefined}
+          >
+            <span>{text.mine}</span>
+            <strong>{row.compareValue || '—'}</strong>
+            <small>{row.status === 'same' ? text.same : canUseProfile ? text.useMine : text.cannotUseMine}</small>
+          </button>
+        )}
       </div>
 
-      <div className="manual-editor">
-        <div className="manual-editor-label"><SlidersHorizontal size={14}/><span>{text.manual}</span></div>
-        {!editor ? <span className="manual-unsupported">{text.manualUnsupported}</span> : editor.kind === 'boolean' ? (
-          <div className="boolean-editor">
-            <button className={draft === 'true' ? 'selected' : ''} onClick={() => setDraft('true')}>Enabled</button>
-            <button className={draft === 'false' ? 'selected' : ''} onClick={() => setDraft('false')}>Disabled</button>
-            <button className="primary" onClick={apply}>{text.apply}</button>
+      {unresolvedCount > 0 && (
+        <div className="workspace-setting-attention" role="status">
+          <AlertTriangle size={15}/>
+          <div>
+            <strong>{text.attentionFlagged(unresolvedCount)}</strong>
+            {unresolvedLinkedIssues.map((issue) => <span key={issue.id}>{issue.detail || issue.label}</span>)}
+            {unresolvedLinkedIssues.map((issue) => issue.guidance ? <small key={`${issue.id}:guidance`}>{issue.guidance}</small> : null)}
           </div>
-        ) : (
-          <div className="numeric-editor">
-            <button onClick={() => setDraft(String(Math.max(editor.min ?? -Infinity, (Number(draft) || 0) - (editor.step ?? 1))))}>−</button>
-            <div className="numeric-input-wrap"><input inputMode="decimal" value={draft} onChange={(event) => setDraft(event.target.value.replace(',', '.'))}/><span>{editor.unit || ''}</span></div>
-            <button onClick={() => setDraft(String(Math.min(editor.max ?? Infinity, (Number(draft) || 0) + (editor.step ?? 1))))}>+</button>
-            <button className="primary" onClick={apply}>{text.apply}</button>
-          </div>
-        )}
-        {manualError && <div className="manual-validation-error"><AlertTriangle size={13}/><span>{manualError}</span></div>}
-      </div>
+        </div>
+      )}
+
+      {linkedAttentionResolved && (
+        <div className="workspace-setting-resolved">
+          <CheckCircle2 size={14}/>
+          <span>{text.attentionResolved}</span>
+        </div>
+      )}
     </article>
   );
 }
@@ -264,6 +408,7 @@ export function ProjectWorkspace({ inspection, profile, profileName, onProfileCh
   const [exporting, setExporting] = useState(false);
   const [verification, setVerification] = useState<SafeThreeMfExportVerification | null>(null);
   const [exportError, setExportError] = useState<string | null>(null);
+  const [focusRowKey, setFocusRowKey] = useState<string | null>(null);
 
   useEffect(() => {
     const saved = loadWorkspacePlan(inspection, profile);
@@ -272,6 +417,21 @@ export function ProjectWorkspace({ inspection, profile, profileName, onProfileCh
     setVerification(null);
     setExportError(null);
   }, [context]);
+
+  useEffect(() => {
+    if (!focusRowKey) return;
+    const frame = window.requestAnimationFrame(() => {
+      const target = document.getElementById(settingCardDomId(focusRowKey));
+      if (!target) return;
+      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      target.focus({ preventScroll: true });
+    });
+    const timer = window.setTimeout(() => setFocusRowKey(null), 1800);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.clearTimeout(timer);
+    };
+  }, [tab, focusRowKey]);
 
   const comparison = useMemo(() => compareInspections(inspection, profile?.profile ?? inspection), [inspection, profile]);
   const rows = comparison.rows;
@@ -284,10 +444,13 @@ export function ProjectWorkspace({ inspection, profile, profileName, onProfileCh
   const preview = useMemo(() => createSafeThreeMfBuildPreview(inspection, profile?.profile ?? inspection, rows, buildDecisions, manualValues), [inspection, profile, rows, buildDecisions, manualValues]);
   const eligibility = useMemo(() => exportEligibility(inspection, preview), [inspection, preview]);
 
-  const isRowChanged = (rowKey?: string) => {
-    if (!rowKey) return false;
-    const mutation = preview.mutations.find((item) => item.rowKey === rowKey);
-    return mutation?.status === 'ready' && !sameRaw(mutation.before, mutation.after);
+  const effectiveRawFor = (key: BuilderCanonicalKey): unknown => {
+    const settings = preview.previewProjectSettings ?? inspection.projectSettings;
+    if (settings) {
+      const concreteKey = findExistingProjectSettingsKey(settings, key);
+      if (concreteKey) return settings[concreteKey];
+    }
+    return inspection.builderValues?.[key];
   };
 
   const issues = useMemo<TabIssue[]>(() => {
@@ -295,19 +458,81 @@ export function ProjectWorkspace({ inspection, profile, profileName, onProfileCh
     if (profile) {
       for (const row of rows.filter((item) => item.status !== 'same' && impactForRow(item) === 'high')) {
         const target = rowTab[canonicalKey(row)];
-        if (target) result.push({ id: `diff:${row.key}`, tab: target, rowKey: row.key, impact: 'high', label: row.label });
+        if (!target) continue;
+        const compared = row.compareValue ? ` (${row.compareValue})` : '';
+        result.push({
+          id: `diff:${row.key}`,
+          tab: target,
+          rowKey: row.key,
+          impact: 'high',
+          label: row.label,
+          detail: lv
+            ? `Pašreizējā vērtība būtiski atšķiras no aktīvā drukas profila${compared}.`
+            : `The current value differs materially from the active print profile${compared}.`,
+        });
       }
     }
+
     for (const notice of inspection.notices) {
       const impact = notice.severity === 'critical' ? 'high' : 'medium';
-      result.push({ id: `notice:${notice.id}`, tab: tabForNotice(notice.id), rowKey: noticeRowKey(notice.id), impact, label: notice.id });
-    }
-    const unique = new Map<string, TabIssue>();
-    for (const issue of result) unique.set(issue.rowKey ? `row:${issue.rowKey}` : issue.id, issue);
-    return [...unique.values()];
-  }, [inspection.notices, profile, rows]);
+      const rowKey = noticeRowKey(notice.id);
+      let guidance: string | undefined;
+      if (notice.id === 'one-wall') {
+        guidance = lv
+          ? 'Lai novērstu šo brīdinājumu, Wall loops jābūt vismaz 2.'
+          : 'To clear this warning, Wall loops must be at least 2.';
+      } else if (notice.id === 'high-layer-height') {
+        const nozzle = Number(notice.values?.nozzle);
+        if (Number.isFinite(nozzle) && nozzle > 0) {
+          const limit = Number((nozzle * 0.8).toFixed(3)).toString();
+          guidance = lv
+            ? `Lai novērstu šo brīdinājumu, Layer height jābūt ${limit} mm vai mazāk (≤ 80% no nozzle diametra).`
+            : `To clear this warning, Layer height must be ${limit} mm or lower (≤ 80% of nozzle diameter).`;
+        }
+      }
 
-  const unresolvedIssues = issues.filter((issue) => !isRowChanged(issue.rowKey));
+      result.push({
+        id: `notice:${notice.id}`,
+        tab: tabForNotice(notice.id),
+        rowKey,
+        impact,
+        label: String(t(notice.titleKey, notice.values)),
+        detail: String(t(notice.detailKey, notice.values)),
+        guidance,
+      });
+    }
+
+    const unique = new Map<string, TabIssue>();
+    for (const issue of result) unique.set(issue.id, issue);
+    return [...unique.values()];
+  }, [inspection.notices, profile, rows, lv, t]);
+
+  const issueResolved = (issue: TabIssue): boolean => {
+    if (!issue.rowKey) return false;
+    const row = rowByKey.get(issue.rowKey);
+    if (!row) return false;
+
+    if (issue.id === 'notice:one-wall') {
+      const walls = numericRaw(effectiveRawFor('wall_loops'));
+      return walls != null && walls > 1;
+    }
+
+    if (issue.id === 'notice:high-layer-height') {
+      const layer = numericRaw(effectiveRawFor('layer_height'));
+      const nozzle = numericRaw(effectiveRawFor('nozzle_diameter'));
+      return layer != null && nozzle != null && nozzle > 0 && layer <= nozzle * 0.8;
+    }
+
+    if (issue.id.startsWith('diff:') && profile) {
+      const key = canonicalKey(row) as BuilderCanonicalKey;
+      const expected = profile.profile.builderValues?.[key];
+      return expected !== undefined && sameRaw(effectiveRawFor(key), expected);
+    }
+
+    return false;
+  };
+
+  const unresolvedIssues = issues.filter((issue) => !issueResolved(issue));
   const issueCounts = (['printer','material','settings','model'] as const).reduce<Record<string, number>>((acc, key) => {
     acc[key] = unresolvedIssues.filter((issue) => issue.tab === key).length;
     return acc;
@@ -324,6 +549,13 @@ export function ProjectWorkspace({ inspection, profile, profileName, onProfileCh
   };
 
   const chooseProfile = (row: ProfileDiffRow) => persist({ ...choices, [row.key]: 'profile' });
+  const keepProject = (row: ProfileDiffRow) => {
+    const nextChoices = { ...choices };
+    const nextManual = { ...manualValues };
+    delete nextChoices[row.key];
+    delete nextManual[row.key];
+    persist(nextChoices, nextManual);
+  };
   const commitManual = (row: ProfileDiffRow, raw: unknown, display: string) => {
     const source = currentRaw(inspection, row);
     if (sameRaw(source, raw)) {
@@ -387,10 +619,47 @@ export function ProjectWorkspace({ inspection, profile, profileName, onProfileCh
     </article>)}</div>;
   };
 
-  const settingCards = (selectedRows: ProfileDiffRow[]) => <div className="workspace-settings-grid">{selectedRows.map((row) => (
-    <SettingCard key={row.key} row={row} inspection={inspection} profile={profile} choice={choices[row.key] ?? 'project'} manualValue={manualValues[row.key]}
-      onChooseProfile={() => chooseProfile(row)} onApplyManual={(raw,display) => commitManual(row,raw,display)} text={text} lv={lv}/>
-  ))}</div>;
+  const settingCards = (selectedRows: ProfileDiffRow[]) => (
+    <div className="workspace-settings-grid">
+      {selectedRows.map((row) => {
+        const linkedIssues = issues.filter((issue) => issue.rowKey === row.key);
+        const unresolvedLinkedIssues = unresolvedIssues.filter((issue) => issue.rowKey === row.key);
+        return (
+          <SettingCard
+            key={row.key}
+            row={row}
+            inspection={inspection}
+            profile={profile}
+            choice={choices[row.key] ?? 'project'}
+            manualValue={manualValues[row.key]}
+            linkedIssues={linkedIssues}
+            unresolvedLinkedIssues={unresolvedLinkedIssues}
+            highlighted={focusRowKey === row.key}
+            onChooseProfile={() => chooseProfile(row)}
+            onKeepProject={() => keepProject(row)}
+            onApplyManual={(raw, display) => commitManual(row, raw, display)}
+            text={text}
+            lv={lv}
+          />
+        );
+      })}
+    </div>
+  );
+
+  const openIssue = (issue: TabIssue) => {
+    setTab(issue.tab);
+    setFocusRowKey(issue.rowKey ?? null);
+  };
+
+  const openTab = (target: WorkspaceTab) => {
+    setTab(target);
+    if (target === 'overview' || target === 'advanced') {
+      setFocusRowKey(null);
+      return;
+    }
+    const firstIssue = unresolvedIssues.find((issue) => issue.tab === target);
+    setFocusRowKey(firstIssue?.rowKey ?? null);
+  };
 
   const titleForTab = (key: WorkspaceTab) => text.tabs[key];
   const verdictTone = inspection.notices.some((notice) => notice.severity === 'critical') ? 'critical' : unresolvedIssues.length ? 'review' : 'good';
@@ -399,7 +668,7 @@ export function ProjectWorkspace({ inspection, profile, profileName, onProfileCh
     <div className="workspace-tabs glass-panel" role="tablist">
       {tabs.map(({key,icon:Icon}) => {
         const count = key === 'overview' ? unresolvedIssues.length : issueCounts[key] ?? 0;
-        return <button key={key} className={tab === key ? 'active' : ''} onClick={() => setTab(key)} role="tab" aria-selected={tab === key}>
+        return <button key={key} className={tab === key ? 'active' : ''} onClick={() => openTab(key)} role="tab" aria-selected={tab === key}>
           <Icon size={16}/><span>{titleForTab(key)}</span>{count > 0 && <b className="attention-bubble">{count}</b>}
         </button>;
       })}
@@ -409,7 +678,7 @@ export function ProjectWorkspace({ inspection, profile, profileName, onProfileCh
       <section className={`workspace-verdict glass-panel ${verdictTone}`}>
         <div className="workspace-verdict-icon">{verdictTone === 'good' ? <CheckCircle2 size={28}/> : <AlertTriangle size={28}/>}</div>
         <div><span className="eyebrow">{text.projectCheck}</span><h1>{verdictTone === 'critical' ? text.criticalTitle : unresolvedIssues.length ? text.reviewTitle : profile ? text.goodTitle : text.noProfileTitle}</h1><p>{unresolvedIssues.length ? text.reviewText(unresolvedIssues.length) : text.goodText}</p></div>
-        {unresolvedIssues.length > 0 && <button className="primary" onClick={() => setTab(unresolvedIssues[0].tab)}>{text.openTab}<ChevronRight size={15}/></button>}
+        {unresolvedIssues.length > 0 && <button className="primary" onClick={() => openIssue(unresolvedIssues[0])}>{text.openTab}<ChevronRight size={15}/></button>}
       </section>
 
       <div className="overview-two-column">
@@ -424,22 +693,22 @@ export function ProjectWorkspace({ inspection, profile, profileName, onProfileCh
       </div>
 
       <section className="attention-overview"><div className="section-heading"><div><span className="eyebrow"><CircleAlert size={14}/>{text.attention}</span><h2>{unresolvedIssues.length ? text.reviewTitle : text.noAttention}</h2></div></div>
-        {unresolvedIssues.length > 0 && <div className="attention-cards">{(['printer','material','settings','model'] as const).filter(k=>issueCounts[k]>0).map((key)=><button key={key} onClick={()=>setTab(key)} className="attention-card glass-panel"><span>{text.tabs[key]}</span><strong>{issueCounts[key]}</strong><ChevronRight size={16}/></button>)}</div>}
+        {unresolvedIssues.length > 0 && <div className="attention-cards">{(['printer','material','settings','model'] as const).filter(k=>issueCounts[k]>0).map((key)=><button key={key} onClick={()=>openTab(key)} className="attention-card glass-panel"><span>{text.tabs[key]}</span><strong>{issueCounts[key]}</strong><ChevronRight size={16}/></button>)}</div>}
       </section>
       <div className="audit-note"><ShieldCheck size={14}/>{text.auditNote}</div>
     </div>}
 
-    {tab === 'printer' && <div className="workspace-tab-page"><PageHeading title={text.printerTitle} sub={text.printerSub} count={issueCounts.printer}/>{noticeCards('printer')}{settingCards(rowsFor(['printer_profile','nozzle_diameter','build_plate']))}</div>}
+    {tab === 'printer' && <div className="workspace-tab-page"><PageHeading title={text.printerTitle} sub={text.printerSub} count={issueCounts.printer} onAttentionClick={() => openTab('printer')}/>{noticeCards('printer')}{settingCards(rowsFor(['printer_profile','nozzle_diameter','build_plate']))}</div>}
 
-    {tab === 'material' && <div className="workspace-tab-page"><PageHeading title={text.materialTitle} sub={text.materialSub} count={issueCounts.material}/>
+    {tab === 'material' && <div className="workspace-tab-page"><PageHeading title={text.materialTitle} sub={text.materialSub} count={issueCounts.material} onAttentionClick={() => openTab('material')}/>
       {noticeCards('material')}
       <div className="filament-workspace-grid">{inspection.filaments.length ? inspection.filaments.map((f)=><article className="filament-workspace-card glass-panel" key={f.index}><span className="filament-swatch" style={{background:f.color||'rgba(255,255,255,.16)'}}/><div><strong>F{f.index} · {f.type}</strong><span>{[f.vendor,f.profile].filter(Boolean).join(' · ')||'—'}</span><small>{f.usedGrams ? `${f.usedGrams} g` : '—'} · {f.maxVolumetricSpeed ? `${f.maxVolumetricSpeed} mm³/s` : '—'}</small></div></article>) : <div className="workspace-empty glass-panel">{text.noFilaments}</div>}</div>
       {settingCards(rowsFor(['max_volumetric_speed']))}
     </div>}
 
-    {tab === 'settings' && <div className="workspace-tab-page"><PageHeading title={text.settingsTitle} sub={text.settingsSub} count={issueCounts.settings}/>{noticeCards('settings')}{settingCards(rowsFor(['process_profile','layer_height','wall_loops','sparse_infill_density']))}</div>}
+    {tab === 'settings' && <div className="workspace-tab-page"><PageHeading title={text.settingsTitle} sub={text.settingsSub} count={issueCounts.settings} onAttentionClick={() => openTab('settings')}/>{noticeCards('settings')}{settingCards(rowsFor(['process_profile','layer_height','wall_loops','sparse_infill_density']))}</div>}
 
-    {tab === 'model' && <div className="workspace-tab-page"><PageHeading title={text.modelTitle} sub={text.modelSub} count={issueCounts.model}/>
+    {tab === 'model' && <div className="workspace-tab-page"><PageHeading title={text.modelTitle} sub={text.modelSub} count={issueCounts.model} onAttentionClick={() => openTab('model')}/>
       {noticeCards('model')}
       <div className="model-facts-row"><Metric icon={Box} label={text.objects} value={inspection.objectCount}/><Metric icon={PackageOpen} label={text.parts} value={inspection.partCount}/><Metric icon={Layers3} label={text.plates} value={inspection.plateCount}/><Metric icon={FileCode2} label={text.archive} value={inspection.archiveEntryCount}/></div>
       {settingCards(rowsFor(['enable_support','brim_width']))}
@@ -461,6 +730,8 @@ export function ProjectWorkspace({ inspection, profile, profileName, onProfileCh
   </section>;
 }
 
-function PageHeading({title,sub,count}:{title:string;sub:string;count?:number}) { return <div className="workspace-page-heading"><div><h1>{title}</h1><p>{sub}</p></div>{count ? <span className="page-attention"><AlertTriangle size={14}/>{count}</span> : <span className="page-ok"><Check size={14}/>OK</span>}</div>; }
+function PageHeading({title,sub,count,onAttentionClick}:{title:string;sub:string;count?:number;onAttentionClick?:()=>void}) {
+  return <div className="workspace-page-heading"><div><h1>{title}</h1><p>{sub}</p></div>{count ? <button type="button" className="page-attention" onClick={onAttentionClick}><AlertTriangle size={14}/>{count}</button> : <span className="page-ok"><Check size={14}/>OK</span>}</div>;
+}
 function Identity({label,value}:{label:string;value:string}) { return <div className="identity-item"><span>{label}</span><strong title={value}>{value}</strong></div>; }
 function Metric({icon:Icon,label,value}:{icon:typeof Box;label:string;value:number}) { return <article className="model-metric glass-panel"><Icon size={18}/><div><strong>{value}</strong><span>{label}</span></div></article>; }
