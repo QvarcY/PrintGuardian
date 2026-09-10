@@ -22,9 +22,14 @@ export function DesktopEditionBadge() {
   const detail = portable
     ? (lv ? 'Darbojas bez instalēšanas' : 'Runs without installation')
     : (lv ? 'Windows instalētā versija' : 'Windows installed edition');
+  const storageDetail = runtime.storageScope === 'portable'
+    ? (lv ? 'Dati glabājas blakus Portable versijai' : 'Data stays beside the Portable edition')
+    : runtime.storageScope === 'portable-fallback'
+      ? (lv ? 'Portable datu mape nebija rakstāma — izmantots Local AppData' : 'Portable data folder was not writable — using Local AppData')
+      : (lv ? 'Dati glabājas Windows Local AppData' : 'Data is stored in Windows Local AppData');
 
   return (
-    <span className={`desktop-edition-badge ${runtime.distribution}`} title={`${detail} · v${runtime.version}`}>
+    <span className={`desktop-edition-badge ${runtime.distribution}`} title={`${detail} · ${storageDetail} · v${runtime.version}`}>
       <LaptopMinimal size={13} />
       <span>{label}</span>
       <small>v{runtime.version}</small>

@@ -21,7 +21,8 @@ HOW TO CONFIRM WHICH ONE YOU OPENED / KĀ PĀRBAUDĪT, KURU ATVĒRI
 LV: Programmas augšējā joslā desktop versija rāda “Portable” vai “Instalētā”.
 EN: The desktop app shows “Portable” or “Installed” in the top bar.
 
-The Portable build will later keep its own data under PrintGuardianData beside the executable; that persistence path must be verified before the public preview.
+LV: Portable versija glabā savus profilus, iestatījumus un WebView datus slēptā PrintGuardianData mapē blakus EXE. Ja vēlies pārvietot Portable versiju kopā ar tās datiem, kopē visu izpakoto PrintGuardian mapi, ne tikai EXE.
+EN: The Portable edition keeps its profiles, settings and WebView data in a hidden PrintGuardianData folder beside the EXE. To move Portable together with its data, copy the whole extracted PrintGuardian folder, not only the EXE.
 
 
 UNINSTALL / ATINSTALĒŠANA

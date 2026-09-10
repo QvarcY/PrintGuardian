@@ -4,6 +4,7 @@ import { Clock3, FolderOpen, Settings2, ShieldCheck, UserRoundCog } from 'lucide
 import { LanguageSwitch } from './components/LanguageSwitch';
 import { UiScaleControl } from './components/UiScaleControl';
 import { DesktopEditionBadge } from './components/DesktopEditionBadge';
+import { UpdateCentreButton } from './components/UpdateCentreButton';
 import { DropZone } from './components/DropZone';
 import { SupportProject } from './components/SupportProject';
 import { ProjectWorkspace } from './components/ProjectWorkspace';
@@ -61,6 +62,7 @@ function App() {
         <div className="top-actions">
           {inspection && <div className="project-chip"><span className="pulse-dot" />{inspection.fileName}</div>}
           <DesktopEditionBadge />
+          <UpdateCentreButton />
           <SupportProject prominent />
           <UiScaleControl />
           <LanguageSwitch />

@@ -1,11 +1,14 @@
 export type DistributionMode = 'browser' | 'portable' | 'installed';
+export type StorageScope = 'browser' | 'portable' | 'portable-fallback' | 'installed';
 
 export type DesktopRuntimeInfo = {
   desktop: boolean;
   distribution: DistributionMode;
   version: string;
   executableDirectory?: string | null;
+  dataDirectory?: string | null;
   portableDataDirectory?: string | null;
+  storageScope?: StorageScope;
 };
 
 const browserFallback: DesktopRuntimeInfo = {
@@ -13,7 +16,9 @@ const browserFallback: DesktopRuntimeInfo = {
   distribution: 'browser',
   version: 'browser-preview',
   executableDirectory: null,
+  dataDirectory: null,
   portableDataDirectory: null,
+  storageScope: 'browser',
 };
 
 export function isTauriRuntime(): boolean {

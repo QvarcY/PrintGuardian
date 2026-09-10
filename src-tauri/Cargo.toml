@@ -1,6 +1,6 @@
 [package]
 name = "printguardian"
-version = "0.3.0-dev.13"
+version = "0.3.0-dev.14"
 description = "Local-first 3D print project inspector"
 authors = ["CraftIN / QvarcY"]
 edition = "2021"

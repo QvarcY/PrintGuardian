@@ -16,6 +16,11 @@ const lv = await read('src/locales/lv.ts');
 const app = await read('src/App.tsx');
 const distribution = await read('docs/DISTRIBUTION.md');
 const desktopDoc = await read('docs/DESKTOP.md');
+const portableStorageDoc = await read('docs/PORTABLE_STORAGE.md');
+const desktopRuntime = await read('src/lib/desktopRuntime.ts');
+const updateCentre = await read('src/components/UpdateCentreButton.tsx');
+const updateModel = await read('src/lib/updateCenter.ts');
+const rustHost = await read('src-tauri/src/lib.rs');
 const tauriConfig = JSON.parse(await read('src-tauri/tauri.conf.json'));
 const cargoToml = await read('src-tauri/Cargo.toml');
 
@@ -52,6 +57,19 @@ else fail('Windows distribution contract is incomplete');
 
 if (desktopDoc.includes('tauri:build:portable') && desktopDoc.includes('tauri:build:installer') && cargoToml.includes('portable = []')) pass('desktop build flavors are documented and declared');
 else fail('desktop build flavor contract is incomplete');
+
+
+if (Array.isArray(tauriConfig.app?.windows) && tauriConfig.app.windows.length === 0 && rustHost.includes('WebviewWindowBuilder::new') && rustHost.includes('.data_directory(data_directory)')) pass('desktop window is created by Rust with distribution-aware WebView data storage');
+else fail('desktop window still bypasses distribution-aware storage setup');
+
+if (rustHost.includes('PrintGuardianData') && rustHost.includes('portable-fallback') && desktopRuntime.includes('portable-fallback') && portableStorageDoc.includes('PrintGuardianData')) pass('portable storage root and explicit fallback state are implemented/documented');
+else fail('portable storage contract is incomplete');
+
+if (tauriConfig.app?.security?.csp?.includes('https://api.github.com') && updateModel.includes('api.github.com/repos/QvarcY/PrintGuardian/releases') && updateCentre.includes('Update Centre')) pass('desktop update metadata check is narrowly scoped to GitHub Releases');
+else fail('update metadata foundation or CSP scope is missing');
+
+if (updateCentre.includes('createSimulatedUpdate') && updateCentre.includes('Test update notification')) pass('development update notification simulation is available');
+else fail('update notification test path is missing');
 
 if (packageJson.scripts?.['tauri:dev'] && packageJson.scripts?.['package:windows']) pass('desktop development/package scripts are present');
 else fail('desktop scripts are missing');
@@ -95,7 +113,7 @@ for (const fixture of ['fixtures/bambu-style-smoke-test.3mf', 'fixtures/bambu-st
   catch { fail(`${fixture} is missing`); }
 }
 
-for (const file of ['SECURITY.md', 'docs/RELEASE_READINESS.md', 'docs/DISTRIBUTION.md', 'docs/DESKTOP.md', 'docs/WINDOWS_SIGNING.md', 'release/windows/START HERE - SĀC ŠEIT.txt', 'src-tauri/windows/Latvian.nsh', 'src-tauri/windows/nsis-hooks.nsh', 'scripts/stage-windows-release.mjs', 'scripts/build-windows-flavors.mjs', 'src-tauri/src/lib.rs', 'src-tauri/capabilities/default.json', '.github/workflows/windows-desktop.yml']) {
+for (const file of ['SECURITY.md', 'docs/RELEASE_READINESS.md', 'docs/DISTRIBUTION.md', 'docs/DESKTOP.md', 'docs/PORTABLE_STORAGE.md', 'docs/WINDOWS_SIGNING.md', 'release/windows/START HERE - SĀC ŠEIT.txt', 'src-tauri/windows/Latvian.nsh', 'src-tauri/windows/nsis-hooks.nsh', 'scripts/stage-windows-release.mjs', 'scripts/build-windows-flavors.mjs', 'scripts/update-center-smoke.mjs', 'src-tauri/src/lib.rs', 'src-tauri/capabilities/default.json', '.github/workflows/windows-desktop.yml']) {
   try { await access(new URL(file, root)); pass(`${file} exists`); }
   catch { fail(`${file} is missing`); }
 }

@@ -1,13 +1,13 @@
 {
   "name": "printguardian-ui",
   "private": true,
-  "version": "0.3.0-dev.13",
+  "version": "0.3.0-dev.14",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "check:release": "node scripts/release-gate.mjs && node --experimental-strip-types scripts/zip-smoke.mjs",
+    "check:release": "node scripts/release-gate.mjs && node --experimental-strip-types scripts/zip-smoke.mjs && node --experimental-strip-types scripts/update-center-smoke.mjs",
     "stage:windows": "node scripts/stage-windows-release.mjs",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
