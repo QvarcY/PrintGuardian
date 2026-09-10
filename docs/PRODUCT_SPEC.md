@@ -67,3 +67,7 @@ The default screen must answer the user's real questions in order:
 4. Which values can PrintGuardian safely replace with values from my trusted setup?
 
 Technical Profile Diff and archive-level diagnostics belong under advanced tools, not in the normal path.
+
+## Project Workspace information architecture
+
+The primary project interface is tabbed by meaning: **Overview, Printer, Material, Print settings, Model & Supports, Advanced**. A tab badge represents unresolved state and must not disappear simply because the user viewed the tab. Supported setting edits use type-aware controls, while high-impact manual edits require an explicit acknowledgement. Prepared changes remain visible in a sticky action bar across tab navigation.

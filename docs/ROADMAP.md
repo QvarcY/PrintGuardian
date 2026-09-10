@@ -59,7 +59,12 @@
 - ✅ automatic trusted-profile comparison for every subsequently opened project
 - ✅ direct plain-language Keep / Use my value decisions on the main screen
 - ✅ move technical Profile Diff into **Advanced tools**
-- ⏳ multiple named baselines / printer-specific references
+- ✅ category-based **Project Workspace** tabs for Overview / Printer / Material / Print settings / Model & Supports / Advanced
+- ✅ persistent unresolved-attention badges that do not clear on view
+- ✅ type-aware manual editing for supported scalar settings
+- ✅ explicit acknowledgement for high-impact manual edits
+- ✅ sticky prepared-changes / unresolved-attention / verified-export action bar
+- ⏳ multiple named **My print profiles** / printer-material references
 
 ## v0.4 — Safe 3MF Builder
 - ✅ decision model and in-memory `project_settings.config` preview started in v0.3

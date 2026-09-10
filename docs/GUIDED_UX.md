@@ -60,3 +60,11 @@ The default **Standard** interface size uses larger body, explanation, button an
 
 Secondary text may be visually quieter, but it must not become micro-text. Important checklist details are allowed to wrap rather than being truncated simply to preserve card height.
 
+
+## Project Workspace structure (dev.9)
+
+The normal workflow is now split into **Overview, Printer, Material, Print settings, Model & Supports and Advanced** tabs. The Overview is intentionally short; it summarizes the verdict, project identity, My print profile and unresolved attention by category.
+
+Tab badges are persistent unresolved-state indicators. Simply opening or reading a tab does not clear a badge. Setting-linked attention is cleared only by a real prepared change; structural findings remain visible until the underlying project state changes or a dedicated safe resolution mechanism exists.
+
+Supported scalar settings can now be edited with type-aware controls directly inside their category tab. A manual high-impact edit requires an explicit acknowledgement before it enters the prepared-change plan. A sticky bottom bar keeps prepared changes, unresolved attention and verified export available across the workspace.

@@ -1,7 +1,7 @@
 {
   "name": "printguardian-ui",
   "private": true,
-  "version": "0.3.0-dev.8",
+  "version": "0.3.0-dev.9",
   "type": "module",
   "scripts": {
     "dev": "vite",

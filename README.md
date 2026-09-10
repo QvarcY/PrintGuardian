@@ -9,9 +9,9 @@
 
 PrintGuardian is a bilingual (Latvian / English) 3D-print project inspector by **CraftIN / QvarcY**.
 
-The current development branch is **v0.3.0-dev.8**. The core parser, Profile Diff, local reference profile, decision-plan model and verified experimental 3MF export remain in place, but the primary workflow is now **guided-first**: load a project, see a plain-language verdict, set up a trusted print profile once, and review important differences directly on the main screen.
+The current development branch is **v0.3.0-dev.9**. The parser, comparison engine, local print-profile reference, decision model and verified experimental 3MF export remain in place, but the normal interface is now a structured **Project Workspace** rather than one long diagnostic page.
 
-The dev.8 checkpoint adds a readability pass across the guided and advanced views plus a persistent **Compact / Standard / Large** interface-size control. Standard mode is intentionally larger than the earlier micro-dashboard typography.
+The dev.9 checkpoint groups information into **Overview / Printer / Material / Print settings / Model & Supports / Advanced** tabs, adds persistent unresolved-attention badges, type-aware manual setting editors, high-impact confirmation and a sticky prepared-changes/export bar. The existing Compact / Standard / Large interface scaling remains available.
 
 ## Fastest way to test
 
@@ -52,50 +52,29 @@ The React source now uses the same real 3MF inspection model as the standalone p
 - CraftIN / QvarcY author attribution.
 
 
-### v0.3-dev Guided Review + Advanced Profile Diff
+### v0.3-dev Project Workspace + Advanced Profile Diff
 
-- the default screen now automatically guides the user through project checks and trusted-profile comparison without requiring them to discover a Compare workflow;
-- a trusted 3MF can be selected once as **My print profile** directly from the main review flow;
-- future projects are compared against that profile automatically;
-- important differences appear as plain-language review cards with **In this project / In my profile** values and clear actions;
-- safely rewritable values can be selected directly with **Use my value**, while unsupported compound changes remain explained but intentionally non-editable;
-- the primary **Review & Prepare** action scrolls directly to the relevant workflow instead of acting as a dead button;
-- the old technical Profile Diff remains available under **Advanced tools** for users who want raw comparison detail;
-- open **Advanced tools** to manually compare a second `.3mf` file;
-- select a second `.3mf` file;
-- compare `Printer profile`, `Nozzle diameter`, `Build plate` and `Process profile`;
-- compare the important slicer settings currently extracted by PrintGuardian;
-- distinguish unchanged values, changed values and values missing from one file;
-- prioritize changed values with low / medium / high impact labels;
-- default to a differences-only view, with **High impact only** and full comparison filters available on demand;
-- classify known differences into lightweight categories such as compatibility, adhesion, quality, strength and material flow;
-- show localized "why it matters" explanations while keeping slicer-native names in English;
-- show directional guidance for known higher/lower or enabled/disabled setting changes;
-- show relative numeric deltas when both values use compatible units;
-- overlay both experimental **Print DNA** signatures for a fast visual comparison;
-- keep both comparison files local on the computer;
-- save the currently loaded project profile as **My Baseline** in local browser storage;
-- compare future 3MF projects directly against that saved baseline without re-opening the reference file;
-- replace or remove the baseline from the comparison screen;
-- store only extracted profile metadata/settings, Print DNA values and a small Builder raw-value map — never the 3MF file itself.
-- when comparing against **My Baseline**, review each changed value and choose **Keep project value** or **Use baseline value**;
-- persist those choices locally as a scoped decision-plan draft tied to the exact current-vs-baseline comparison;
-- automatically ignore a saved draft when the comparison context no longer matches;
-- show a profile-level **before / after report** with planned baseline substitutions, retained project values, unresolved items and high-impact planned changes;
-- map supported baseline choices to the concrete `project_settings.config` keys already present in the current project;
-- build a modified `project_settings.config` copy **in memory** and verify that the source object remains untouched;
-- validate that the preview JSON serializes/parses and show before/after fingerprints;
-- deliberately block compound printer/nozzle/plate/process metadata and filament-indexed flow values until safer rewrite rules exist;
-- rebuild a **new** 3MF archive for eligible supported substitutions without overwriting the source file;
-- reopen the rebuilt archive locally before download and verify archive-entry order/count, non-target entry contents, replacement JSON, requested mutations and core inspection counts;
-- name the result with a `-printguardian.3mf` suffix;
-- block export when any selected baseline substitution is unresolved or intentionally unsupported;
-- keep compound machine/profile metadata and filament-indexed flow values blocked until safer rewrite semantics exist;
-- treat this as **structural PrintGuardian verification**, not proof that Bambu Studio / OrcaSlicer will accept every real-world project and not a guarantee that the print will succeed.
+- the normal project view is split into predictable category tabs instead of one long page;
+- **Overview** stays concise and shows the verdict, project identity, My print profile and attention summary;
+- **Printer**, **Material**, **Print settings** and **Model & Supports** own the settings that belong to those categories;
+- unresolved findings appear as persistent count bubbles beside the relevant tab and are not cleared merely by opening the tab;
+- a trusted 3MF can be selected once as optional **My print profile / Mans drukas profils**; the underlying source 3MF is not persisted;
+- future projects are compared with that profile automatically, while file analysis still works without a profile;
+- supported scalar settings can be changed directly with type-aware controls such as integer steppers, bounded numeric/unit inputs and Enabled/Disabled choices;
+- compatible values from My print profile can be applied when the Safe 3MF mapping layer can verify the concrete raw replacement;
+- supported high-impact manual edits require an explicit acknowledgement before they enter the prepared-change plan;
+- prepared profile/manual edits are stored locally and scoped to the exact current project + print-profile context;
+- a sticky change bar keeps prepared-change count, unresolved attention, reset, review and verified new-3MF export visible across tabs;
+- export remains a separate new file, never overwrites the source, and reopens/verifies the rebuilt archive before download;
+- compound printer/nozzle/plate/process rewrites and filament-indexed flow values remain blocked until dedicated safe rewrite semantics exist;
+- **Advanced** retains the technical two-file Profile Diff, raw-value/build-preview detail and Print DNA comparison for users who want to inspect implementation-level differences;
+- slicer-native setting names stay in English in both languages while explanations are localized.
+
+The internal storage/model may still use names such as `baseline` and decision context. Those are implementation details and are not prerequisites for normal use. The workspace design is documented in [`docs/PROJECT_WORKSPACE.md`](docs/PROJECT_WORKSPACE.md).
 
 Profile Diff still treats a changed value as a **fact, not an automatic error**. The impact label is a prioritization aid, not a safety verdict.
 
-**My Baseline is also not a safety certification.** It is a user-selected local reference that helps answer “what changed from the profile I trust?” faster.
+**My print profile is not a safety certification.** It is an optional user-selected local reference that helps PrintGuardian explain how another project differs from the printer/settings the user trusts.
 
 ## Important current limitation
 

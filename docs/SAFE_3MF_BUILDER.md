@@ -2,14 +2,9 @@
 
 ## Current development stage
 
-The full Safe 3MF Builder is **not stable yet**, but the first end-to-end supported path now exists. Starting with `v0.3.0-dev.7`, the normal user no longer has to discover a separate **My Baseline → Compare → Decision Plan** sequence. The same baseline/diff/decision engine remains underneath, while the main screen presents it as a guided **My print profile** review flow.
+The full Safe 3MF Builder is **not stable yet**, but the first end-to-end supported path now exists. Starting with `v0.3.0-dev.7`, the normal user no longer has to discover a separate baseline/compare/decision sequence. In `v0.3.0-dev.9`, that guided flow is organized into the category-based **Project Workspace**, while the same comparison/build engine remains underneath.
 
-For every detected difference the user can see the current project value and the trusted print-profile value. Where the raw mapping is proven safe, the user can explicitly choose:
-
-- **Keep project value**
-- **Use my value**
-
-Compound or unresolved changes remain visible and explained, but their automatic replacement control is disabled.
+For relevant settings the user can see the current project value and the trusted print-profile value. Where the raw mapping is proven safe, the user can reuse the print-profile value or enter a supported manual value with a type-aware editor. High-impact manual edits require explicit acknowledgement. Compound or unresolved changes remain visible and explained, but their automatic replacement control is disabled.
 
 Starting with `v0.3.0-dev.4`, those decisions are also stored as a **local, context-scoped draft** and can be restored when the exact same current-vs-baseline comparison is opened again. PrintGuardian also generates a profile-level before/after report from that draft.
 
@@ -17,7 +12,7 @@ Starting with `v0.3.0-dev.5`, PrintGuardian additionally captures a small raw-va
 
 ## Current mapping policy
 
-The mapping policy remains deliberately conservative. Simple scalar slicer settings such as `Layer height`, `Wall loops`, `Sparse infill density`, `Enable support` and `Brim width` can be mapped when the current project already contains the corresponding key and the baseline provides the same raw data type.
+The mapping policy remains deliberately conservative. Simple scalar slicer settings such as `Layer height`, `Wall loops`, `Sparse infill density`, `Enable support` and `Brim width` can be mapped when the current project already contains the corresponding key. A My print profile replacement must provide the same raw data type; supported manual edits are coerced back to the current project's scalar raw type and validated against the editor range.
 
 The following remain blocked in the preview:
 

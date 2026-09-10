@@ -4,6 +4,16 @@ PrintGuardian is under active development. Until v1.0, features and internal for
 
 ## v0.3.0-dev — Profile Diff (in development)
 
+- Replaced the long single-page guided review with a category-based **Project Workspace** using Overview, Printer, Material, Print settings, Model & Supports and Advanced tabs.
+- Added persistent tab attention bubbles that represent unresolved findings; opening a tab does not clear them.
+- Reframed the old baseline concept as the optional user-facing **My print profile / Mans drukas profils**, while retaining baseline naming only as an internal implementation detail.
+- Added type-aware manual editing for supported scalar settings, including integer, numeric-with-unit and boolean controls.
+- Added persistent project-scoped manual/profile change plans so prepared edits survive navigation and are not applied to a different project/profile context.
+- Added explicit acknowledgement before supported high-impact manual changes are accepted.
+- Made setting impact intrinsic in the workspace, so a high-impact setting remains high-impact even when its original value happened to match the trusted profile.
+- Added a sticky change bar with prepared-change count, unresolved-attention count, reset, review and verified new-3MF export actions.
+- Kept technical Profile Diff and raw builder diagnostics under Advanced instead of mixing them into the normal workflow.
+- Mirrored the tabbed workspace, attention-state behavior, print-profile setup, manual editors and sticky change workflow in standalone `preview.html`.
 - Added persistent **Compact / Standard / Large** interface-size control in the top bar.
 - Increased default body, explanation, sidebar, button, tooltip, settings, checklist and guided-review text sizes for normal reading distance.
 - Increased contrast of secondary copy so explanations remain subordinate without becoming difficult to read.
